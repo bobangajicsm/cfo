@@ -1,15 +1,80 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans:
+    "Mona Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --bg-color: #080f25;
+  --bg-color-secondary: #101935;
+  --text-color-secondary: #aeb9e1;
+  --border-color: #343b4f;
+  --border-color-secondary: #1c2645;
+  --inner-glow-sm: inset -2px 2px 6px 0px rgba(255, 255, 255, 0.1);
+  --accent: #57c3ff;
+  --ternary: #6c72ff;
+
+  --neutral--800: #080f25;
+  --neutral--400: #aeb9e1;
+  --neutral--100: white;
+  --accent--primary-1: #6c72ff;
+  --secondary--color-4: #343b4f;
+  --secondary--color-1: #101935;
+  --general--shadow-01: #14142b0f;
+  --secondary--color-2: #9a91fb;
+  --secondary--color-3: #57c3ff;
+  --secondary--color-5: #fdb52a;
+  --neutral--700: #212c4d;
+  --neutral--600: #37446b;
+  --neutral--500: #7e89ac;
+  --neutral--200: #d9e1fa;
+  --system--green-300: #14ca74;
+  --system--300: #ff5a65;
+  --general--shadow-03: #14142b1a;
+  --system--red-100: #ffeff0;
+  --neutral--300: #d1dbf9;
+  --general--shadow-02: #14142b14;
+  --system--red-400: #dc2b2b;
+  --button-shadow--color-01: #4a3aff0f;
+  --button-shadow--white-01: #14142b0a;
+  --button-shadow--white-02: #14142b0f;
+  --button-shadow--white-03: #14142b1a;
+  --button-shadow--color-3: #4a3aff14;
+  --button-shadow--color-2: #4a3aff14;
+  --general--shadow-04: #14142b24;
+  --general--shadow-05: #14142b29;
+  --general--shadow-06: #14142b3d;
+  --system--blue-400: #086cd9;
+  --system--blue-300: #1d88fe;
+  --system--blue-200: #8fc3ff;
+  --system--blue-100: #eaf4ff;
+  --system--green-400: #11845b;
+  --system--green-200: #7fdca4;
+  --system--green-100: #def2e6;
+  --system--red-200: #ffbec2;
+  --system--orange-400: #d5691b;
+  --system--orange-300: #ff9e2c;
+  --system--orange-200: #ffd19b;
+  --system--orange-100: #fff3e4;
+
+  --bg-color-alpha: 8, 15, 37;
+  --bg-color-secondary-alpha: 16, 25, 53;
+  --accent--primary-1-alpha: 108, 114, 255;
+  --system--300-alpha: 255, 90, 101;
+  --system--green-300-alpha: 20, 202, 116;
+  --secondary--color-4-alpha: 52, 59, 79;
+  --neutral--700-alpha: 33, 44, 77;
 }
 
-html,
-body {
-  @apply bg-white dark:bg-gray-950;
-
+html {
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
   }
+
+  font-size: 62.5%;
+}
+
+body {
+  padding-bottom: 52px;
+  background-color: var(--bg-color);
+  color: white;
 }
