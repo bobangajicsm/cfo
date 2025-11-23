@@ -36,7 +36,7 @@ const CashFlow = () => {
               backgroundColor: "var(--text-color-secondary)",
             },
             "& .Mui-selected": {
-              color: "white !important",
+              color: "var(--text-color-primary) !important",
             },
           }}
         >

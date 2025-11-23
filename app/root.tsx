@@ -6,6 +6,8 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 
 import type { Route } from "./+types/root";
 import "./app.css";
@@ -24,6 +26,154 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+const getThemeConfig = (mode: "light" | "dark") => ({
+  palette: {
+    mode,
+    primary: {
+      main: "#6c72ff", // --accent--primary-1
+      light: "#9a91fb", // --secondary--color-2
+      dark: "#4a3aff",
+    },
+    secondary: {
+      main: "#57c3ff", // --secondary--color-3
+      light: "#8fc3ff", // --system--blue-200
+      dark: "#086cd9", // --system--blue-400
+    },
+    background: {
+      default: mode === "dark" ? "#080f25" : "#ffffff", // --neutral--800 : --neutral--100
+      paper: mode === "dark" ? "#101935" : "#d9e1fa", // --secondary--color-1 : --neutral--200
+    },
+    text: {
+      primary: mode === "dark" ? "#ffffff" : "#212c4d", // --neutral--100 : --neutral--700
+      secondary: mode === "dark" ? "#aeb9e1" : "#7e89ac", // --neutral--400 : --neutral--500
+    },
+    divider: mode === "dark" ? "#343b4f" : "#d1dbf9", // --secondary--color-4 : --neutral--300
+    error: {
+      main: "#ff5a65", // --system--300
+      light: "#ffbec2", // --system--red-200
+      dark: "#dc2b2b", // --system--red-400
+    },
+    warning: {
+      main: "#ff9e2c", // --system--orange-300
+      light: "#ffd19b", // --system--orange-200
+      dark: "#d5691b", // --system--orange-400
+    },
+    info: {
+      main: "#1d88fe", // --system--blue-300
+      light: "#8fc3ff", // --system--blue-200
+      dark: "#086cd9", // --system--blue-400
+    },
+    success: {
+      main: "#14ca74", // --system--green-300
+      light: "#7fdca4", // --system--green-200
+      dark: "#11845b", // --system--green-400
+    },
+  },
+  typography: {
+    fontFamily: '"Mona Sans", ui-sans-serif, system-ui, sans-serif',
+    fontSize: 12,
+    htmlFontSize: 10,
+    h1: {
+      fontSize: "4.8rem",
+      fontWeight: 700,
+    },
+    h2: {
+      fontSize: "3.6rem",
+      fontWeight: 600,
+    },
+    h3: {
+      fontSize: "2.8rem",
+      fontWeight: 600,
+    },
+    h4: {
+      fontSize: "2.4rem",
+      fontWeight: 600,
+    },
+    h5: {
+      fontSize: "2rem",
+      fontWeight: 600,
+    },
+    h6: {
+      fontSize: "1.6rem",
+      fontWeight: 600,
+    },
+    body1: {
+      fontSize: "1.4rem",
+    },
+    body2: {
+      fontSize: "1.2rem",
+    },
+    button: {
+      fontSize: "1.4rem",
+      textTransform: "none" as const,
+    },
+  },
+
+  components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: "none",
+        },
+      },
+      defaultProps: {
+        elevation: 0,
+      },
+      root: {
+        MuiPopoverPaper: {
+          MuiMenuPaper: {
+            styleOverrides: {
+              background: "red",
+            },
+          },
+        },
+      },
+    },
+    MuiMenu: {
+      styleOverrides: {
+        paper: {
+          color: "var(--text-color-secondary)",
+          border: "1px solid var(--border-color)",
+          backgroundColor: "rgba(var(--bg-color-secondary-alpha), 0.82)",
+          backdropFilter: "blur(5px)",
+        },
+      },
+    },
+
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          height: "30px",
+          borderRadius: "2px",
+          backgroundColor: "var(--mui-elements-bg-color)",
+          color: "var(--mui-elements-color)",
+          lineHeight: 0,
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          backgroundImage: "none",
+          boxShadow: "0px 20px 40px rgba(20, 20, 43, 0.24)",
+        },
+      },
+    },
+  },
+});
+
+const darkTheme = createTheme(getThemeConfig("dark"));
+const lightTheme = createTheme(getThemeConfig("light"));
+
+function ThemeWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      {children}
+    </ThemeProvider>
+  );
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -33,8 +183,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
-        {children}
+      <body className="dark">
+        <ThemeWrapper>{children}</ThemeWrapper>
         <ScrollRestoration />
         <Scripts />
       </body>

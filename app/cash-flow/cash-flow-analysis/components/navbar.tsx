@@ -1,20 +1,27 @@
-import { Box, Breadcrumbs, Link, Typography } from "@mui/material";
+import { Box, Breadcrumbs, Typography } from "@mui/material";
 import React from "react";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import { Link } from "react-router";
 
 const breadcrumbs = [
-  <Link
-    underline="hover"
-    key="1"
-    color="var(--neutral--400)"
-    href="/"
-    fontSize="1.2rem"
+  <Box
+    component={Link}
+    to="/"
+    sx={{
+      fontSize: "1.2rem",
+      color: "var(--neutral--400)",
+    }}
   >
     Cash Flow
-  </Link>,
-  <Link underline="hover" key="2" color="var(--neutral--400)">
+  </Box>,
+  <Box
+    sx={{
+      fontSize: "1.2rem",
+      color: "var(--neutral--400)",
+    }}
+  >
     Cash Flow Analysis
-  </Link>,
+  </Box>,
 ];
 
 const Navbar = () => {
@@ -24,7 +31,7 @@ const Navbar = () => {
       py={1}
       sx={{ borderBottom: 1, borderColor: "var(--border-color)" }}
     >
-      <Typography variant="h1" fontSize="2.4rem">
+      <Typography variant="h1" fontSize="2.4rem" fontWeight={500}>
         Cash Flow Analysis
       </Typography>
       <Breadcrumbs

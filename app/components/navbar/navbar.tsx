@@ -1,6 +1,6 @@
 import { Box, Icon, Stack } from "@mui/material";
 import React from "react";
-import { Link, NavLink } from "react-router";
+import { Link, NavLink, useLocation } from "react-router";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import WorkIcon from "@mui/icons-material/Work";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
@@ -8,6 +8,11 @@ import HelpIcon from "@mui/icons-material/Help";
 import SettingsIcon from "@mui/icons-material/Settings";
 
 const navbar = () => {
+  const location = useLocation();
+
+  const isCashFlowActive =
+    location.pathname === "/" || location.pathname === "/analysis";
+
   return (
     <Box
       display="flex"
@@ -27,9 +32,10 @@ const navbar = () => {
       }}
     >
       <NavLink
-        to="/cash-flow"
-        style={({ isActive }) => ({ color: isActive ? "white" : undefined })}
-        end={false}
+        to="/"
+        style={{
+          color: isCashFlowActive ? "var(--text-color-primary)" : undefined,
+        }}
       >
         <Stack alignItems="center" gap={1}>
           <AttachMoneyIcon sx={{ fontSize: "2.4rem" }} />
@@ -37,7 +43,9 @@ const navbar = () => {
         </Stack>
       </NavLink>
       <NavLink
-        style={({ isActive }) => ({ color: isActive ? "white" : undefined })}
+        style={({ isActive }) => ({
+          color: isActive ? "var(--text-color-primary)" : undefined,
+        })}
         to="/portfolio"
       >
         <Stack alignItems="center" gap={1}>
@@ -46,7 +54,9 @@ const navbar = () => {
         </Stack>
       </NavLink>
       <NavLink
-        style={({ isActive }) => ({ color: isActive ? "white" : undefined })}
+        style={({ isActive }) => ({
+          color: isActive ? "var(--text-color-primary)" : undefined,
+        })}
         to="/analytics"
       >
         <Stack alignItems="center" gap={1}>
@@ -54,13 +64,23 @@ const navbar = () => {
           Analytics
         </Stack>
       </NavLink>
-      <NavLink to="/support">
+      <NavLink
+        style={({ isActive }) => ({
+          color: isActive ? "var(--text-color-primary)" : undefined,
+        })}
+        to="/support"
+      >
         <Stack alignItems="center" gap={1}>
           <HelpIcon sx={{ fontSize: "2.4rem" }} />
           Support
         </Stack>
       </NavLink>
-      <NavLink to="/settings">
+      <NavLink
+        style={({ isActive }) => ({
+          color: isActive ? "var(--text-color-primary)" : undefined,
+        })}
+        to="/settings"
+      >
         <Stack alignItems="center" gap={1}>
           <SettingsIcon sx={{ fontSize: "2.4rem" }} />
           Settings

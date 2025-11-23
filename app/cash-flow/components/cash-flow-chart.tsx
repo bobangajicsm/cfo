@@ -1,21 +1,12 @@
 import React, { useState } from "react";
 
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import TrendingDownIcon from "@mui/icons-material/TrendingDown";
-import TrendingFlatIcon from "@mui/icons-material/TrendingFlat";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import InfoOutlineIcon from "@mui/icons-material/InfoOutline";
 import { Link } from "react-router";
+import InfoOutlineIcon from "@mui/icons-material/InfoOutline";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
-import {
-  Box,
-  IconButton,
-  MenuItem,
-  OutlinedInput,
-  Select,
-  Typography,
-} from "@mui/material";
+import { Box, Menu, MenuItem, OutlinedInput, Typography } from "@mui/material";
 
 import {
   BarChart,
@@ -25,7 +16,11 @@ import {
   YAxis,
   CartesianGrid,
 } from "recharts";
-import InfoDialog from "~/components/info-dialog/info-dialog";
+import InfoDialog from "~/components/info-dialog";
+import TrendingChip from "~/components/trending-chip";
+import Card from "~/components/card";
+import ButtonIcon from "~/components/button-icon";
+import Dropdown from "~/components/dropdown";
 
 const data2025 = [
   { month: "Jan", earnings: 3500, expenses: 2500 },
@@ -63,8 +58,9 @@ const yearData: Record<string, typeof data2025> = {
 };
 
 const CashFlowChart = () => {
-  const [date, setDate] = useState("2025");
+  const [date, setDate] = useState("Y");
   const [isOpenInfoDialog, setIsOpenInfoDialog] = useState(false);
+  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleOpenInfoDialog = () => {
     setIsOpenInfoDialog(true);
@@ -74,119 +70,127 @@ const CashFlowChart = () => {
     setIsOpenInfoDialog(false);
   };
 
-  const currentData = yearData[date];
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setMenuAnchorEl(null);
+  };
+
+  let currentData: typeof data2025;
+  let prevData: typeof data2025 | null = null;
+  let numMonths = 12;
+
+  const currentYearData = data2025;
+  const previousYearData = data2024;
+
+  switch (date) {
+    case "W":
+    case "M":
+      numMonths = 1;
+      currentData = currentYearData.slice(-numMonths);
+      prevData = previousYearData.slice(-numMonths);
+      break;
+    case "Q":
+      numMonths = 3;
+      currentData = currentYearData.slice(-numMonths);
+      prevData = previousYearData.slice(-numMonths);
+      break;
+    case "6M":
+      numMonths = 6;
+      currentData = currentYearData.slice(-numMonths);
+      prevData = previousYearData.slice(-numMonths);
+      break;
+    case "Y":
+      numMonths = 12;
+      currentData = currentYearData;
+      prevData = previousYearData;
+      break;
+    case "2Y":
+      numMonths = 24;
+      currentData = [
+        ...previousYearData.map((item) => ({
+          ...item,
+          month: `${2024} ${item.month}`,
+        })),
+        ...currentYearData.map((item) => ({
+          ...item,
+          month: `${2025} ${item.month}`,
+        })),
+      ];
+      prevData = null;
+      break;
+    default:
+      numMonths = 12;
+      currentData = currentYearData;
+      prevData = previousYearData;
+  }
+
   const netCurrent = currentData.reduce(
     (acc, { earnings, expenses }) => acc + earnings - expenses,
     0
   );
-  const avgNet = Math.round(netCurrent / 12);
+  const avgNet = Math.round(netCurrent / numMonths);
 
-  const previousYear = (parseInt(date) - 1).toString();
-  const hasPrevious = previousYear in yearData;
+  const hasPrevious = prevData !== null;
   const netPrevious = hasPrevious
-    ? yearData[previousYear].reduce(
+    ? prevData?.reduce(
         (acc, { earnings, expenses }) => acc + earnings - expenses,
         0
       )
     : netCurrent;
   const growthRate = hasPrevious
-    ? ((netCurrent - netPrevious) / netPrevious) * 100
+    ? ((netCurrent - (netPrevious || 0)) / (netPrevious || 0)) * 100
     : 0;
-  const percentage = Math.abs(growthRate).toFixed(1) + "%";
-
-  const isUp = growthRate > 0;
-  const isDown = growthRate < 0;
-
-  let color, bgColor, borderColor, IconComponent, percentageDisplay;
-  if (isUp) {
-    color = "var(--system--green-300)";
-    bgColor = "rgba(var(--system--green-300-alpha), 0.2)";
-    borderColor = "rgba(var(--system--green-300-alpha), 0.2)";
-    IconComponent = TrendingUpIcon;
-    percentageDisplay = `+${percentage}`;
-  } else if (isDown) {
-    color = "var(--system--300)";
-    bgColor = "rgba(var(--system--300-alpha), 0.2)";
-    borderColor = "rgba(var(--system--300-alpha), 0.2)";
-    IconComponent = TrendingDownIcon;
-    percentageDisplay = `-${percentage}`;
-  } else {
-    color = "var(--text-color-secondary)";
-    bgColor = "var(--neutral--700)";
-    borderColor = "var(--neutral--700)";
-    IconComponent = TrendingFlatIcon;
-    percentageDisplay = "0%";
-  }
 
   return (
     <>
-      <Box
+      <Card
         sx={{
-          position: "relative",
-          backgroundColor: "var(--bg-color-secondary)",
-          borderRadius: 2,
-          border: "1px solid var(--border-color)",
-          px: 2,
-          pt: 2,
           pb: 1,
+          mb: 2,
         }}
       >
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="flex-start"
-        >
-          <Box component={Link} to="/cash-flow/analysis">
-            <Typography
-              color="var(--text-color-secondary)"
-              fontSize={"1.2rem"}
-              mb={0.5}
-            >
-              Net passive cash flow
+        <Box>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
+              Cash flow
             </Typography>
-            <Box display="flex" alignItems="center" gap={1}>
-              <Typography fontSize={"2.8rem"} fontWeight={700}>
-                ${avgNet}
-              </Typography>
-              <Box display="flex" gap={0.5} alignItems="center">
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  gap={0.5}
-                  sx={{
-                    color,
-                    backgroundColor: bgColor,
-                    border: `1px solid ${borderColor}`,
-                    borderRadius: 0.5,
-                    py: 0.2,
-                    px: 0.5,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: "0.4rem",
-                      height: "0.4rem",
-                      backgroundColor: color,
-                      borderRadius: "100%",
-                    }}
-                  />
-                  <Typography
-                    sx={{
-                      fontSize: "1.2rem",
-                    }}
-                  >
-                    {percentageDisplay}
-                  </Typography>
-                  <IconComponent
-                    sx={{
-                      fontSize: "1.2rem",
-                    }}
-                  />
-                </Box>
-              </Box>
-            </Box>
+            <ButtonIcon onClick={handleOpenMenu}>
+              <MoreHorizIcon sx={{ fontSize: "1.6rem" }} />
+            </ButtonIcon>
+          </Box>
+          <Box display="flex" alignItems="center" gap={1}>
+            <Typography fontSize="2.8rem" fontWeight={700}>
+              ${avgNet}
+            </Typography>
+            <TrendingChip value={parseFloat(growthRate.toFixed(1))} />
           </Box>
         </Box>
+        <Menu
+          anchorEl={menuAnchorEl}
+          open={Boolean(menuAnchorEl)}
+          onClose={handleCloseMenu}
+        >
+          <MenuItem onClick={handleCloseMenu} component={Link} to="/analysis">
+            Analytics
+          </MenuItem>
+          <MenuItem onClick={handleCloseMenu} component={Link} to="/reports">
+            Reports
+          </MenuItem>
+          <MenuItem
+            onClick={handleCloseMenu}
+            component={Link}
+            to="/notifications"
+          >
+            Notifications
+          </MenuItem>
+        </Menu>
         <Box
           mb={2}
           display="flex"
@@ -199,80 +203,38 @@ const CashFlowChart = () => {
               sx={{
                 width: "0.8rem",
                 height: "0.8rem",
-                backgroundColor: "#6c72ff",
+                backgroundColor: "var(--accent--primary-1)",
                 borderRadius: "100%",
               }}
             />
-            <Typography color="var(--text-color-secondary)" fontSize={"1.2rem"}>
+            <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
               Revenue
             </Typography>
             <Box
               sx={{
                 width: "0.8rem",
                 height: "0.8rem",
-                backgroundColor: "#57c3ff",
+                backgroundColor: "var(--secondary--color-3)",
                 borderRadius: "100%",
               }}
             />
-            <Typography color="var(--text-color-secondary)" fontSize={"1.2rem"}>
+            <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
               Expenses
             </Typography>
           </Box>
-          <Select
+          <Dropdown
             value={date}
             onChange={(e) => setDate(e.target.value)}
             input={<OutlinedInput startAdornment={<CalendarTodayIcon />} />}
             size="small"
             IconComponent={KeyboardArrowDownIcon}
-            sx={{
-              width: "9.2rem",
-              height: "3rem",
-              "& .MuiSelect-select": {
-                height: 30,
-                fontSize: "1.2rem",
-                padding: "4px 8px",
-                display: "flex",
-                alignItems: "center",
-                color: "var(--neutral--400)",
-              },
-              "& .MuiInputLabel-root": {
-                fontSize: "1.2em",
-                transform: "translate(14px, -6px) scale(0.75)",
-              },
-
-              border: "1px solid var(--neutral--600)",
-              borderRadius: 0.5,
-              backgroundColor: "var(--neutral--700)",
-              color: "var(--neutral--400)",
-
-              "& .MuiSvgIcon-root": {
-                fontSize: "1.2rem",
-                color: "var(--neutral--400)",
-              },
-            }}
-            MenuProps={{
-              sx: {
-                "& .MuiMenu-paper": {
-                  maxHeight: 200,
-                  backgroundColor: "var(--neutral--700)",
-                  border: "1px solid var(--neutral--600)",
-                  borderRadius: 0.5,
-                },
-                "& .MuiMenuItem-root": {
-                  fontSize: "1.2rem",
-                  minHeight: 28,
-                  padding: "4px 12px",
-                  color: "var(--neutral--400)",
-                  "&:hover": {
-                    backgroundColor: "var(--neutral--800)",
-                  },
-                },
-              },
-            }}
           >
-            <MenuItem value="2025">2025</MenuItem>
-            <MenuItem value="2024">2024</MenuItem>
-          </Select>
+            {["W", "M", "Q", "6M", "Y", "2Y"].map((timeframe) => (
+              <MenuItem key={timeframe} value={timeframe}>
+                {timeframe}
+              </MenuItem>
+            ))}
+          </Dropdown>
         </Box>
         <BarChart
           style={{
@@ -309,42 +271,36 @@ const CashFlowChart = () => {
 
           <Bar
             dataKey="earnings"
-            fill="var(--accent)"
+            fill="var(--secondary--color-3)"
             activeBar={<Rectangle fill="gold" stroke="purple" />}
           />
           <Bar
             dataKey="expenses"
-            fill="var(--ternary)"
+            fill="var(--accent--primary-1)"
             activeBar={<Rectangle fill="gold" stroke="purple" />}
           />
         </BarChart>
-        <IconButton
-          onClick={handleOpenInfoDialog}
+        <ButtonIcon
           sx={{
-            backgroundColor: "rgba(var(--accent--primary-1-alpha), 0.3)",
-            color: "var(--text-color-secondary)",
-            "&:hover": {
-              backgroundColor: "rgba(var(--accent--primary-1-alpha), 1)",
-              color: "white",
-            },
             position: "absolute",
             top: "-13px",
-            right: "-13px",
-            padding: 0.5,
+            left: "-13px",
+            opacity: 0.7,
           }}
+          onClick={handleOpenInfoDialog}
         >
-          <InfoOutlineIcon
-            sx={{
-              fontSize: "2rem",
-            }}
-          />
-        </IconButton>
-      </Box>
+          <InfoOutlineIcon sx={{ fontSize: "2rem" }} />
+        </ButtonIcon>
+      </Card>
+
       <InfoDialog
-        title="Net Passive Cash Flow"
-        description="This chart displays your monthly earnings and expenses for the selected year. Use it to track your cash flow trends over time."
         open={isOpenInfoDialog}
         onClose={handleCloseInfoDialog}
+        title="Cash Flow"
+        shortDescription="This chart displays your monthly earnings and expenses for the selected year. Use it to track your cash flow trends over time."
+        formula="Net Cash Flow = Operating Cash Flow + Investing Cash Flow + Financing Cash Flow"
+        longDescription="Cash flow is the movement of money into or out of a business, project, or financial product. It is a key indicator of financial health. Positive cash flow means more money is coming in than going out, while negative cash flow indicates the opposite. Understanding cash flow helps in making informed decisions about investments, expenses, and growth strategies."
+        youtubeUrl="https://www.youtube.com/embed/HRwK3cbkywk?si=XflznV34c5F-q1EF"
       />
     </>
   );

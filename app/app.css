@@ -4,24 +4,18 @@
   --font-sans:
     "Mona Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --bg-color: #080f25;
-  --bg-color-secondary: #101935;
-  --text-color-secondary: #aeb9e1;
-  --border-color: #343b4f;
-  --border-color-secondary: #1c2645;
   --inner-glow-sm: inset -2px 2px 6px 0px rgba(255, 255, 255, 0.1);
-  --accent: #57c3ff;
-  --ternary: #6c72ff;
 
   --neutral--800: #080f25;
   --neutral--400: #aeb9e1;
   --neutral--100: white;
+  --neutral--150: #f7f9fc;
   --accent--primary-1: #6c72ff;
-  --secondary--color-4: #343b4f;
   --secondary--color-1: #101935;
   --general--shadow-01: #14142b0f;
   --secondary--color-2: #9a91fb;
   --secondary--color-3: #57c3ff;
+  --secondary--color-4: #343b4f;
   --secondary--color-5: #fdb52a;
   --neutral--700: #212c4d;
   --neutral--600: #37446b;
@@ -56,8 +50,6 @@
   --system--orange-200: #ffd19b;
   --system--orange-100: #fff3e4;
 
-  --bg-color-alpha: 8, 15, 37;
-  --bg-color-secondary-alpha: 16, 25, 53;
   --accent--primary-1-alpha: 108, 114, 255;
   --system--300-alpha: 255, 90, 101;
   --system--green-300-alpha: 20, 202, 116;
@@ -65,16 +57,43 @@
   --neutral--700-alpha: 33, 44, 77;
 }
 
-html {
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-  }
+:root {
+  --bg-color: var(--neutral--150);
+  --bg-color-secondary: var(--neutral--100);
+  --text-color-primary: var(--neutral--700);
+  --text-color-secondary: var(--neutral--500);
+  --border-color: var(--neutral--300);
+  --border-color-secondary: var(--neutral--400);
+  --bg-color-alpha: 255, 255, 255;
+  --bg-color-secondary-alpha: 217, 225, 250;
+  --mui-elements-bg-color: var(--neutral-100);
+  --mui-elements-color: var(--neutral--700);
+  --mui-elements-bg-color--alpha: 255, 255, 255;
+}
 
+body.dark {
+  --bg-color: var(--neutral--800);
+  --bg-color-secondary: var(--secondary--color-1);
+  --text-color-primary: var(--neutral--100);
+  --text-color-secondary: var(--neutral--400);
+  --border-color: var(--secondary--color-4);
+  --border-color-secondary: #1c2645;
+  --bg-color-alpha: 8, 15, 37;
+  --bg-color-secondary-alpha: 16, 25, 53;
+  --mui-elements-bg-color: var(--neutral--700);
+  --mui-elements-color: var(--neutral--400);
+}
+
+html:has(body.dark) {
+  color-scheme: dark;
+}
+
+html {
   font-size: 62.5%;
 }
 
 body {
   padding-bottom: 52px;
   background-color: var(--bg-color);
-  color: white;
+  color: var(--text-color-primary);
 }

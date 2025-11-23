@@ -1,10 +1,12 @@
 import type { Route } from ".react-router/types/app/+types/root";
-import { Box, IconButton, Link, Stack, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Navbar from "~/cash-flow/cash-flow-analysis/components/navbar";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import InfoOutlineIcon from "@mui/icons-material/InfoOutline";
 import { useState } from "react";
-import InfoDialog from "~/components/info-dialog/info-dialog";
+import InfoDialog from "~/components/info-dialog";
+import ButtonIcon from "~/components/button-icon";
+import Card from "~/components/card";
+import AnalysisCard from "~/cash-flow/cash-flow-analysis/components/analysis-card";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -59,7 +61,6 @@ const CashFlowAnalysis = () => {
 
   const handleCloseInfoDialog = () => {
     setIsOpenInfoDialog(false);
-    setSelectedItem(null);
   };
 
   return (
@@ -68,109 +69,24 @@ const CashFlowAnalysis = () => {
         <Navbar />
         <Box p={2}>
           {data.map((item, index) => (
-            <Box
+            <AnalysisCard
+              sx={{ mb: 2 }}
               key={index}
-              sx={{
-                position: "relative",
-                backgroundColor: "var(--bg-color-secondary)",
-                borderRadius: 2,
-                border: "1px solid var(--border-color)",
-                px: 2,
-                py: 2,
-                mb: 2,
-              }}
-            >
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="flex-end"
-              >
-                <Box>
-                  <Typography fontSize={"1.4rem"} mb={0.5}>
-                    {item.title}
-                  </Typography>
-                  <Typography color="var(--text-color-secondary)">
-                    {item.description}
-                  </Typography>
-                </Box>
-                <Box display="flex" alignItems="center" gap={1}>
-                  <Typography
-                    fontSize={"2.4rem"}
-                    fontWeight={700}
-                    lineHeight={1}
-                  >
-                    {item.value}
-                  </Typography>
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    gap={0.5}
-                    sx={{
-                      color:
-                        item.trend === "up"
-                          ? "var(--system--green-300)"
-                          : "var(--system--red-300)",
-                      backgroundColor:
-                        item.trend === "up"
-                          ? "rgba(var(--system--green-300-alpha), 0.2)"
-                          : "rgba(var(--system--red-300-alpha), 0.2)",
-                      border:
-                        item.trend === "up"
-                          ? "1px solid rgba(var(--system--green-300-alpha), 0.2)"
-                          : "1px solid rgba(var(--system--red-300-alpha), 0.2)",
-                      borderRadius: 0.5,
-                      py: 0.2,
-                      px: 0.5,
-                    }}
-                  >
-                    {item.trend === "up" ? (
-                      <TrendingUpIcon
-                        sx={{
-                          fontSize: "1.2rem",
-                        }}
-                      />
-                    ) : (
-                      <TrendingUpIcon
-                        sx={{
-                          fontSize: "1.2rem",
-                          transform: "rotate(180deg)",
-                        }}
-                      />
-                    )}
-                  </Box>
-                </Box>
-              </Box>
-              <IconButton
-                onClick={() => handleOpenInfoDialog(item)}
-                sx={{
-                  backgroundColor: "rgba(var(--accent--primary-1-alpha), 0.3)",
-                  color: "var(--text-color-secondary)",
-                  "&:hover": {
-                    backgroundColor: "rgba(var(--accent--primary-1-alpha), 1)",
-                    color: "white",
-                  },
-                  position: "absolute",
-                  top: "-13px",
-                  right: "-13px",
-                  padding: 0.5,
-                }}
-              >
-                <InfoOutlineIcon
-                  sx={{
-                    fontSize: "2rem",
-                  }}
-                />
-              </IconButton>
-            </Box>
+              item={item}
+              onClick={() => handleOpenInfoDialog(item)}
+            />
           ))}
         </Box>
       </Box>
       {selectedItem && (
         <InfoDialog
           title={selectedItem.title}
-          description={selectedItem.fullDescription}
+          shortDescription={selectedItem.fullDescription}
           open={isOpenInfoDialog}
           onClose={handleCloseInfoDialog}
+          formula="Net Cash Flow = Operating Cash Flow + Investing Cash Flow + Financing Cash Flow"
+          longDescription="Cash flow is the movement of money into or out of a business, project, or financial product. It is a key indicator of financial health. Positive cash flow means more money is coming in than going out, while negative cash flow indicates the opposite. Understanding cash flow helps in making informed decisions about investments, expenses, and growth strategies."
+          youtubeUrl="https://www.youtube.com/embed/HRwK3cbkywk?si=XflznV34c5F-q1EF"
         />
       )}
     </>
