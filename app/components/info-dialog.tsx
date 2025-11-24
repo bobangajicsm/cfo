@@ -134,7 +134,7 @@ const InfoDialog = ({
                 startIcon={<OpenInNewIcon sx={{ fontSize: '1.4rem !important' }} />}
                 size="small"
               >
-                Learn More in Our Academy
+                Visit Academy
               </Button>
             </Link>
             <ButtonPrimary onClick={handleOpenServiceProviderDialog}>

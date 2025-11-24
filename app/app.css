@@ -69,6 +69,7 @@ body.dark {
   --bg-color-secondary-alpha: 16, 25, 53;
   --mui-elements-bg-color: var(--neutral--700);
   --mui-elements-color: var(--neutral--400);
+  --icon-color: var(--neutral--400);
 }
 
 body.light {
@@ -83,6 +84,7 @@ body.light {
   --mui-elements-bg-color: var(--neutral-100);
   --mui-elements-color: var(--neutral--700);
   --mui-elements-bg-color--alpha: 255, 255, 255;
+  --icon-color: var(--neutral--600);
 }
 
 html:has(body.dark) {

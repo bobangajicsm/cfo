@@ -13,7 +13,7 @@ const ButtonIcon = ({ onClick, children, ...props }: ButtonIconProps) => (
     onClick={onClick}
     sx={{
       backgroundColor: "rgba(var(--accent--primary-1-alpha), 0.2)",
-      color: "var(--text-color-secondary)",
+      color: "var(--icon-color)",
       "&:hover": {
         backgroundColor: "rgba(var(--accent--primary-1-alpha), 1)",
         color: "white",
