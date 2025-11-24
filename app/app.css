@@ -57,6 +57,22 @@
   --neutral--700-alpha: 33, 44, 77;
 }
 
+:root {
+  --bg-color: var(--neutral--150);
+  --bg-color-secondary: var(--neutral--100);
+  --text-color-primary: var(--neutral--700);
+  --text-color-secondary: var(--neutral--500);
+  --border-color: var(--neutral--300);
+  --border-color-secondary: var(--neutral--400);
+  --bg-color-alpha: 255, 255, 255;
+  --bg-color-secondary-alpha: 217, 225, 250;
+  --mui-elements-bg-color: var(--neutral--100);
+  --mui-elements-bg-color-secondary: var(--neutral--400);
+  --mui-elements-color: var(--neutral--700);
+  --mui-elements-bg-color--alpha: 255, 255, 255;
+  --mui-elements-border-color: var(--border-color);
+  --icon-color: var(--neutral--600);
+}
 
 body.dark {
   --bg-color: var(--neutral--800);
@@ -68,23 +84,17 @@ body.dark {
   --bg-color-alpha: 8, 15, 37;
   --bg-color-secondary-alpha: 16, 25, 53;
   --mui-elements-bg-color: var(--neutral--700);
+  --mui-elements-bg-color-secondary: var(--secondary--color-4);
   --mui-elements-color: var(--neutral--400);
+  --mui-elements-bg-color--alpha: 255, 255, 255;
+  --mui-elements-border-color: transparent;
   --icon-color: var(--neutral--400);
 }
 
-body.light {
-  --bg-color: var(--neutral--150);
-  --bg-color-secondary: var(--neutral--100);
-  --text-color-primary: var(--neutral--700);
-  --text-color-secondary: var(--neutral--500);
-  --border-color: var(--neutral--300);
-  --border-color-secondary: var(--neutral--400);
-  --bg-color-alpha: 255, 255, 255;
-  --bg-color-secondary-alpha: 217, 225, 250;
-  --mui-elements-bg-color: var(--neutral-100);
-  --mui-elements-color: var(--neutral--700);
-  --mui-elements-bg-color--alpha: 255, 255, 255;
-  --icon-color: var(--neutral--600);
+body {
+  padding-bottom: 52px;
+  background-color: var(--bg-color);
+  color: var(--text-color-primary);
 }
 
 html:has(body.dark) {
@@ -94,11 +104,4 @@ html:has(body.dark) {
 html {
   font-size: 62.5%;
 }
-
-body {
-  padding-bottom: 52px;
-  background-color: var(--bg-color);
-  color: var(--text-color-primary);
-}
-
 

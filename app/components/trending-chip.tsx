@@ -30,9 +30,9 @@ const TrendingChip = ({ value }: TrendingChipProps) => {
     borderStyle = `1px solid rgba(${alphaVar}, 0.2)`;
   } else {
     IconComponent = TrendingFlatIcon;
-    chipColor = "var(--text-color-secondary)";
-    backgroundColor = "var(--neutral--700)";
-    borderStyle = "1px solid var(--neutral--700)";
+    chipColor = "var(--mui-elements-color)";
+    backgroundColor = "var(--mui-elements-bg-color-secondary)";
+    borderStyle = "1px solid var(--mui-elements-border-color)";
   }
 
   return (
