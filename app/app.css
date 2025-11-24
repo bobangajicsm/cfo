@@ -57,19 +57,6 @@
   --neutral--700-alpha: 33, 44, 77;
 }
 
-:root {
-  --bg-color: var(--neutral--150);
-  --bg-color-secondary: var(--neutral--100);
-  --text-color-primary: var(--neutral--700);
-  --text-color-secondary: var(--neutral--500);
-  --border-color: var(--neutral--300);
-  --border-color-secondary: var(--neutral--400);
-  --bg-color-alpha: 255, 255, 255;
-  --bg-color-secondary-alpha: 217, 225, 250;
-  --mui-elements-bg-color: var(--neutral-100);
-  --mui-elements-color: var(--neutral--700);
-  --mui-elements-bg-color--alpha: 255, 255, 255;
-}
 
 body.dark {
   --bg-color: var(--neutral--800);
@@ -82,6 +69,20 @@ body.dark {
   --bg-color-secondary-alpha: 16, 25, 53;
   --mui-elements-bg-color: var(--neutral--700);
   --mui-elements-color: var(--neutral--400);
+}
+
+body.light {
+  --bg-color: var(--neutral--150);
+  --bg-color-secondary: var(--neutral--100);
+  --text-color-primary: var(--neutral--700);
+  --text-color-secondary: var(--neutral--500);
+  --border-color: var(--neutral--300);
+  --border-color-secondary: var(--neutral--400);
+  --bg-color-alpha: 255, 255, 255;
+  --bg-color-secondary-alpha: 217, 225, 250;
+  --mui-elements-bg-color: var(--neutral-100);
+  --mui-elements-color: var(--neutral--700);
+  --mui-elements-bg-color--alpha: 255, 255, 255;
 }
 
 html:has(body.dark) {
@@ -97,3 +98,5 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color-primary);
 }
+
+

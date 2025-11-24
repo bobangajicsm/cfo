@@ -14,6 +14,7 @@ const ButtonPrimary = ({ children, ...props }: ButtonPrimaryProps) => {
         color: "var(--mui-elements-color)",
         textTransform: "none",
         fontSize: "1.2rem",
+        py: '0.3rem',
         ...props.sx,
       }}
     >

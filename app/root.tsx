@@ -6,25 +6,17 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
+import {
+  ThemeProvider,
+  createTheme,
+  useMediaQuery,
+  CssBaseline,
+} from "@mui/material";
+import { useEffect, useState } from "react";
 
-import type { Route } from "./+types/root";
 import "./app.css";
 import Navbar from "~/components/navbar/navbar";
-
-export const links: Route.LinksFunction = () => [
-  { rel: "preconnect", href: "https://fonts.googleapis.com" },
-  {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous",
-  },
-  {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&display=swap'",
-  },
-];
+import ThemeLoadingScreen from "./components/theme-loading-screen";
 
 const getThemeConfig = (mode: "light" | "dark") => ({
   palette: {
@@ -165,13 +157,67 @@ const getThemeConfig = (mode: "light" | "dark") => ({
 const darkTheme = createTheme(getThemeConfig("dark"));
 const lightTheme = createTheme(getThemeConfig("light"));
 
-function ThemeWrapper({ children }: { children: React.ReactNode }) {
+function DynamicThemeProvider({ children }: { children: React.ReactNode }) {
+  const prefersDarkMode = true;
+
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  useEffect(() => {
+    const updateTheme = () => {
+      const hasDarkClass = document.body.classList.contains("dark");
+      setIsDarkMode(hasDarkClass || (!document.body.classList.contains("light") && prefersDarkMode));
+    };
+
+    // Initial check
+    updateTheme();
+
+    // Watch for class changes (e.g., from theme toggle)
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (
+          mutation.type === "attributes" &&
+          (mutation.attributeName === "class")
+        ) {
+          updateTheme();
+        }
+      });
+    });
+
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, [prefersDarkMode]);
+
+  const theme = isDarkMode ? darkTheme : lightTheme;
+
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
+    <ThemeProvider theme={theme}>
+      <CssBaseline enableColorScheme />
       {children}
     </ThemeProvider>
   );
+}
+
+function ClientThemeWrapper({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <ThemeProvider theme={darkTheme}>
+        <CssBaseline />
+        {children}
+      </ThemeProvider>
+    );
+  }
+
+  return <DynamicThemeProvider>{children}</DynamicThemeProvider>;
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -182,11 +228,61 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                document.documentElement.style.visibility = 'hidden';
+
+                const applyTheme = () => {
+                  try {
+                    const saved = localStorage.getItem('theme');
+                    const theme = saved === 'light' || saved === 'dark' 
+                      ? saved 
+                      : 'dark';
+
+                    document.body.classList.remove('light', 'dark');
+                    document.body.classList.add(theme);
+
+                    document.documentElement.style.visibility = '';
+                  } catch (e) {}
+                };
+
+                applyTheme();
+                if (document.readyState === 'loading') {
+                  document.addEventListener('DOMContentLoaded', applyTheme);
+                }
+                window.addEventListener('load', applyTheme);
+              })();
+            `,
+          }}
+        />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
+
       <body className="dark">
-        <ThemeWrapper>{children}</ThemeWrapper>
+        <ThemeLoadingScreen />
+
+        <ClientThemeWrapper>{children}</ClientThemeWrapper>
         <ScrollRestoration />
         <Scripts />
+
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.addEventListener('load', () => {
+                const loader = document.getElementById('theme-loader');
+                if (loader) {
+                  loader.classList.add('loaded');
+                  setTimeout(() => loader.remove(), 400);
+                }
+              });
+            `,
+          }}
+        />
       </body>
     </html>
   );

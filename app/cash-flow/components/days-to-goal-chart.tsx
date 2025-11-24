@@ -73,12 +73,14 @@ const DaysToGoalChart = () => {
           justifyContent="center"
         >
           <TextField
-            label="Target monthly cash flow"
+            variant="outlined"
+            size="small"
+            placeholder="Target monthly cash flow"
             value={targetInput}
             onChange={(e) => setTargetInput(e.target.value)}
             type="number"
-            size="small"
           />
+
           <Button variant="contained" onClick={handleSubmit} size="small">
             Set Goal
           </Button>
@@ -87,7 +89,6 @@ const DaysToGoalChart = () => {
     );
   }
 
-  // Calculate days based on target
   let daysToGoal = 0;
   let totalDays = currentDays;
   if (targetGoal > currentCashFlow) {
