@@ -207,7 +207,7 @@ const IncomeTable = () => {
             color: "var(--text-color-primary)",
           },
           "& .MuiTableCell-root:first-of-type": {
-            minWidth: "130px",
+            minWidth: "100px",
           },
         }}
       >
@@ -236,7 +236,7 @@ const IncomeTable = () => {
               const avgChange =
                 group.items.length > 0
                   ? group.items.reduce((acc, item) => acc + item.change, 0) /
-                    group.items.length
+                  group.items.length
                   : 0;
 
               const isOpen = openCategories[group.category];
@@ -366,9 +366,9 @@ const IncomeTable = () => {
                 >
                   {key === "amount"
                     ? `$${totalIncome.toLocaleString("en-US", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}`
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}`
                     : ""}
                 </TableCell>
               ))}
