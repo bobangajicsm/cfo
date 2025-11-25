@@ -1,16 +1,16 @@
-import * as React from "react";
+import * as React from 'react';
 
-import DialogTitle from "@mui/material/DialogTitle";
-import Dialog from "@mui/material/Dialog";
-import CloseIcon from "@mui/icons-material/Close";
-import Button from "@mui/material/Button";
+import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import CloseIcon from '@mui/icons-material/Close';
+import Button from '@mui/material/Button';
 
-import { Box, DialogActions, Link, Typography } from "@mui/material";
-import ButtonIcon from "~/components/button-icon";
-import ButtonPrimary from "~/components/button-primary";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import ServiceProviderDialog from "~/components/service-provider-dialog";
-import { useState } from "react";
+import { Box, DialogActions, Link, Typography } from '@mui/material';
+import ButtonIcon from '~/components/button-icon';
+import ButtonPrimary from '~/components/button-primary';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import ServiceProviderDialog from '~/components/service-provider-dialog';
+import { useState } from 'react';
 
 export interface InfoDialogProps {
   open: boolean;
@@ -31,8 +31,7 @@ const InfoDialog = ({
   longDescription,
   youtubeUrl,
 }: InfoDialogProps) => {
-  const [isOpenServiceProviderDialog, setIsOpenServiceProviderDialog] =
-    useState(false);
+  const [isOpenServiceProviderDialog, setIsOpenServiceProviderDialog] = useState(false);
 
   const handleOpenServiceProviderDialog = () => {
     onClose();
@@ -53,13 +52,13 @@ const InfoDialog = ({
         onClose={handleClose}
         open={open}
         sx={{
-          backdropFilter: "blur(5px)",
-          "& .MuiPaper-root": {
-            color: "var(--text-color-primary)",
-            backgroundColor: "rgba(var(--bg-color-secondary-alpha), 0.95)",
+          backdropFilter: 'blur(5px)',
+          '& .MuiPaper-root': {
+            color: 'var(--text-color-primary)',
+            backgroundColor: 'rgba(var(--bg-color-secondary-alpha), 0.95)',
             borderRadius: 2,
-            border: "1px solid var(--border-color)",
-            overflow: "visible",
+            border: '1px solid var(--border-color)',
+            overflow: 'visible',
           },
         }}
       >
@@ -82,7 +81,7 @@ const InfoDialog = ({
               fontFamily="monospace"
               color="var(--text-color-primary)"
               sx={{
-                backgroundColor: "var(--bg-color-tertiary)",
+                backgroundColor: 'var(--bg-color-tertiary)',
                 p: 1,
                 borderRadius: 1,
               }}
@@ -92,11 +91,7 @@ const InfoDialog = ({
           </Box>
 
           <Box p={2}>
-            <Typography
-              fontSize="1.1rem"
-              color="var(--text-color-secondary)"
-              lineHeight={1.6}
-            >
+            <Typography fontSize="1.1rem" color="var(--text-color-secondary)" lineHeight={1.6}>
               {longDescription}
             </Typography>
           </Box>
@@ -119,16 +114,11 @@ const InfoDialog = ({
           <DialogActions
             sx={{
               p: 2,
-              borderTop: "1px solid var(--border-color)",
-              justifyContent: "space-between",
+              borderTop: '1px solid var(--border-color)',
+              justifyContent: 'space-between',
             }}
           >
-            <Link
-              component="a"
-              href="https://google.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <Link component="a" href="https://google.com" target="_blank" rel="noopener noreferrer">
               <Button
                 variant="contained"
                 startIcon={<OpenInNewIcon sx={{ fontSize: '1.4rem !important' }} />}
@@ -143,26 +133,22 @@ const InfoDialog = ({
           </DialogActions>
           <ButtonIcon
             sx={{
-              position: "absolute",
-              top: "-13px",
-              right: "-13px",
+              position: 'absolute',
+              top: '-13px',
+              right: '-13px',
               opacity: 0.7,
             }}
             onClick={handleClose}
           >
             <CloseIcon
               sx={{
-                fontSize: "2rem",
+                fontSize: '2rem',
               }}
             />
           </ButtonIcon>
         </Box>
-
       </Dialog>
-      <ServiceProviderDialog
-        open={isOpenServiceProviderDialog}
-        onClose={handleCloseInfoDialog}
-      />
+      <ServiceProviderDialog open={isOpenServiceProviderDialog} onClose={handleCloseInfoDialog} />
     </>
   );
 };

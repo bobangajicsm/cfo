@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   Tabs,
   Tab,
@@ -9,7 +9,7 @@ import {
   FormControlLabel,
   Radio,
   CircularProgress,
-} from "@mui/material";
+} from '@mui/material';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -34,33 +34,30 @@ function TabPanel({ children, value, index, ...other }: TabPanelProps) {
 function a11yProps(index: number) {
   return {
     id: `tab-${index}`,
-    "aria-controls": `tabpanel-${index}`,
+    'aria-controls': `tabpanel-${index}`,
   };
 }
 
-// Helper to get initial theme (system + saved preference)
-const getInitialTheme = (): "light" | "dark" => {
-  if (typeof window === "undefined") return "light"; // SSR fallback
+const getInitialTheme = (): 'light' | 'dark' => {
+  if (typeof window === 'undefined') return 'light';
 
-  const saved = localStorage.getItem("theme") as "light" | "dark" | null;
+  const saved = localStorage.getItem('theme') as 'light' | 'dark' | null;
   if (saved) return saved;
 
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  return prefersDark ? "dark" : "light";
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  return prefersDark ? 'dark' : 'light';
 };
 
-// Apply theme class to body
-const applyTheme = (theme: "light" | "dark") => {
-  document.body.classList.remove("light", "dark");
+const applyTheme = (theme: 'light' | 'dark') => {
+  document.body.classList.remove('light', 'dark');
   document.body.classList.add(theme);
 };
 
 const Settings = () => {
   const [tabValue, setTabValue] = useState(0);
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [mounted, setMounted] = useState(false);
 
-  // Mount + initialize theme
   useEffect(() => {
     const initialTheme = getInitialTheme();
     setTheme(initialTheme);
@@ -68,12 +65,11 @@ const Settings = () => {
     setMounted(true);
   }, []);
 
-  // Sync theme changes to body + localStorage
   useEffect(() => {
     if (!mounted) return;
 
     applyTheme(theme);
-    localStorage.setItem("theme", theme);
+    localStorage.setItem('theme', theme);
   }, [theme, mounted]);
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
@@ -81,25 +77,20 @@ const Settings = () => {
   };
 
   const handleThemeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTheme(event.target.value as "light" | "dark");
+    setTheme(event.target.value as 'light' | 'dark');
   };
 
-  // Optional: Add system/auto option later
-  // const isSystemDark = useMediaQuery("(prefers-color-scheme: dark)");
-  // const effectiveTheme = theme === "system" ? (isSystemDark ? "dark" : "light") : theme;
-
   if (!mounted) {
-    // Optional: Show a subtle loader or nothing during hydration
     return (
-      <Box sx={{ p: 3, display: "flex", justifyContent: "center" }}>
+      <Box sx={{ p: 3, display: 'flex', justifyContent: 'center' }}>
         <CircularProgress size={24} />
       </Box>
     );
   }
 
   return (
-    <Box sx={{ width: "100%" }}>
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+    <Box sx={{ width: '100%' }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={tabValue} onChange={handleTabChange} aria-label="settings tabs">
           <Tab label="General" {...a11yProps(0)} />
           <Tab label="Account" {...a11yProps(1)} />
@@ -122,9 +113,6 @@ const Settings = () => {
             <FormControlLabel value="dark" control={<Radio />} label="Dark" />
           </RadioGroup>
         </FormControl>
-
-        {/* Future: Add "System" option */}
-        {/* <FormControlLabel value="system" control={<Radio />} label="System (Auto)" /> */}
       </TabPanel>
 
       <TabPanel value={tabValue} index={1}>

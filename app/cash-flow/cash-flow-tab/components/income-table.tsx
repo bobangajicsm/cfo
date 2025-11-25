@@ -2,7 +2,6 @@ import {
   Box,
   MenuItem,
   OutlinedInput,
-  Select,
   Chip,
   Table,
   TableBody,
@@ -15,33 +14,33 @@ import {
   Checkbox,
   TextField,
   type SelectChangeEvent,
-} from "@mui/material";
-import React, { useState } from "react";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import TrendingChip from "~/components/trending-chip";
-import Card from "~/components/card";
-import Dropdown from "~/components/dropdown";
-import dayjs from "dayjs";
+} from '@mui/material';
+import React, { useState } from 'react';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import TrendingChip from '~/components/trending-chip';
+import Card from '~/components/card';
+import Dropdown from '~/components/dropdown';
+import dayjs from 'dayjs';
 
 const data = [
-  { source: "Salary", amount: "$6,500.00", change: 5.2, date: "2025-11-01" },
+  { source: 'Salary', amount: '$6,500.00', change: 5.2, date: '2025-11-01' },
   {
-    source: "Freelance Project",
-    amount: "$1,000.00",
+    source: 'Freelance Project',
+    amount: '$1,000.00',
     change: 5.0,
-    date: "2025-11-15",
+    date: '2025-11-15',
   },
   {
-    source: "Stock Dividends",
-    amount: "$200.00",
+    source: 'Stock Dividends',
+    amount: '$200.00',
     change: -2.5,
-    date: "2025-11-20",
+    date: '2025-11-20',
   },
   {
-    source: "Rental Property",
-    amount: "$700.00",
+    source: 'Rental Property',
+    amount: '$700.00',
     change: 0,
-    date: "2025-11-22",
+    date: '2025-11-22',
   },
 ];
 
@@ -49,27 +48,21 @@ const IncomeTable = () => {
   const [openCategories, setOpenCategories] = useState<{
     [key: string]: boolean;
   }>({});
-  const [selectedColumns, setSelectedColumns] = useState<string[]>([
-    "source",
-    "change",
-    "amount",
-  ]);
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedColumns, setSelectedColumns] = useState<string[]>(['source', 'change', 'amount']);
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
-  const columnOrder = ["source", "date", "change", "amount"] as const;
+  const columnOrder = ['source', 'date', 'change', 'amount'] as const;
   const labels = {
-    source: "Source",
-    date: "Date",
-    change: "Change",
-    amount: "Amount",
+    source: 'Source',
+    date: 'Date',
+    change: 'Change',
+    amount: 'Amount',
   } as const;
-  const visibleColKeys = columnOrder.filter((key) =>
-    selectedColumns.includes(key)
-  );
+  const visibleColKeys = columnOrder.filter((key) => selectedColumns.includes(key));
 
   const handleChange = (event: SelectChangeEvent<string | string[]>) => {
     const value = event.target.value;
-    setSelectedColumns(typeof value === "string" ? value.split(",") : value);
+    setSelectedColumns(typeof value === 'string' ? value.split(',') : value);
   };
 
   const filteredData = data.filter((item) =>
@@ -78,11 +71,11 @@ const IncomeTable = () => {
 
   const groups = [
     {
-      category: "Earned",
+      category: 'Earned',
       items: filteredData.slice(0, 2),
     },
     {
-      category: "Recurring",
+      category: 'Recurring',
       items: filteredData.slice(2),
     },
   ];
@@ -91,7 +84,7 @@ const IncomeTable = () => {
     return (
       acc +
       group.items.reduce((gAcc, item) => {
-        const numericAmount = parseFloat(item.amount.replace(/[^0-9.-]+/g, ""));
+        const numericAmount = parseFloat(item.amount.replace(/[^0-9.-]+/g, ''));
         return gAcc + (isNaN(numericAmount) ? 0 : numericAmount);
       }, 0)
     );
@@ -99,13 +92,13 @@ const IncomeTable = () => {
 
   const getChildCellContent = (key: string, row: (typeof data)[0]) => {
     switch (key) {
-      case "source":
+      case 'source':
         return row.source;
-      case "date":
-        return dayjs(row.date).format("MMM d, YYYY") || "";
-      case "change":
+      case 'date':
+        return dayjs(row.date).format('MMM d, YYYY') || '';
+      case 'change':
         return <TrendingChip value={row.change} />;
-      case "amount":
+      case 'amount':
         return row.amount;
       default:
         return null;
@@ -129,13 +122,7 @@ const IncomeTable = () => {
           Income
         </Typography>
 
-        <Box
-          display="flex"
-          width={1}
-          gap={1}
-          justifyContent="space-between"
-          alignItems="center"
-        >
+        <Box display="flex" width={1} gap={1} justifyContent="space-between" alignItems="center">
           <TextField
             variant="outlined"
             size="small"
@@ -154,21 +141,20 @@ const IncomeTable = () => {
             renderValue={(selected) => {
               const selectedArray = Array.isArray(selected)
                 ? selected
-                : String(selected).split(",");
+                : String(selected).split(',');
               return (
                 <Box
                   sx={{
-                    display: "flex",
+                    display: 'flex',
                     gap: 0.5,
-                    justifyContent: "center",
-                    alignItems: "center",
+                    justifyContent: 'center',
+                    alignItems: 'center',
                   }}
                 >
                   <Chip
                     sx={{
-                      height: "1.6rem",
-                      backgroundColor:
-                        "rgba(var(--accent--primary-1-alpha), 0.3)",
+                      height: '1.6rem',
+                      backgroundColor: 'rgba(var(--accent--primary-1-alpha), 0.3)',
                     }}
                     key={selectedArray[0]}
                     label={labels[selectedArray[0] as keyof typeof labels]}
@@ -180,16 +166,16 @@ const IncomeTable = () => {
             }}
           >
             {[
-              { value: "source", label: "Source" },
-              { value: "date", label: "Date" },
-              { value: "change", label: "Change" },
-              { value: "amount", label: "Amount" },
+              { value: 'source', label: 'Source' },
+              { value: 'date', label: 'Date' },
+              { value: 'change', label: 'Change' },
+              { value: 'amount', label: 'Amount' },
             ].map((item) => (
               <MenuItem key={item.value} value={item.value}>
                 <Checkbox
                   checked={selectedColumns.includes(item.value)}
                   size="small"
-                  sx={{ verticalAlign: "middle" }}
+                  sx={{ verticalAlign: 'middle' }}
                 />
                 {item.label}
               </MenuItem>
@@ -199,26 +185,24 @@ const IncomeTable = () => {
       </Box>
       <TableContainer
         sx={{
-          backgroundColor: "var(--bg-color-secondary)",
-          "& .MuiTableCell-root": {
-            fontSize: "1.2rem",
-            borderColor: "var(--neutral--600)",
-            whiteSpace: "nowrap",
-            color: "var(--text-color-primary)",
+          mt: 1,
+          backgroundColor: 'var(--bg-color-secondary)',
+          '& .MuiTableCell-root': {
+            fontSize: '1.2rem',
+            borderColor: 'var(--neutral--600)',
+            whiteSpace: 'nowrap',
+            color: 'var(--text-color-primary)',
           },
-          "& .MuiTableCell-root:first-of-type": {
-            minWidth: "100px",
+          '& .MuiTableCell-root:first-of-type': {
+            minWidth: '100px',
           },
         }}
       >
-        <Table aria-label="simple table">
+        <Table>
           <TableHead>
             <TableRow>
               {visibleColKeys.map((key) => (
-                <TableCell
-                  key={key}
-                  align={key === "amount" ? "right" : undefined}
-                >
+                <TableCell sx={{ p: 1 }} key={key} align={key === 'amount' ? 'right' : undefined}>
                   {labels[key]}
                 </TableCell>
               ))}
@@ -227,23 +211,20 @@ const IncomeTable = () => {
           <TableBody>
             {groups.map((group) => {
               const groupTotal = group.items.reduce((acc, item) => {
-                const numericAmount = parseFloat(
-                  item.amount.replace(/[^0-9.-]+/g, "")
-                );
+                const numericAmount = parseFloat(item.amount.replace(/[^0-9.-]+/g, ''));
                 return acc + (isNaN(numericAmount) ? 0 : numericAmount);
               }, 0);
 
               const avgChange =
                 group.items.length > 0
-                  ? group.items.reduce((acc, item) => acc + item.change, 0) /
-                  group.items.length
+                  ? group.items.reduce((acc, item) => acc + item.change, 0) / group.items.length
                   : 0;
 
               const isOpen = openCategories[group.category];
 
               return (
                 <React.Fragment key={group.category}>
-                  <TableRow sx={{ "td, th": { border: 0 } }}>
+                  <TableRow sx={{ 'td, th': { border: 0 } }}>
                     <TableCell
                       scope="row"
                       onClick={() =>
@@ -253,27 +234,23 @@ const IncomeTable = () => {
                         }))
                       }
                       sx={{
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        fontWeight: "bold",
-                        py: 1,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        fontWeight: 'bold',
+                        p: 1,
                       }}
                     >
                       <KeyboardArrowDownIcon
                         sx={{
                           mr: 1,
-                          transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-                          transition: "transform 0.3s",
+                          transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                          transition: 'transform 0.3s',
                         }}
                       />
                       {group.category}
                       {group.items.length === 0 && (
-                        <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          sx={{ ml: 1 }}
-                        >
+                        <Typography variant="body2" color="textSecondary" sx={{ ml: 1 }}>
                           (No matches)
                         </Typography>
                       )}
@@ -281,22 +258,18 @@ const IncomeTable = () => {
                     {visibleColKeys.slice(1).map((key) => (
                       <TableCell
                         key={key}
-                        align={key === "amount" ? "right" : undefined}
-                        sx={
-                          key === "amount"
-                            ? { fontWeight: "bold", py: 1 }
-                            : { py: 1 }
-                        }
+                        align={key === 'amount' ? 'right' : undefined}
+                        sx={key === 'amount' ? { fontWeight: 'bold', p: 1 } : { p: 1 }}
                       >
-                        {key === "change" ? (
+                        {key === 'change' ? (
                           <TrendingChip value={avgChange} />
-                        ) : key === "amount" ? (
-                          `$${groupTotal.toLocaleString("en-US", {
+                        ) : key === 'amount' ? (
+                          `$${groupTotal.toLocaleString('en-US', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}`
                         ) : (
-                          ""
+                          ''
                         )}
                       </TableCell>
                     ))}
@@ -317,15 +290,11 @@ const IncomeTable = () => {
                                   {visibleColKeys.map((key) => (
                                     <TableCell
                                       key={key}
-                                      scope={
-                                        key === "source" ? "row" : undefined
-                                      }
-                                      align={
-                                        key === "amount" ? "right" : undefined
-                                      }
+                                      scope={key === 'source' ? 'row' : undefined}
+                                      align={key === 'amount' ? 'right' : undefined}
                                       sx={{
-                                        borderTop:
-                                          "1px solid var(--neutral--600)",
+                                        borderTop: '1px solid var(--neutral--600)',
+                                        p: 1,
                                       }}
                                     >
                                       {getChildCellContent(key, row)}
@@ -344,32 +313,30 @@ const IncomeTable = () => {
             })}
             <TableRow
               sx={{
-                backgroundColor: "rgba(var(--system--green-300-alpha), 0.05)",
+                backgroundColor: 'rgba(var(--system--green-300-alpha), 0.05)',
               }}
             >
               <TableCell
                 component="th"
                 scope="row"
-                sx={{ fontWeight: "bold", fontSize: "1.3rem" }}
+                sx={{ fontWeight: 'bold', fontSize: '1.3rem', p: 1 }}
               >
                 Total
               </TableCell>
               {visibleColKeys.slice(1).map((key) => (
                 <TableCell
                   key={key}
-                  align={key === "amount" ? "right" : undefined}
+                  align={key === 'amount' ? 'right' : undefined}
                   sx={
-                    key === "amount"
-                      ? { fontWeight: "bold", fontSize: "1.3rem" }
-                      : {}
+                    key === 'amount' ? { fontWeight: 'bold', fontSize: '1.3rem', p: 1 } : { p: 1 }
                   }
                 >
-                  {key === "amount"
-                    ? `$${totalIncome.toLocaleString("en-US", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}`
-                    : ""}
+                  {key === 'amount'
+                    ? `$${totalIncome.toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}`
+                    : ''}
                 </TableCell>
               ))}
             </TableRow>

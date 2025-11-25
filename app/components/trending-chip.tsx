@@ -1,9 +1,9 @@
-import React from "react";
-import { Box, Typography } from "@mui/material";
+import React from 'react';
+import { Box, Typography } from '@mui/material';
 
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import TrendingDownIcon from "@mui/icons-material/TrendingDown";
-import TrendingFlatIcon from "@mui/icons-material/TrendingFlat";
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import TrendingDownIcon from '@mui/icons-material/TrendingDown';
+import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
 
 interface TrendingChipProps {
   value: number;
@@ -17,22 +17,22 @@ const TrendingChip = ({ value }: TrendingChipProps) => {
   let positive = value > 0;
 
   if (value > 0) {
-    chipColor = "var(--system--green-300)";
+    chipColor = 'var(--system--green-300)';
     IconComponent = TrendingUpIcon;
-    const alphaVar = "var(--system--green-300-alpha)";
+    const alphaVar = 'var(--system--green-300-alpha)';
     backgroundColor = `rgba(${alphaVar}, 0.2)`;
     borderStyle = `1px solid rgba(${alphaVar}, 0.2)`;
   } else if (value < 0) {
-    chipColor = "var(--system--300)";
+    chipColor = 'var(--system--300)';
     IconComponent = TrendingDownIcon;
-    const alphaVar = "var(--system--300-alpha)";
+    const alphaVar = 'var(--system--300-alpha)';
     backgroundColor = `rgba(${alphaVar}, 0.2)`;
     borderStyle = `1px solid rgba(${alphaVar}, 0.2)`;
   } else {
     IconComponent = TrendingFlatIcon;
-    chipColor = "var(--mui-elements-color)";
-    backgroundColor = "var(--mui-elements-bg-color-secondary)";
-    borderStyle = "1px solid var(--mui-elements-border-color)";
+    chipColor = 'var(--mui-elements-color)';
+    backgroundColor = 'var(--mui-elements-bg-color-secondary)';
+    borderStyle = '1px solid var(--mui-elements-border-color)';
   }
 
   return (
@@ -52,13 +52,13 @@ const TrendingChip = ({ value }: TrendingChipProps) => {
       >
         <Typography
           sx={{
-            fontSize: "1.2rem",
+            fontSize: '1.2rem',
           }}
         >
-          {positive && "+"}
+          {positive && '+'}
           {value}%
         </Typography>
-        <IconComponent sx={{ fontSize: "1.2rem" }} />
+        <IconComponent sx={{ fontSize: '1.2rem' }} />
       </Box>
     </Box>
   );

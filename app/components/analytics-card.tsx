@@ -1,9 +1,9 @@
-import { Box, Typography } from "@mui/material";
-import React from "react";
-import Card from "~/components/card";
-import ButtonIcon from "~/components/button-icon";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import InfoOutlineIcon from "@mui/icons-material/InfoOutline";
+import { Box, Typography } from '@mui/material';
+import React from 'react';
+import Card from '~/components/card';
+import ButtonIcon from '~/components/button-icon';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 
 interface CardProps extends React.ComponentProps<typeof Box> {
   onClick: () => void;
@@ -11,11 +11,11 @@ interface CardProps extends React.ComponentProps<typeof Box> {
     title: string;
     description: string;
     value: string;
-    trend: "up" | "down";
+    trend: 'up' | 'down';
   };
 }
 
-const AnalysisCard = ({ onClick, item, ...props }: CardProps) => {
+const AnalyticsCard = ({ onClick, item, ...props }: CardProps) => {
   return (
     <Card {...props}>
       <Box display="flex" justifyContent="space-between" alignItems="flex-end">
@@ -36,34 +36,31 @@ const AnalysisCard = ({ onClick, item, ...props }: CardProps) => {
             alignItems="center"
             gap={0.5}
             sx={{
-              color:
-                item.trend === "up"
-                  ? "var(--system--green-300)"
-                  : "var(--system--300)",
+              color: item.trend === 'up' ? 'var(--system--green-300)' : 'var(--system--300)',
               backgroundColor:
-                item.trend === "up"
-                  ? "rgba(var(--system--green-300-alpha), 0.2)"
-                  : "rgba(var(--system--300-alpha), 0.2)",
+                item.trend === 'up'
+                  ? 'rgba(var(--system--green-300-alpha), 0.2)'
+                  : 'rgba(var(--system--300-alpha), 0.2)',
               border:
-                item.trend === "up"
-                  ? "1px solid rgba(var(--system--green-300-alpha), 0.2)"
-                  : "1px solid rgba(var(--system--300-alpha), 0.2)",
+                item.trend === 'up'
+                  ? '1px solid rgba(var(--system--green-300-alpha), 0.2)'
+                  : '1px solid rgba(var(--system--300-alpha), 0.2)',
               borderRadius: 0.5,
               py: 0.2,
               px: 0.5,
             }}
           >
-            {item.trend === "up" ? (
+            {item.trend === 'up' ? (
               <TrendingUpIcon
                 sx={{
-                  fontSize: "1.2rem",
+                  fontSize: '1.2rem',
                 }}
               />
             ) : (
               <TrendingUpIcon
                 sx={{
-                  fontSize: "1.2rem",
-                  transform: "rotate(180deg)",
+                  fontSize: '1.2rem',
+                  transform: 'rotate(180deg)',
                 }}
               />
             )}
@@ -74,16 +71,16 @@ const AnalysisCard = ({ onClick, item, ...props }: CardProps) => {
       <ButtonIcon
         onClick={onClick}
         sx={{
-          position: "absolute",
-          top: "-13px",
-          left: "-13px",
+          position: 'absolute',
+          top: '-13px',
+          left: '-13px',
           opacity: 0.7,
         }}
       >
-        <InfoOutlineIcon sx={{ fontSize: "2rem" }} />
+        <InfoOutlineIcon sx={{ fontSize: '2rem' }} />
       </ButtonIcon>
     </Card>
   );
 };
 
-export default AnalysisCard;
+export default AnalyticsCard;

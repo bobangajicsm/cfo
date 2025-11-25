@@ -1,9 +1,9 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   --font-sans:
-    "Mona Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    'Mona Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
   --inner-glow-sm: inset -2px 2px 6px 0px rgba(255, 255, 255, 0.1);
 
   --neutral--800: #080f25;
@@ -55,6 +55,7 @@
   --system--green-300-alpha: 20, 202, 116;
   --secondary--color-4-alpha: 52, 59, 79;
   --neutral--700-alpha: 33, 44, 77;
+  --neutral--100-alpha: 255, 255, 255;
 }
 
 :root {
@@ -104,4 +105,3 @@ html:has(body.dark) {
 html {
   font-size: 62.5%;
 }
-

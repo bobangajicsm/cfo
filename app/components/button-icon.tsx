@@ -1,6 +1,6 @@
-import { IconButton } from "@mui/material";
+import { IconButton } from '@mui/material';
 
-import React from "react";
+import React from 'react';
 
 interface ButtonIconProps extends React.ComponentProps<typeof IconButton> {
   children?: React.ReactNode;
@@ -12,11 +12,11 @@ const ButtonIcon = ({ onClick, children, ...props }: ButtonIconProps) => (
     {...props}
     onClick={onClick}
     sx={{
-      backgroundColor: "rgba(var(--accent--primary-1-alpha), 0.2)",
-      color: "var(--icon-color)",
-      "&:hover": {
-        backgroundColor: "rgba(var(--accent--primary-1-alpha), 1)",
-        color: "white",
+      backgroundColor: 'rgba(var(--accent--primary-1-alpha), 0.2)',
+      color: 'var(--icon-color)',
+      '&:hover': {
+        backgroundColor: 'rgba(var(--accent--primary-1-alpha), 1)',
+        color: 'white',
       },
       padding: 0.5,
       ...props.sx,

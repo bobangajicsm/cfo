@@ -1,17 +1,15 @@
-import type { Route } from ".react-router/types/app/+types/root";
-import CashFlowTab from "./cash-flow-tab";
-import { Box, Tab, Tabs } from "@mui/material";
-import { useState } from "react";
+import type { Route } from '.react-router/types/app/+types/root';
+import CashFlowTab from './cash-flow-tab/cash-flow-tab';
+import { Box, Tab, Tabs } from '@mui/material';
+import { useState } from 'react';
+import NetWorthTab from './net-worth-tab/net-worth-tab';
 
 export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "Cash Flow Organizer" },
-    { name: "description", content: "Welcome to CFO" },
-  ];
+  return [{ title: 'Cash Flow Organizer' }, { name: 'description', content: 'Welcome to CFO' }];
 }
 
 const CashFlow = () => {
-  const [value, setValue] = useState("cash-flow");
+  const [value, setValue] = useState('cash-flow');
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
@@ -19,24 +17,24 @@ const CashFlow = () => {
 
   return (
     <Box>
-      <Box px={2} sx={{ borderBottom: 1, borderColor: "var(--border-color)" }}>
+      <Box px={2} sx={{ borderBottom: 1, borderColor: 'var(--border-color)' }}>
         <Tabs
           value={value}
           onChange={handleChange}
           sx={{
-            "& .MuiTabs-list": {
-              justifyContent: "space-around",
+            '& .MuiTabs-list': {
+              justifyContent: 'space-around',
             },
-            "& .MuiButtonBase-root": {
-              fontSize: "1.2rem",
-              color: "var(--text-color-secondary)",
+            '& .MuiButtonBase-root': {
+              fontSize: '1.2rem',
+              color: 'var(--text-color-secondary)',
               p: 0,
             },
-            "& .MuiTabs-indicator": {
-              backgroundColor: "var(--text-color-secondary)",
+            '& .MuiTabs-indicator': {
+              backgroundColor: 'var(--text-color-secondary)',
             },
-            "& .Mui-selected": {
-              color: "var(--text-color-primary) !important",
+            '& .Mui-selected': {
+              color: 'var(--text-color-primary) !important',
             },
           }}
         >
@@ -45,7 +43,8 @@ const CashFlow = () => {
           <Tab value="net-worth" label="Net Worth" />
         </Tabs>
       </Box>
-      {value === "cash-flow" && <CashFlowTab />}
+      {value === 'cash-flow' && <CashFlowTab />}
+      {value === 'net-worth' && <NetWorthTab />}
     </Box>
   );
 };

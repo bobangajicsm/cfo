@@ -1,11 +1,11 @@
-import { Box, Stack, Typography, TextField, Button } from "@mui/material";
-import React, { useState, useEffect } from "react";
-import { Tooltip, PieChart, Pie } from "recharts";
+import { Box, Stack, Typography, TextField, Button } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Tooltip, PieChart, Pie } from 'recharts';
 
-import InfoDialog from "~/components/info-dialog";
-import TrendingChip from "~/components/trending-chip";
-import ButtonIcon from "~/components/button-icon";
-import InfoOutlineIcon from "@mui/icons-material/InfoOutline";
+import InfoDialog from '~/components/info-dialog';
+import TrendingChip from '~/components/trending-chip';
+import ButtonIcon from '~/components/button-icon';
+import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 
 const currentCashFlow = 2675;
 const currentDays = 30;
@@ -13,11 +13,11 @@ const growthRate = 0.128; // Based on the 12.8% trending value, assuming monthly
 
 const DaysToGoalChart = () => {
   const [isOpenInfoDialog, setIsOpenInfoDialog] = useState(false);
-  const [targetInput, setTargetInput] = useState("");
+  const [targetInput, setTargetInput] = useState('');
   const [targetGoal, setTargetGoal] = useState<number | null>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem("cashFlowGoal");
+    const saved = localStorage.getItem('cashFlowGoal');
     if (saved) {
       setTargetGoal(parseInt(saved, 10));
     }
@@ -35,43 +35,34 @@ const DaysToGoalChart = () => {
     const num = Number(targetInput);
     if (!isNaN(num) && num > 0) {
       setTargetGoal(num);
-      localStorage.setItem("cashFlowGoal", num.toString());
-      setTargetInput("");
+      localStorage.setItem('cashFlowGoal', num.toString());
+      setTargetInput('');
     }
   };
 
   const resetTarget = () => {
     setTargetGoal(null);
-    localStorage.removeItem("cashFlowGoal");
-    setTargetInput("");
+    localStorage.removeItem('cashFlowGoal');
+    setTargetInput('');
   };
 
   if (targetGoal === null) {
     return (
       <Box
         sx={{
-          position: "relative",
-          backgroundColor: "var(--bg-color-secondary)",
+          position: 'relative',
+          backgroundColor: 'var(--bg-color-secondary)',
           borderRadius: 2,
-          border: "1px solid var(--border-color)",
+          border: '1px solid var(--border-color)',
           px: 2,
           py: 2,
           mb: 2,
         }}
       >
-        <Typography
-          color="var(--text-color-secondary)"
-          fontSize="1.2rem"
-          mb={2}
-        >
+        <Typography color="var(--text-color-secondary)" fontSize="1.2rem" mb={2}>
           Cash flow goal
         </Typography>
-        <Stack
-          direction="row"
-          gap={2}
-          alignItems="center"
-          justifyContent="center"
-        >
+        <Stack direction="row" gap={2} alignItems="center" justifyContent="center">
           <TextField
             variant="outlined"
             size="small"
@@ -101,8 +92,8 @@ const DaysToGoalChart = () => {
   const daysLeft = totalDays - currentDays;
 
   const chartData = [
-    { name: "Progress", value: currentDays, fill: "var(--accent--primary-1)" },
-    { name: "Remaining", value: daysLeft, fill: "var(--neutral--600)" },
+    { name: 'Progress', value: currentDays, fill: 'var(--accent--primary-1)' },
+    { name: 'Remaining', value: daysLeft, fill: 'var(--neutral--600)' },
   ];
 
   const formattedTarget = `$${targetGoal.toLocaleString()}`;
@@ -111,20 +102,16 @@ const DaysToGoalChart = () => {
     <>
       <Box
         sx={{
-          position: "relative",
-          backgroundColor: "var(--bg-color-secondary)",
+          position: 'relative',
+          backgroundColor: 'var(--bg-color-secondary)',
           borderRadius: 2,
-          border: "1px solid var(--border-color)",
+          border: '1px solid var(--border-color)',
           px: 2,
           py: 2,
           mb: 2,
         }}
       >
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="flex-start"
-        >
+        <Box display="flex" justifyContent="space-between" alignItems="flex-start">
           <Box>
             <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
               Cash flow goal
@@ -137,7 +124,7 @@ const DaysToGoalChart = () => {
             </Box>
           </Box>
         </Box>
-        <PieChart width={210} height={120} style={{ margin: "0 auto" }}>
+        <PieChart width={210} height={120} style={{ margin: '0 auto' }}>
           <Pie
             stroke="none"
             dataKey="value"
@@ -164,15 +151,15 @@ const DaysToGoalChart = () => {
             alignItems="center"
             justifyContent="space-between"
             mb={1}
-            sx={{ borderBottom: "1px solid var(--border-color)", pb: 1 }}
+            sx={{ borderBottom: '1px solid var(--border-color)', pb: 1 }}
           >
             <Box display="flex" alignItems="center" gap={1}>
               <Box
                 sx={{
-                  width: "8px",
-                  height: "8px",
-                  backgroundColor: "var(--accent--primary-1)",
-                  borderRadius: "100%",
+                  width: '8px',
+                  height: '8px',
+                  backgroundColor: 'var(--accent--primary-1)',
+                  borderRadius: '100%',
                 }}
               />
               <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
@@ -182,18 +169,14 @@ const DaysToGoalChart = () => {
 
             <Typography fontSize="1.2rem">{currentDays}</Typography>
           </Box>
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-          >
+          <Box display="flex" alignItems="center" justifyContent="space-between">
             <Box display="flex" alignItems="center" gap={1}>
               <Box
                 sx={{
-                  width: "8px",
-                  height: "8px",
-                  backgroundColor: "var(--neutral--600)",
-                  borderRadius: "100%",
+                  width: '8px',
+                  height: '8px',
+                  backgroundColor: 'var(--neutral--600)',
+                  borderRadius: '100%',
                 }}
               />
               <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
@@ -208,13 +191,13 @@ const DaysToGoalChart = () => {
         <ButtonIcon
           onClick={handleOpenInfoDialog}
           sx={{
-            position: "absolute",
-            top: "-13px",
-            left: "-13px",
+            position: 'absolute',
+            top: '-13px',
+            left: '-13px',
             opacity: 0.7,
           }}
         >
-          <InfoOutlineIcon sx={{ fontSize: "2rem" }} />
+          <InfoOutlineIcon sx={{ fontSize: '2rem' }} />
         </ButtonIcon>
       </Box>
       <InfoDialog
