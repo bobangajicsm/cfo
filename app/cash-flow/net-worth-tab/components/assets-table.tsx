@@ -215,7 +215,6 @@ const AssetsTable = () => {
               </TableRow>
             ))}
 
-            {/* Total Assets Row */}
             <TableRow
               sx={{
                 backgroundColor: 'rgba(var(--system--green-300-alpha), 0.1)',

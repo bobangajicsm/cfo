@@ -3,6 +3,7 @@ import CashFlowTab from './cash-flow-tab/cash-flow-tab';
 import { Box, Tab, Tabs } from '@mui/material';
 import { useState } from 'react';
 import NetWorthTab from './net-worth-tab/net-worth-tab';
+import BudgetTab from './budget-tab/budget-tab';
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: 'Cash Flow Organizer' }, { name: 'description', content: 'Welcome to CFO' }];
@@ -39,11 +40,12 @@ const CashFlow = () => {
           }}
         >
           <Tab value="cash-flow" label="Cash Flow" />
-          <Tab value="p&l" label="P&L" />
+          <Tab value="budget" label="Budget" />
           <Tab value="net-worth" label="Net Worth" />
         </Tabs>
       </Box>
       {value === 'cash-flow' && <CashFlowTab />}
+      {value === 'budget' && <BudgetTab />}
       {value === 'net-worth' && <NetWorthTab />}
     </Box>
   );
