@@ -13,36 +13,20 @@ import Dropdown from '~/components/dropdown';
 import InfoDialog from '~/components/info-dialog';
 import TrendingChip from '~/components/trending-chip';
 
-const sankeyData: [string, string, number][] = [
-  ['Salary', 'Rent/Mortgage', 1800],
-  ['Freelance', 'Rent/Mortgage', 200],
-  ['Salary', 'Groceries', 500],
-  ['Freelance', 'Groceries', 100],
-  ['Salary', 'Utilities', 200],
-  ['Freelance', 'Utilities', 50],
-  ['Salary', 'Transportation', 350],
-  ['Freelance', 'Transportation', 50],
-  ['Salary', 'Insurance', 300],
-  ['Salary', 'Entertainment', 300],
-  ['Freelance', 'Entertainment', 50],
-  ['Salary', 'Healthcare', 180],
-  ['Freelance', 'Healthcare', 20],
-  ['Salary', 'Savings', 1000],
-  ['Freelance', 'Savings', 200],
-  ['Salary', 'Investments', 700],
-  ['Freelance', 'Investments', 100],
-  ['Salary', 'Debt Repayment', 400],
-  ['Freelance', 'Debt Repayment', 100],
-  ['Salary', 'Miscellaneous', 270],
-  ['Freelance', 'Miscellaneous', 30],
+const data2025 = [
+  { month: 'Jan', earnings: 110600, expenses: 29150 },
+  { month: 'Feb', earnings: 137600, expenses: 22650 },
+  { month: 'Mar', earnings: 103600, expenses: 23350 },
+  { month: 'Apr', earnings: 113100, expenses: 23550 },
+  { month: 'May', earnings: 105600, expenses: 23400 },
+  { month: 'Jun', earnings: 106600, expenses: 23650 },
+  { month: 'Jul', earnings: 117100, expenses: 75850 },
+  { month: 'Aug', earnings: 108600, expenses: 24050 },
+  { month: 'Sep', earnings: 109600, expenses: 24450 },
+  { month: 'Oct', earnings: 119600, expenses: 24650 },
+  { month: 'Nov', earnings: 111600, expenses: 52150 },
+  { month: 'Dec', earnings: 113600, expenses: 48850 },
 ];
-
-const totalIncome = sankeyData.reduce((sum, [, , v]) => sum + v, 0);
-const totalSpent = sankeyData
-  .filter(([_, to]) => !['Savings', 'Investments'].includes(to))
-  .reduce((sum, [, , v]) => sum + v, 0);
-const savingsRate =
-  totalIncome > 0 ? (((totalIncome - totalSpent) / totalIncome) * 100).toFixed(1) : '0';
 
 const BudgetChart = () => {
   const [date, setDate] = useState('M');
@@ -54,6 +38,60 @@ const BudgetChart = () => {
   const handleOpenMenu = (e: React.MouseEvent<HTMLElement>) => setMenuAnchorEl(e.currentTarget);
   const handleCloseMenu = () => setMenuAnchorEl(null);
 
+  let periodData = data2025;
+  switch (date) {
+    case 'W':
+      periodData = [
+        { month: 'Week', earnings: data2025[11].earnings / 4, expenses: data2025[11].expenses / 4 },
+      ];
+      break;
+    case 'M':
+      periodData = [data2025[11]];
+      break;
+    case 'Q':
+      periodData = data2025.slice(-3);
+      break;
+    case '6M':
+      periodData = data2025.slice(-6);
+      break;
+    case 'Y':
+      periodData = data2025;
+      break;
+    default:
+      periodData = [data2025[11]];
+  }
+
+  const totalEarnings = periodData.reduce((sum, d) => sum + d.earnings, 0);
+  const totalExpenses = periodData.reduce((sum, d) => sum + d.expenses, 0);
+  const totalNet = totalEarnings - totalExpenses;
+  const savingsRate = totalEarnings > 0 ? ((totalNet / totalEarnings) * 100).toFixed(1) : '0';
+
+  const majorIncomes = ['Parent-1 Salary', 'Parent-2 Salary', 'Online Store', 'Rentals/Bonuses'];
+  const incomeProps = [0.62, 0.12, 0.12, 0.14];
+
+  const majorExpenses = [
+    'Mortgage',
+    'Groceries',
+    'Fun Money',
+    'Health Insurance',
+    'Other Expenses',
+  ];
+  const expenseProps = [0.25, 0.08, 0.06, 0.06, 0.55];
+
+  const sankeyData: [string, string, number][] = [];
+  const expenseTotalProp = totalExpenses / totalEarnings;
+  const savingsProp = 1 - expenseTotalProp;
+
+  majorIncomes.forEach((inc, i) => {
+    const incAmount = totalEarnings * incomeProps[i];
+    majorExpenses.forEach((exp, j) => {
+      const flow = incAmount * expenseProps[j] * expenseTotalProp;
+      if (flow > 0) sankeyData.push([inc, exp, Math.round(flow)]);
+    });
+    const savingsFlow = incAmount * savingsProp;
+    if (savingsFlow > 0) sankeyData.push([inc, 'Savings', Math.round(savingsFlow)]);
+  });
+
   const chartData: (string | number)[][] = [['From', 'To', 'Weight'], ...sankeyData];
 
   const options = {
@@ -64,10 +102,10 @@ const BudgetChart = () => {
         label: {
           fontName: '--var(--font-sans)',
           fontSize: '1.2rem',
-          color: 'var(--text-color-primary)',
+          color: 'white',
         },
         nodePadding: 32,
-        width: 16,
+        width: 0,
         labelPadding: 10,
         interactivity: true,
         colors: [
@@ -89,6 +127,8 @@ const BudgetChart = () => {
     },
   };
 
+  const trendValue = +savingsRate > 25 ? 12 : +savingsRate > 15 ? 4 : -3;
+
   return (
     <>
       <Card sx={{ pb: 2, mb: 2, position: 'relative' }}>
@@ -106,7 +146,7 @@ const BudgetChart = () => {
             <Typography fontSize="2.8rem" fontWeight={700} lineHeight={1}>
               {savingsRate}%
             </Typography>
-            <TrendingChip value={+savingsRate > 25 ? 12 : +savingsRate > 15 ? 4 : -3} />
+            <TrendingChip value={trendValue} />
           </Box>
         </Box>
 
@@ -150,7 +190,7 @@ const BudgetChart = () => {
                 sx={{
                   width: 10,
                   height: 10,
-                  bgcolor: 'var(---secondary--color-3)',
+                  bgcolor: 'var(--secondary--color-3)',
                   borderRadius: '50%',
                 }}
               />
@@ -203,21 +243,8 @@ const BudgetChart = () => {
             height="680px"
             data={chartData}
             options={options}
-            chartEvents={[
-              {
-                eventName: 'ready',
-                callback: () => {
-                  setTimeout(() => {
-                    document.querySelectorAll('text').forEach((t) => {
-                      t.setAttribute('fill', 'var(--text-color-primary)');
-                    });
-                  }, 50);
-                },
-              },
-            ]}
           />
         </Box>
-
         <ButtonIcon
           sx={{
             position: 'absolute',

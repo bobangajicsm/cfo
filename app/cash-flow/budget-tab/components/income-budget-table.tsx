@@ -27,12 +27,12 @@ interface IncomeItem {
 }
 
 const rawData: IncomeItem[] = [
-  { category: 'Salary', budget: 5000, actual: 5000 },
-  { category: 'Freelance', budget: 1200, actual: 1800 },
-  { category: 'Investments', budget: 300, actual: 450 },
-  { category: 'Side Hustle', budget: 800, actual: 620 },
-  { category: 'Rental Income', budget: 900, actual: 900 },
-  { category: 'Other', budget: 200, actual: 350 },
+  { category: 'Salaries (Parents)', budget: 74000, actual: 74000 },
+  { category: 'Online Store Profit', budget: 6250, actual: 32000 },
+  { category: 'Rental Income', budget: 583, actual: 7000 },
+  { category: 'Dividends', budget: 750, actual: 0 },
+  { category: 'Bonuses', budget: 1458, actual: 0 },
+  { category: 'Tax Credits/Refunds', budget: 50, actual: 600 },
 ];
 
 const columnOptions = ['Budget', 'Actual', 'Remaining'] as const;
@@ -90,7 +90,6 @@ const IncomeBudgetTable = () => {
             sx={{ maxWidth: 300 }}
           />
 
-          {/* Your exact dropdown style from the original month selector */}
           <Dropdown
             multiple
             size="small"

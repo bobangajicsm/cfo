@@ -56,7 +56,11 @@ const TrendingChip = ({ value }: TrendingChipProps) => {
           }}
         >
           {positive && '+'}
-          {value}%
+          {value.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+          %
         </Typography>
         <IconComponent sx={{ fontSize: '1.2rem' }} />
       </Box>

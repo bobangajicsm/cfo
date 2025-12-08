@@ -37,7 +37,7 @@ const NetWorthTab = () => {
           item={{
             title: 'Cash Flow Net Worth',
             description: 'Income / Capitalization Rate',
-            value: '500.000',
+            value: '13,664.03',
             trend: 'up',
           }}
           onClick={handleOpenInfoDialog}

@@ -23,24 +23,89 @@ import Dropdown from '~/components/dropdown';
 import dayjs from 'dayjs';
 
 const data = [
-  { source: 'Salary', amount: '$6,500.00', change: 5.2, date: '2025-11-01' },
   {
-    source: 'Freelance Project',
-    amount: '$1,000.00',
-    change: 5.0,
-    date: '2025-11-15',
+    source: 'Parent-1 salary (take-home)',
+    amount: '$3,825,000.00',
+    change: 6.9,
+    date: '2025-12-15',
   },
   {
-    source: 'Stock Dividends',
-    amount: '$200.00',
-    change: -2.5,
-    date: '2025-11-20',
+    source: 'Parent-2 salary (take-home)',
+    amount: '$780,000.00',
+    change: 4.3,
+    date: '2025-12-15',
   },
   {
-    source: 'Rental Property',
-    amount: '$700.00',
-    change: 0,
-    date: '2025-11-22',
+    source: 'Online store net profit',
+    amount: '$750,200.00',
+    change: 52.4,
+    date: '2025-12-15',
+  },
+  {
+    source: 'Dividends (quarterly)',
+    amount: '$170,700.00',
+    change: 12.5,
+    date: '2025-10-15',
+  },
+  {
+    source: 'Rental duplex (net)',
+    amount: '$169,600.00',
+    change: 0.0,
+    date: '2023-12-15',
+  },
+  {
+    source: 'Rental duplex AirBnB (net)',
+    amount: '$150,000.00',
+    change: 27.3,
+    date: '2025-12-15',
+  },
+  {
+    source: 'Annual bonus (Mar)',
+    amount: '$105,000.00',
+    change: 33.3,
+    date: '2022-03-15',
+  },
+  {
+    source: 'Child-tax credit (advance)',
+    amount: '$36,000.00',
+    change: 0.0,
+    date: '2025-12-15',
+  },
+  {
+    source: 'Annual bonus (Feb)',
+    amount: '$35,000.00',
+    change: 0.0,
+    date: '2024-02-15',
+  },
+  {
+    source: 'Annual bonus + equity vest (Feb)',
+    amount: '$35,000.00',
+    change: 0.0,
+    date: '2025-02-15',
+  },
+  {
+    source: '2019 tax refund',
+    amount: '$18,000.00',
+    change: 0.0,
+    date: '2020-04-15',
+  },
+  {
+    source: 'Tax refund (2023 overpayment)',
+    amount: '$6,200.00',
+    change: 0.0,
+    date: '2024-04-15',
+  },
+  {
+    source: 'Child-tax credit',
+    amount: '$6,000.00',
+    change: 0.0,
+    date: '2020-12-15',
+  },
+  {
+    source: 'Tax refund (2022 overpayment)',
+    amount: '$5,500.00',
+    change: 0.0,
+    date: '2023-04-15',
   },
 ];
 
@@ -72,11 +137,30 @@ const IncomeTable = () => {
   const groups = [
     {
       category: 'Earned',
-      items: filteredData.slice(0, 2),
+      items: filteredData.filter((item) =>
+        [
+          'Parent-1 salary (take-home)',
+          'Parent-2 salary (take-home)',
+          'Online store net profit',
+          'Annual bonus (Mar)',
+          'Annual bonus (Feb)',
+          'Annual bonus + equity vest (Feb)',
+        ].includes(item.source)
+      ),
     },
     {
       category: 'Recurring',
-      items: filteredData.slice(2),
+      items: filteredData.filter(
+        (item) =>
+          ![
+            'Parent-1 salary (take-home)',
+            'Parent-2 salary (take-home)',
+            'Online store net profit',
+            'Annual bonus (Mar)',
+            'Annual bonus (Feb)',
+            'Annual bonus + equity vest (Feb)',
+          ].includes(item.source)
+      ),
     },
   ];
 

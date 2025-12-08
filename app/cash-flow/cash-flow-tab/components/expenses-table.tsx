@@ -23,25 +23,80 @@ import Dropdown from '~/components/dropdown';
 import dayjs from 'dayjs';
 
 const data = [
-  { source: 'Rent', amount: '$1,800.00', change: 2.5, date: '2025-11-01' },
+  { source: 'Primary-home mortgage (P&I)', amount: '$576,000.00', change: 0.0, date: '2025-09-15' },
+  { source: 'Groceries / household', amount: '$180,900.00', change: 10.8, date: '2025-09-15' },
+  { source: 'Fun money (couple)', amount: '$137,600.00', change: 14.4, date: '2025-09-15' },
+  { source: 'Health-insurance premium', amount: '$129,600.00', change: 0.0, date: '2025-09-15' },
   {
-    source: 'Utilities',
-    amount: '$150.00',
-    change: 5.0,
+    source: 'Rental-duplex mortgage (P&I)',
+    amount: '$108,000.00',
+    change: 0.0,
+    date: '2025-09-15',
+  },
+  { source: 'Christmas & gifts', amount: '$91,000.00', change: 11.1, date: '2025-12-15' },
+  { source: 'Kid activities / sports', amount: '$79,110.00', change: 20.3, date: '2025-09-15' },
+  { source: 'Utilities', amount: '$75,270.00', change: 12.2, date: '2025-09-15' },
+  { source: 'Child-care / after-school', amount: '$72,000.00', change: 0.0, date: '2025-09-15' },
+  { source: 'Fuel & routine car maint', amount: '$69,690.00', change: 7.7, date: '2025-09-15' },
+  { source: 'New SUV (cash, Sep)', amount: '$65,000.00', change: 0, date: '2020-09-15' },
+  { source: 'Luxury anniversary holiday', amount: '$54,000.00', change: 0.0, date: '2025-11-15' },
+  { source: 'Around-the-world luxury cruise', amount: '$52,000.00', change: 0, date: '2025-07-15' },
+  { source: 'IVF / fertility treatment', amount: '$37,000.00', change: 0.0, date: '2022-02-15' },
+  { source: 'Master-bath renovation', amount: '$36,000.00', change: 0.0, date: '2024-10-15' },
+  { source: 'Home addition / extra garage', amount: '$35,000.00', change: 0, date: '2024-09-15' },
+  { source: 'Parent-1 3-week unpaid leave', amount: '$33,000.00', change: 0, date: '2023-05-15' },
+  { source: 'Life & umbrella insurance', amount: '$28,800.00', change: 0.0, date: '2025-09-15' },
+  { source: 'Rental major rehab', amount: '$28,000.00', change: 0, date: '2023-01-15' },
+  { source: 'Early-pay 2020 property tax', amount: '$27,000.00', change: 0, date: '2020-02-15' },
+  { source: 'Phones & streaming', amount: '$25,200.00', change: 0.0, date: '2025-09-15' },
+  { source: 'Family vacation (Europe, Jul)', amount: '$25,000.00', change: 0, date: '2020-07-15' },
+  { source: 'Used replacement car (Aug)', amount: '$25,000.00', change: 0, date: '2021-08-15' },
+  { source: 'Medical (appendectomy)', amount: '$24,000.00', change: 0, date: '2020-11-15' },
+  { source: 'Rental turnkey refurb', amount: '$22,000.00', change: 0, date: '2022-06-15' },
+  { source: 'IRS 2019 estimate', amount: '$18,500.00', change: 0, date: '2020-02-15' },
+  { source: 'Roof replacement (Oct)', amount: '$18,000.00', change: 0, date: '2021-10-15' },
+  { source: 'Second IVF cycle', amount: '$18,000.00', change: 0, date: '2024-04-15' },
+  {
+    source: 'Hurricane deductible roof repair',
+    amount: '$16,500.00',
+    change: 20.0,
     date: '2025-11-15',
   },
+  { source: 'Furnace replacement', amount: '$16,000.00', change: 0.0, date: '2025-12-15' },
+  { source: 'HVAC replacement', amount: '$15,000.00', change: 0, date: '2020-11-15' },
   {
-    source: 'Groceries',
-    amount: '$450.00',
-    change: -1.2,
-    date: '2025-11-08',
-  },
-  {
-    source: 'Transportation',
-    amount: '$200.00',
+    source: 'Sister’s destination wedding trip',
+    amount: '$15,000.00',
     change: 0,
-    date: '2025-11-20',
+    date: '2022-11-15',
   },
+  { source: 'Child-care contract', amount: '$14,400.00', change: 0, date: '2020-09-15' },
+  { source: 'Rental HVAC sudden failure', amount: '$13,000.00', change: -26.7, date: '2023-11-15' },
+  { source: 'Emergency driveway rebuild', amount: '$13,000.00', change: 0.0, date: '2025-01-15' },
+  { source: 'Furnace puff-back cleanup', amount: '$12,500.00', change: 8.3, date: '2023-12-15' },
+  { source: 'Private-school spring tuition', amount: '$12,000.00', change: 0, date: '2020-11-15' },
+  { source: 'Parent-2 coding-boot-camp loan', amount: '$12,000.00', change: 0, date: '2021-05-15' },
+  { source: 'Furnace & duct collapse', amount: '$12,000.00', change: 0, date: '2021-12-15' },
+  { source: 'Pet emergency surgery', amount: '$11,500.00', change: -56.2, date: '2024-10-15' },
+  { source: 'Emergency root canal', amount: '$10,500.00', change: 0.0, date: '2022-02-15' },
+  { source: 'COVID-medical bills (parent-1)', amount: '$9,000.00', change: 0, date: '2021-03-15' },
+  {
+    source: 'Rental AirBnB trashed—make-ready',
+    amount: '$8,500.00',
+    change: 0,
+    date: '2024-09-15',
+  },
+  { source: 'Medical (braces / oral surgery)', amount: '$8,000.00', change: 0, date: '2020-02-15' },
+  { source: 'Hurricane deductible roof fix', amount: '$8,000.00', change: 0, date: '2021-08-15' },
+  { source: 'Birthday / memberships', amount: '$7,000.00', change: 50.0, date: '2025-03-15' },
+  { source: 'Laptops & camera crash', amount: '$6,600.00', change: 0, date: '2020-11-15' },
+  { source: 'Emergency slab leak', amount: '$6,500.00', change: 0, date: '2024-04-15' },
+  { source: 'Major transmission repair', amount: '$5,500.00', change: 0, date: '2021-05-15' },
+  { source: 'Pet cancer surgery', amount: '$4,500.00', change: 0, date: '2022-11-15' },
+  { source: 'Emergency travel to relatives', amount: '$3,500.00', change: 0, date: '2020-10-15' },
+  { source: 'Emergency wisdom-teeth', amount: '$3,500.00', change: 0, date: '2021-03-15' },
+  { source: 'Emergency pet surgery', amount: '$3,500.00', change: 0, date: '2021-10-15' },
+  { source: 'Summer camp / stay-cation', amount: '$3,000.00', change: 0, date: '2021-05-15' },
 ];
 
 const ExpensesTable = () => {
@@ -69,16 +124,88 @@ const ExpensesTable = () => {
     item.source.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Define groups with all items (no slicing to show everything)
+  const fixedSources = [
+    'Primary-home mortgage (P&I)',
+    'Health-insurance premium',
+    'Rental-duplex mortgage (P&I)',
+    'Child-care / after-school',
+    'Life & umbrella insurance',
+    'Child-care contract',
+  ];
+  const variableSources = [
+    'Groceries / household',
+    'Fun money (couple)',
+    'Kid activities / sports',
+    'Utilities',
+    'Fuel & routine car maint',
+    'Phones & streaming',
+  ];
+  const occasionalSources = [
+    'Christmas & gifts',
+    'Luxury anniversary holiday',
+    'New SUV (cash, Sep)',
+    'Around-the-world luxury cruise',
+    'Master-bath renovation',
+    'Home addition / extra garage',
+    'Parent-1 3-week unpaid leave',
+    'Rental major rehab',
+    'Early-pay 2020 property tax',
+    'Family vacation (Europe, Jul)',
+    'Used replacement car (Aug)',
+    'Rental turnkey refurb',
+    'Roof replacement (Oct)',
+    'Second IVF cycle',
+    'Furnace replacement',
+    'HVAC replacement',
+    'Sister’s destination wedding trip',
+    'Furnace puff-back cleanup',
+    'Private-school spring tuition',
+    'Parent-2 coding-boot-camp loan',
+    'Furnace & duct collapse',
+    'COVID-medical bills (parent-1)',
+    'Rental AirBnB trashed—make-ready',
+    'Hurricane deductible roof fix',
+    'Birthday / memberships',
+    'Laptops & camera crash',
+    'Emergency slab leak',
+    'Major transmission repair',
+    'Pet cancer surgery',
+    'Emergency travel to relatives',
+    'Emergency wisdom-teeth',
+    'Emergency pet surgery',
+    'Summer camp / stay-cation',
+  ];
+  const unplannedSources = [
+    'IVF / fertility treatment',
+    'Medical (appendectomy)',
+    'IRS 2019 estimate',
+    'Hurricane deductible roof repair',
+    'Emergency root canal',
+    'Medical (braces / oral surgery)',
+    'Rental HVAC sudden failure',
+    'Emergency driveway rebuild',
+    'Pet emergency surgery',
+  ];
+
   const groups = [
     {
       category: 'Fixed',
-      items: filteredData.slice(0, 2),
+      items: filteredData.filter((item) => fixedSources.includes(item.source)),
     },
     {
       category: 'Variable',
-      items: filteredData.slice(2),
+      items: filteredData.filter((item) => variableSources.includes(item.source)),
     },
-  ];
+    {
+      category: 'Occasional',
+      items: filteredData.filter((item) => occasionalSources.includes(item.source)),
+    },
+    {
+      category: 'Unplanned',
+      items: filteredData.filter((item) => unplannedSources.includes(item.source)),
+    },
+  ].filter((group) => group.items.length > 0); // Hide empty groups
 
   const totalExpenses = groups.reduce((acc, group) => {
     return (
@@ -313,7 +440,7 @@ const ExpensesTable = () => {
             })}
             <TableRow
               sx={{
-                backgroundColor: 'rgba(var(--system--300-alpha), 0.05)',
+                backgroundColor: 'rgba(var(--system--red-300-alpha), 0.05)',
               }}
             >
               <TableCell

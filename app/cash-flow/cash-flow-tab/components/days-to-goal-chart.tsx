@@ -7,9 +7,9 @@ import TrendingChip from '~/components/trending-chip';
 import ButtonIcon from '~/components/button-icon';
 import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 
-const currentCashFlow = 2675;
+const currentCashFlow = 6676.75;
 const currentDays = 30;
-const growthRate = 0.128; // Based on the 12.8% trending value, assuming monthly growth
+const growthRate = 0.254;
 
 const DaysToGoalChart = () => {
   const [isOpenInfoDialog, setIsOpenInfoDialog] = useState(false);
@@ -120,7 +120,7 @@ const DaysToGoalChart = () => {
               <Typography fontSize="2.8rem" fontWeight={700}>
                 {formattedTarget}
               </Typography>
-              <TrendingChip value={12.8} />
+              <TrendingChip value={25.4} />
             </Box>
           </Box>
         </Box>

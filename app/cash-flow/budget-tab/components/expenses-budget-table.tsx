@@ -27,16 +27,18 @@ interface ExpenseItem {
 }
 
 const rawData: ExpenseItem[] = [
-  { category: 'Rent/Mortgage', budget: 2000, actual: 2000 },
-  { category: 'Utilities', budget: 300, actual: 320 },
-  { category: 'Groceries', budget: 600, actual: 720 },
-  { category: 'Transportation', budget: 400, actual: 380 },
-  { category: 'Insurance', budget: 250, actual: 250 },
-  { category: 'Dining Out', budget: 300, actual: 450 },
-  { category: 'Entertainment', budget: 200, actual: 280 },
-  { category: 'Healthcare', budget: 150, actual: 90 },
-  { category: 'Subscriptions', budget: 120, actual: 120 },
-  { category: 'Other', budget: 300, actual: 410 },
+  { category: 'Primary-home mortgage (P&I)', budget: 90000, actual: 96000 },
+  { category: 'Groceries / household', budget: 28000, actual: 34000 },
+  { category: 'Fun money (couple)', budget: 32000, actual: 38000 },
+  { category: 'Health-insurance premium', budget: 20000, actual: 21600 },
+  { category: 'Rental-duplex mortgage (P&I)', budget: 16000, actual: 18000 },
+  { category: 'Kid activities / sports', budget: 18000, actual: 21000 },
+  { category: 'Utilities', budget: 16000, actual: 17000 },
+  { category: 'Child-care / after-school', budget: 14000, actual: 14400 },
+  { category: 'Fuel & routine car maint', budget: 14000, actual: 16000 },
+  { category: 'Life & umbrella insurance', budget: 2800, actual: 4800 },
+  { category: 'Phones & streaming', budget: 4000, actual: 4200 },
+  { category: 'Other Occasional/Unplanned', budget: 50000, actual: 65000 },
 ];
 
 const columnOptions = ['Budget', 'Actual', 'Remaining'] as const;
