@@ -263,7 +263,7 @@ const CashFlowChart = () => {
           </Box>
         </Box>
         <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenu}>
-          <MenuItem onClick={handleCloseMenu} component={Link} to="/analytics">
+          <MenuItem onClick={handleCloseMenu} component={Link} to="/cash-flow/analytics">
             Analytics
           </MenuItem>
           <MenuItem onClick={handleCloseMenu} component={Link} to="/reports">

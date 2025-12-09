@@ -2,7 +2,7 @@ import type { Route } from '.react-router/types/app/+types/root';
 import { Box } from '@mui/material';
 import { useState } from 'react';
 import InfoDialog from '~/components/info-dialog';
-import AnalyticsCard from '../../components/analytics-card';
+import AnalyticsCard from '../../../components/analytics-card';
 import Navbar from './components/navbar';
 
 export function meta({}: Route.MetaArgs) {

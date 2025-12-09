@@ -168,7 +168,7 @@ const NetWorthChart = () => {
           </Box>
         </Box>
         <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenu}>
-          <MenuItem onClick={handleCloseMenu} component={Link} to="/analytics">
+          <MenuItem onClick={handleCloseMenu} component={Link} to="/cash-flow/net-worth/analytics">
             Analytics
           </MenuItem>
           <MenuItem onClick={handleCloseMenu} component={Link} to="/reports">

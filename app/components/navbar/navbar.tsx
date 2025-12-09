@@ -10,7 +10,8 @@ import SettingsIcon from '@mui/icons-material/Settings';
 const navbar = () => {
   const location = useLocation();
 
-  const isCashFlowActive = location.pathname === '/' || location.pathname === '/analytics';
+  const isCashFlowActive =
+    location.pathname === '/' || location.pathname === '/cash-flow/analytics';
 
   return (
     <Box

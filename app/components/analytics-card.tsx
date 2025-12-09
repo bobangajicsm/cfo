@@ -4,6 +4,7 @@ import Card from '~/components/card';
 import ButtonIcon from '~/components/button-icon';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
+import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
 
 interface CardProps extends React.ComponentProps<typeof Box> {
   onClick: () => void;
@@ -11,7 +12,7 @@ interface CardProps extends React.ComponentProps<typeof Box> {
     title: string;
     description: string;
     value: string;
-    trend: 'up' | 'down';
+    trend: 'up' | 'down' | 'neutral';
   };
 }
 
@@ -36,15 +37,24 @@ const AnalyticsCard = ({ onClick, item, ...props }: CardProps) => {
             alignItems="center"
             gap={0.5}
             sx={{
-              color: item.trend === 'up' ? 'var(--system--green-300)' : 'var(--system--300)',
+              color:
+                item.trend === 'up'
+                  ? 'var(--system--green-300)'
+                  : item.trend === 'down'
+                    ? 'var(--system--300)'
+                    : 'var(--mui-elements-color)',
               backgroundColor:
                 item.trend === 'up'
                   ? 'rgba(var(--system--green-300-alpha), 0.2)'
-                  : 'rgba(var(--system--300-alpha), 0.2)',
+                  : item.trend === 'down'
+                    ? 'rgba(var(--system--300-alpha), 0.2)'
+                    : 'var(--mui-elements-bg-color-secondary)',
               border:
                 item.trend === 'up'
                   ? '1px solid rgba(var(--system--green-300-alpha), 0.2)'
-                  : '1px solid rgba(var(--system--300-alpha), 0.2)',
+                  : item.trend === 'down'
+                    ? '1px solid rgba(var(--system--300-alpha), 0.2)'
+                    : '',
               borderRadius: 0.5,
               py: 0.2,
               px: 0.5,
@@ -56,11 +66,17 @@ const AnalyticsCard = ({ onClick, item, ...props }: CardProps) => {
                   fontSize: '1.2rem',
                 }}
               />
-            ) : (
+            ) : item.trend === 'down' ? (
               <TrendingUpIcon
                 sx={{
                   fontSize: '1.2rem',
                   transform: 'rotate(180deg)',
+                }}
+              />
+            ) : (
+              <TrendingFlatIcon
+                sx={{
+                  fontSize: '1.2rem',
                 }}
               />
             )}
