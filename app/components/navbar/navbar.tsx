@@ -11,7 +11,9 @@ const navbar = () => {
   const location = useLocation();
 
   const isCashFlowActive =
-    location.pathname === '/' || location.pathname === '/cash-flow/analytics';
+    location.pathname === '/' ||
+    location.pathname === '/cash-flow/analytics' ||
+    location.pathname === '/cash-flow/net-worth/analytics';
 
   return (
     <Box
