@@ -11,4 +11,7 @@ export default [
     'cash-flow/net-worth-tab/net-worth-analytics/net-worth-analytics.tsx'
   ),
   route('settings', 'settings/settings.tsx'),
+  route('portfolio/coming-soon', 'cash-flow/portfolio-more-pages.tsx'),
+  route('analytics/coming-soon', 'cash-flow/analytics-more-pages.tsx'),
+  route('support/coming-soon', 'cash-flow/support-more-pages.tsx'),
 ] satisfies RouteConfig;

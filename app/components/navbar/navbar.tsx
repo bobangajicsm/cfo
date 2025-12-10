@@ -48,7 +48,7 @@ const navbar = () => {
         style={({ isActive }) => ({
           color: isActive ? 'var(--text-color-primary)' : undefined,
         })}
-        to="/portfolio"
+        to="/portfolio/coming-soon"
       >
         <Stack alignItems="center" gap={1}>
           <WorkIcon sx={{ fontSize: '2.4rem' }} />
@@ -59,7 +59,7 @@ const navbar = () => {
         style={({ isActive }) => ({
           color: isActive ? 'var(--text-color-primary)' : undefined,
         })}
-        to="/analytic"
+        to="/analytics/coming-soon"
       >
         <Stack alignItems="center" gap={1}>
           <AnalyticsIcon sx={{ fontSize: '2.4rem' }} />
@@ -70,7 +70,7 @@ const navbar = () => {
         style={({ isActive }) => ({
           color: isActive ? 'var(--text-color-primary)' : undefined,
         })}
-        to="/support"
+        to="/support/coming-soon"
       >
         <Stack alignItems="center" gap={1}>
           <HelpIcon sx={{ fontSize: '2.4rem' }} />

@@ -1,0 +1,27 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#A78BFA;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6EE7B7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#10B981;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Rounded square/diamond shape (purple) - rotated -->
+  <rect x="70" y="70" width="60" height="60" rx="15" 
+        fill="url(#purpleGrad)"
+        transform="rotate(15 100 100)"/>
+  
+  <!-- Rounded triangle/teardrop shape (green) -->
+  <path d="M 110 65 Q 135 80 130 105 Q 125 120 110 125 Q 95 120 90 105 Q 85 80 110 65 Z" 
+        fill="url(#greenGrad)" 
+        opacity="0.85"/>
+  
+  <!-- Small rounded square accent -->
+  <rect x="115" y="85" width="20" height="20" rx="6" 
+        fill="url(#purpleGrad)"
+        opacity="0.6"/>
+</svg>
