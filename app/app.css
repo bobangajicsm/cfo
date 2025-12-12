@@ -105,3 +105,9 @@ html:has(body.dark) {
 html {
   font-size: 62.5%;
 }
+
+.budget-chart .google-visualization-tooltip {
+  border: 1px solid transparent;
+  box-shadow: none;
+  background-color: transparent;
+}

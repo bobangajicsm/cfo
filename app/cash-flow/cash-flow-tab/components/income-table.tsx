@@ -107,6 +107,24 @@ const data = [
     change: 0.0,
     date: '2023-04-15',
   },
+  {
+    source: 'House sold (net)',
+    amount: '$500,000.00',
+    change: 0.0,
+    date: '2025-11-20',
+  },
+  {
+    source: 'Investment property sale',
+    amount: '$300,000.00',
+    change: 15.2,
+    date: '2025-08-15',
+  },
+  {
+    source: 'Stock portfolio gains (capital)',
+    amount: '$250,000.00',
+    change: 8.7,
+    date: '2025-12-10',
+  },
 ];
 
 const IncomeTable = () => {
@@ -134,32 +152,36 @@ const IncomeTable = () => {
     item.source.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const activeSources = [
+    'Parent-1 salary (take-home)',
+    'Parent-2 salary (take-home)',
+    'Online store net profit',
+    'Annual bonus (Mar)',
+    'Annual bonus (Feb)',
+    'Annual bonus + equity vest (Feb)',
+  ] as const;
+
+  const portfolioSources = [
+    'House sold (net)',
+    'Investment property sale',
+    'Stock portfolio gains (capital)',
+  ] as const;
+
   const groups = [
     {
-      category: 'Earned',
-      items: filteredData.filter((item) =>
-        [
-          'Parent-1 salary (take-home)',
-          'Parent-2 salary (take-home)',
-          'Online store net profit',
-          'Annual bonus (Mar)',
-          'Annual bonus (Feb)',
-          'Annual bonus + equity vest (Feb)',
-        ].includes(item.source)
-      ),
+      category: 'Active',
+      items: filteredData.filter((item) => activeSources.includes(item.source as any)),
     },
     {
-      category: 'Recurring',
+      category: 'Portfolio',
+      items: filteredData.filter((item) => portfolioSources.includes(item.source as any)),
+    },
+    {
+      category: 'Passive',
       items: filteredData.filter(
         (item) =>
-          ![
-            'Parent-1 salary (take-home)',
-            'Parent-2 salary (take-home)',
-            'Online store net profit',
-            'Annual bonus (Mar)',
-            'Annual bonus (Feb)',
-            'Annual bonus + equity vest (Feb)',
-          ].includes(item.source)
+          !activeSources.includes(item.source as any) &&
+          !portfolioSources.includes(item.source as any)
       ),
     },
   ];

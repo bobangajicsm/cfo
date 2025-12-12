@@ -92,10 +92,27 @@ const BudgetChart = () => {
     if (savingsFlow > 0) sankeyData.push([inc, 'Savings', Math.round(savingsFlow)]);
   });
 
-  const chartData: (string | number)[][] = [['From', 'To', 'Weight'], ...sankeyData];
+  const tooltipHeader = { role: 'tooltip', p: { html: true } };
+  const chartData = [
+    ['From', 'To', 'Weight', tooltipHeader],
+    ...sankeyData.map(([from, to, weight]) => {
+      const flow = Math.round(weight);
+      const formattedValue = `$${flow.toLocaleString()}`;
+      const html = `
+        <div style="background: rgba(var(--bg-color-secondary-alpha), 0.96); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px 14px;">
+          <div style="color: var(--text-color-secondary); font-size: 0.9rem; margin-bottom: 8px;">${from} to ${to}</div>
+          <div style="padding: 4px 0; color: var(--text-color); font-weight: 500; font-size: 14px;">${formattedValue}</div>
+        </div>
+      `;
+      return [from, to, flow, html];
+    }),
+  ];
 
   const options = {
     backgroundColor: 'transparent',
+    tooltip: {
+      isHtml: true,
+    },
     sankey: {
       orientation: 'vertical' as const,
       node: {
@@ -131,7 +148,7 @@ const BudgetChart = () => {
 
   return (
     <>
-      <Card sx={{ pb: 2, mb: 2, position: 'relative' }}>
+      <Card sx={{ pb: 2, mb: 2, position: 'relative' }} className="budget-chart">
         <Box>
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Typography color="var(--text-color-secondary)" fontSize="1.2rem">

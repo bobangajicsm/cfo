@@ -295,7 +295,6 @@ const NetWorthChart = () => {
                   if (name === 'liabilities') return [formattedValue, 'Debt'];
                   return [formattedValue, name];
                 }}
-                labelFormatter={(label) => `Month: ${label}`}
               />
 
               <Area
