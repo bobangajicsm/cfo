@@ -7,7 +7,18 @@ import LogoUrl from '~/assets/images/logo.svg';
 
 const SignInPage = () => {
   return (
-    <Stack alignItems="center" justifyContent="center" height="calc(100vh - 65px)" px={2} sx={{}}>
+    <Stack
+      alignItems="center"
+      justifyContent="center"
+      height="100vh"
+      width="100%"
+      px={2}
+      position="fixed"
+      sx={{
+        backgroundColor: 'var(--bg-color)',
+        zIndex: 1,
+      }}
+    >
       <Box
         component="img"
         src={CommingSoonImgUrl}
@@ -39,8 +50,6 @@ const SignInPage = () => {
               fontSize: '13px',
             },
           }}
-          // routing="path"
-          // path="/sign-in"
           routing="virtual"
         />
       </Stack>
