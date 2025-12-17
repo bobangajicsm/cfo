@@ -39,8 +39,9 @@ const SignInPage = () => {
               fontSize: '13px',
             },
           }}
-          routing="path"
-          path="/sign-in"
+          // routing="path"
+          // path="/sign-in"
+          routing="virtual"
         />
       </Stack>
     </Stack>

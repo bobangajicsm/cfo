@@ -1,6 +1,6 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation } from 'react-router';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useLayoutEffect, useMemo } from 'react';
 import { ClerkProvider, useAuth, RedirectToSignIn } from '@clerk/clerk-react';
 
 import './app.css';
@@ -151,16 +151,16 @@ function DynamicThemeProvider({ children }: { children: React.ReactNode }) {
 
   const [isDarkMode, setIsDarkMode] = useState(true);
 
-  useEffect(() => {
-    const updateTheme = () => {
-      const hasDarkClass = document.body.classList.contains('dark');
-      setIsDarkMode(
-        hasDarkClass || (!document.body.classList.contains('light') && prefersDarkMode)
-      );
-    };
+  const updateTheme = () => {
+    const hasDarkClass = document.body.classList.contains('dark');
+    setIsDarkMode(hasDarkClass || (!document.body.classList.contains('light') && prefersDarkMode));
+  };
 
+  useLayoutEffect(() => {
     updateTheme();
+  }, []);
 
+  useEffect(() => {
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
@@ -185,25 +185,6 @@ function DynamicThemeProvider({ children }: { children: React.ReactNode }) {
       {children}
     </ThemeProvider>
   );
-}
-
-function ClientThemeWrapper({ children }: { children: React.ReactNode }) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <ThemeProvider theme={darkTheme}>
-        <CssBaseline />
-        {children}
-      </ThemeProvider>
-    );
-  }
-
-  return <DynamicThemeProvider>{children}</DynamicThemeProvider>;
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -256,7 +237,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body className="dark">
         <ThemeLoadingScreen />
 
-        <ClientThemeWrapper>{children}</ClientThemeWrapper>
+        <DynamicThemeProvider>{children}</DynamicThemeProvider>
         <ScrollRestoration />
         <Scripts />
 
@@ -282,7 +263,7 @@ function ProtectedApp() {
   const { isSignedIn } = useAuth();
   const location = useLocation();
 
-  const isPublicPath = location.pathname.startsWith('/sign-in');
+  const isPublicPath = useMemo(() => location.pathname.startsWith('/sign-in'), [location.pathname]);
 
   if (!isSignedIn && !isPublicPath) {
     return (
