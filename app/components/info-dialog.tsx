@@ -15,10 +15,11 @@ import { useState } from 'react';
 export interface InfoDialogProps {
   open: boolean;
   title: string;
-  shortDescription: string;
-  formula: string;
-  longDescription: string;
-  youtubeUrl: string;
+  shortDescription?: string;
+  formula?: string;
+  longDescription?: string;
+  youtubeUrl?: string;
+  content?: React.ReactNode;
   onClose: () => void;
 }
 
@@ -30,6 +31,7 @@ const InfoDialog = ({
   formula,
   longDescription,
   youtubeUrl,
+  content,
 }: InfoDialogProps) => {
   const [isOpenServiceProviderDialog, setIsOpenServiceProviderDialog] = useState(false);
 
@@ -69,32 +71,40 @@ const InfoDialog = ({
             </Typography>
           </DialogTitle>
 
-          <Box p={2}>
-            <Typography fontSize="1.4rem" color="var(--text-color-secondary)">
-              {shortDescription}
-            </Typography>
-          </Box>
+          {content && content}
 
-          <Box p={2}>
-            <Typography
-              fontSize="1.2rem"
-              fontFamily="monospace"
-              color="var(--text-color-primary)"
-              sx={{
-                backgroundColor: 'var(--bg-color-tertiary)',
-                p: 1,
-                borderRadius: 1,
-              }}
-            >
-              {formula}
-            </Typography>
-          </Box>
+          {shortDescription && (
+            <Box p={2}>
+              <Typography fontSize="1.4rem" color="var(--text-color-secondary)">
+                {shortDescription}
+              </Typography>
+            </Box>
+          )}
 
-          <Box p={2}>
-            <Typography fontSize="1.1rem" color="var(--text-color-secondary)" lineHeight={1.6}>
-              {longDescription}
-            </Typography>
-          </Box>
+          {formula && (
+            <Box p={2}>
+              <Typography
+                fontSize="1.2rem"
+                fontFamily="monospace"
+                color="var(--text-color-primary)"
+                sx={{
+                  backgroundColor: 'var(--bg-color-tertiary)',
+                  p: 1,
+                  borderRadius: 1,
+                }}
+              >
+                {formula}
+              </Typography>
+            </Box>
+          )}
+
+          {longDescription && (
+            <Box p={2}>
+              <Typography fontSize="1.1rem" color="var(--text-color-secondary)" lineHeight={1.6}>
+                {longDescription}
+              </Typography>
+            </Box>
+          )}
 
           {youtubeUrl && (
             <Box p={2}>

@@ -6,7 +6,7 @@ import { Link } from 'react-router';
 import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
-import { Box, Menu, MenuItem, OutlinedInput, Typography } from '@mui/material';
+import { Box, Menu, MenuItem, OutlinedInput, Stack, Typography } from '@mui/material';
 
 import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Line } from 'recharts';
 import InfoDialog from '~/components/info-dialog';
@@ -447,10 +447,62 @@ const CashFlowChart = () => {
         open={isOpenInfoDialog}
         onClose={handleCloseInfoDialog}
         title="Cash Flow"
-        shortDescription="This chart displays your monthly earnings and expenses for the selected year. Use it to track your cash flow trends over time."
-        formula="Net Cash Flow = Operating Cash Flow + Investing Cash Flow + Financing Cash Flow"
-        longDescription="Cash flow is the movement of money into or out of a business, project, or financial product. It is a key indicator of financial health. Positive cash flow means more money is coming in than going out, while negative cash flow indicates the opposite. Understanding cash flow helps in making informed decisions about investments, expenses, and growth strategies."
-        youtubeUrl="https://www.youtube.com/embed/HRwK3cbkywk?si=XflznV34c5F-q1EF"
+        content={
+          <Stack px={2} gap={3} mb={2}>
+            <Box>
+              <Typography sx={{ fontWeight: '700' }}>Calculation Overview</Typography>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+              >
+                Sum all income types (active + passive + portfolio) for total inflows, then subtract
+                categorized expenses (fixed + variable + occasional + unplanned) to derive net cash
+                flow. This personal finance approach differs from business cash flow statements,
+                which segment into operating, investing, and financing activities.
+              </Typography>
+            </Box>
+            <Box>
+              <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+              >
+                Cash Flow = Total Income (Active + Passive + Portfolio) - Total Expenses (Fixed +
+                Variable + Occasional + Unplanned)
+              </Typography>
+            </Box>
+            <Box>
+              <Typography sx={{ fontWeight: '700' }}>Income Types</Typography>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+              >
+                Active income stems from direct labor or services, such as wages, salaries, or
+                freelance earnings requiring ongoing effort. Passive income generates with little
+                daily involvement, like rental payments or royalties from prior work. Portfolio
+                income arises from investments, including dividends, interest, or capital gains from
+                stocks and bonds.
+              </Typography>
+            </Box>
+            <Box>
+              <Typography sx={{ fontWeight: '700' }}>Expense Types</Typography>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+              >
+                Fixed expenses stay constant regardless of activity, such as rent or insurance
+                premiums. Variable expenses change with usage, like groceries or fuel costs.
+                Occasional expenses arise periodically, such as annual subscriptions; unplanned ones
+                are unforeseen, like emergency repairs.​
+              </Typography>
+            </Box>
+          </Stack>
+        }
+        youtubeUrl="https://www.youtube.com/embed/L401Si2DREc?si=kkTopa9Mx2IgVvpv"
       />
     </>
   );
