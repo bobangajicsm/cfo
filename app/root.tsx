@@ -1,6 +1,7 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation } from 'react-router';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { ClerkProvider, useAuth, RedirectToSignIn } from '@clerk/clerk-react';
 
 import './app.css';
 import Navbar from '~/components/navbar/navbar';
@@ -158,10 +159,8 @@ function DynamicThemeProvider({ children }: { children: React.ReactNode }) {
       );
     };
 
-    // Initial check
     updateTheme();
 
-    // Watch for class changes (e.g., from theme toggle)
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
@@ -279,11 +278,35 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App() {
+function ProtectedApp() {
+  const { isSignedIn } = useAuth();
+  const location = useLocation();
+
+  const isPublicPath = location.pathname.startsWith('/sign-in');
+
+  if (!isSignedIn && !isPublicPath) {
+    return (
+      <RedirectToSignIn
+        redirectUrl={`/sign-in?redirect_url=${encodeURIComponent(location.pathname)}`}
+      />
+    );
+  }
+
   return (
     <>
       <Outlet />
       <Navbar />
     </>
+  );
+}
+
+export default function App() {
+  if (!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY) {
+    throw new Error('Missing Publishable Key');
+  }
+  return (
+    <ClerkProvider publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY} signInUrl="/sign-in">
+      <ProtectedApp />
+    </ClerkProvider>
   );
 }

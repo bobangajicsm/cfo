@@ -1,6 +1,7 @@
 import { type RouteConfig, route, index } from '@react-router/dev/routes';
 
 export default [
+  route('sign-in', 'sign-in.tsx', [route('create/sso-callback', 'sign-in/sso-callback.tsx')]),
   index('cash-flow/cash-flow.tsx'),
   route(
     'cash-flow/analytics',

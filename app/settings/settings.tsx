@@ -9,7 +9,10 @@ import {
   FormControlLabel,
   Radio,
   CircularProgress,
+  Button,
 } from '@mui/material';
+import { SignOutButton } from '@clerk/clerk-react';
+import ButtonPrimary from '~/components/button-primary';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -116,7 +119,13 @@ const Settings = () => {
       </TabPanel>
 
       <TabPanel value={tabValue} index={1}>
-        Account settings coming soon.
+        <SignOutButton
+          signOutOptions={{
+            redirectUrl: '/sign-in',
+          }}
+        >
+          <ButtonPrimary color="inherit">Logout</ButtonPrimary>
+        </SignOutButton>
       </TabPanel>
     </Box>
   );
