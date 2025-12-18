@@ -47,7 +47,7 @@ const SignInPage = () => {
               colorInputBackground: 'var(--mui-elements-bg-color)',
               colorInputText: 'var(--mui-elements-color)',
               borderRadius: '0.5rem',
-              fontSize: '13px',
+              fontSize: '12px',
             },
           }}
           routing="virtual"
