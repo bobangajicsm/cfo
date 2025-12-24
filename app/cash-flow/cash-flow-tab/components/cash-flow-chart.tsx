@@ -446,11 +446,10 @@ const CashFlowChart = () => {
       <InfoDialog
         open={isOpenInfoDialog}
         onClose={handleCloseInfoDialog}
-        title="Cash Flow"
+        title="Cash Flow Overview"
         content={
           <Stack px={2} gap={3} mb={2}>
             <Box>
-              <Typography sx={{ fontWeight: '700' }}>Calculation Overview</Typography>
               <Typography
                 sx={{ fontWeight: '400' }}
                 fontSize="1.4rem"
@@ -463,7 +462,7 @@ const CashFlowChart = () => {
               </Typography>
             </Box>
             <Box>
-              <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
+              <Typography sx={{ fontWeight: '700' }}>Cash Flow Formula</Typography>
               <Typography
                 sx={{ fontWeight: '400' }}
                 fontSize="1.4rem"
@@ -497,12 +496,12 @@ const CashFlowChart = () => {
                 Fixed expenses stay constant regardless of activity, such as rent or insurance
                 premiums. Variable expenses change with usage, like groceries or fuel costs.
                 Occasional expenses arise periodically, such as annual subscriptions; unplanned ones
-                are unforeseen, like emergency repairs.​
+                are unforeseen, like emergency repairs.
               </Typography>
             </Box>
           </Stack>
         }
-        youtubeUrl="https://www.youtube.com/embed/L401Si2DREc?si=kkTopa9Mx2IgVvpv"
+        youtubeUrl="https://www.youtube.com/embed/5yVf4yPg0k4?si=9soD-yivIV42YjD9"
       />
     </>
   );

@@ -4,7 +4,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { Box, Menu, MenuItem, OutlinedInput, Typography } from '@mui/material';
+import { Box, Menu, MenuItem, OutlinedInput, Stack, Typography } from '@mui/material';
 import { Link } from 'react-router';
 
 import Card from '~/components/card';
@@ -278,11 +278,68 @@ const BudgetChart = () => {
       <InfoDialog
         open={isOpenInfoDialog}
         onClose={handleCloseInfoDialog}
-        title="Budget Flow"
-        shortDescription="See exactly where your money comes from and where it goes — from top to bottom."
-        formula="Savings Rate = (Income − Expenses) ÷ Income × 100"
-        longDescription="This vertical Sankey diagram is optimized for mobile. Income sources appear at the top, flowing downward into expense categories and savings. The thicker the stream, the more money is allocated. Perfect for quickly understanding your financial flow on the go."
-        youtubeUrl="https://www.youtube.com/embed/9q3cWx5e5gU"
+        title="Budget Overview"
+        content={
+          <Stack px={2} gap={3} mb={2}>
+            <Box>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+              >
+                A budget is a simple plan that compares the money you expect to receive (income)
+                with the money you expect to spend (expenses) over a period, usually a month. It is
+                powerful because it shows clearly whether you will have a surplus (extra currency)
+                or a deficit (shortage of currency), so you can adjust your behavior before problems
+                arise.
+              </Typography>
+            </Box>
+            <Box>
+              <Typography sx={{ fontWeight: '700' }}>Budget and Income</Typography>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+              >
+                An income budget is the amount of income you plan or expect to receive in the
+                period, such as your salary, side-hustle pay, or benefits. Actual income is what you
+                really receive, which may be higher or lower than the income budget once the month
+                is over. The remaining income amount (surplus or deficit) is the difference between
+                income budget and actual income; a surplus means you earned more than expected,
+                while a deficit means you earned less than expected.
+              </Typography>
+            </Box>
+            <Box>
+              <Typography sx={{ fontWeight: '700' }}>Budget and Expenses</Typography>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+              >
+                An expense budget is what you plan or allow yourself to spend across categories such
+                as rent, food, transport, and entertainment. Actual expense is what you really spend
+                in each category and in total during the period. The remaining expense amount
+                (surplus or deficit) is the difference between the expense budget and actual
+                expense; a surplus means you spent less than planned, while a deficit means you
+                overspent.
+              </Typography>
+            </Box>
+            <Box>
+              <Typography sx={{ fontWeight: '700' }}>Why Creating a Budget Is Powerful?</Typography>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+              >
+                Putting income and expense budgets next to actual income and expenses shows, in
+                advance and in hindsight, whether your choices keep you within your means. This
+                turns vague intentions (“spend less, save more”) into concrete numbers, making it
+                easier to cut overspending, increase saving, and avoid or reduce debt.
+              </Typography>
+            </Box>
+          </Stack>
+        }
+        youtubeUrl="https://www.youtube.com/embed/tWK7IZqQlwo?si=ZCHgP4I7UIYX122r"
       />
     </>
   );

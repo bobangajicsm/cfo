@@ -3,7 +3,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 
-import { Box, Menu, MenuItem, OutlinedInput, Typography } from '@mui/material';
+import { Box, Menu, MenuItem, OutlinedInput, Stack, Typography } from '@mui/material';
 import {
   AreaChart,
   Area,
@@ -342,11 +342,63 @@ const NetWorthChart = () => {
       <InfoDialog
         open={isOpenInfoDialog}
         onClose={() => setIsOpenInfoDialog(false)}
-        title="Net Worth"
-        shortDescription="Your complete financial picture: Assets, Debt, and Net Worth over time."
-        formula="Net Worth = Total Assets − Total Liabilities"
-        longDescription="The glowing line is your net worth. The dashed purple line above shows total assets. The dashed red line below shows total debt. This is the gold standard for wealth tracking — used by Copilot, Monarch Money, and top finance apps."
-        youtubeUrl="https://www.youtube.com/embed/HRwK3cbkywk?si=XflznV34c5F-q1EF"
+        title="Net Worth Overview"
+        content={
+          <Stack px={2} gap={3} mb={2}>
+            <Box>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+              >
+                Two methods to calculate Net Worth: 1) Conventional Net Worth = Total Assets – Total
+                Liabilities 2) Cash Flow Net Worth = Income / Capitalization Rate
+              </Typography>
+            </Box>
+            <Box>
+              <Typography sx={{ fontWeight: '700' }}>Conventional Net Worth</Typography>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+              >
+                Conventional net worth is calculated as Total Assets minus Total Liabilities,
+                providing a snapshot of financial position by showing what remains after settling
+                all debts. Assets include cash, investments, property, and vehicles; liabilities
+                cover loans, mortgages, and credit card balances.
+              </Typography>
+            </Box>
+            <Box>
+              <Typography sx={{ fontWeight: '700' }}>Cash Flow Net Worth</Typography>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+              >
+                Cash flow net worth uses the formula Income divided by Capitalization Rate,
+                estimating the principal value of assets based on their income-generating potential,
+                common in real estate or investment valuation. The capitalization rate (cap rate) is
+                typically a percentage like 5-10%, reflecting expected return; higher income or
+                lower cap rate yields higher net worth. This approach values future earning power
+                over current balance sheet items.
+              </Typography>
+            </Box>
+            <Box>
+              <Typography sx={{ fontWeight: '700' }}>Key Differences</Typography>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+              >
+                Conventional net worth focuses on current ownership minus debt, while cash flow net
+                worth emphasizes sustainable income streams for a forward-looking wealth measure.
+                Both track progress but suit different goals: balance sheet health versus investment
+                viability.
+              </Typography>
+            </Box>
+          </Stack>
+        }
+        youtubeUrl="https://www.youtube.com/embed/0DzfvNCXNoA?si=ztLdgqrndYIohB9e"
       />
     </>
   );
