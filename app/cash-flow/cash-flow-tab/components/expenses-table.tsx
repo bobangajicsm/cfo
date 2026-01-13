@@ -99,7 +99,28 @@ const data = [
   { source: 'Summer camp / stay-cation', amount: '$3,000.00', change: 0, date: '2021-05-15' },
 ];
 
-const ExpensesTable = () => {
+const getPeriodMonths = (timeframe: string): number => {
+  switch (timeframe) {
+    case 'W':
+      return 0.25;
+    case 'M':
+      return 1;
+    case 'Q':
+      return 3;
+    case '6M':
+      return 6;
+    case 'Y':
+      return 12;
+    case '2Y':
+      return 24;
+    case '5Y':
+      return 60;
+    default:
+      return 12;
+  }
+};
+
+const ExpensesTable = ({ timeframe = 'Y' }: { timeframe?: string }) => {
   const [openCategories, setOpenCategories] = useState<{
     [key: string]: boolean;
   }>({});
@@ -120,9 +141,15 @@ const ExpensesTable = () => {
     setSelectedColumns(typeof value === 'string' ? value.split(',') : value);
   };
 
-  const filteredData = data.filter((item) =>
-    item.source.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const periodMonths = getPeriodMonths(timeframe);
+  const cutoffDate = dayjs().subtract(periodMonths, 'month');
+
+  const filteredData = data
+    .filter((item) => {
+      const itemDate = dayjs(item.date);
+      return itemDate.isAfter(cutoffDate) || itemDate.isSame(cutoffDate, 'day');
+    })
+    .filter((item) => item.source.toLowerCase().includes(searchTerm.toLowerCase()));
 
   // Define groups with all items (no slicing to show everything)
   const fixedSources = [

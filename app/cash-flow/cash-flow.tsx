@@ -17,8 +17,20 @@ const CashFlow = () => {
   };
 
   return (
-    <Box>
-      <Box px={2} sx={{ borderBottom: 1, borderColor: 'var(--border-color)' }}>
+    <Box sx={{ pt: '50px' }}>
+      <Box
+        px={2}
+        sx={{
+          borderBottom: 1,
+          borderColor: 'var(--border-color)',
+          position: 'fixed',
+          width: '100%',
+          zIndex: 1,
+          top: 0,
+          backgroundColor: 'rgba(var(--bg-color-alpha), 0.7)',
+          backdropFilter: 'blur(5px)',
+        }}
+      >
         <Tabs
           value={value}
           onChange={handleChange}

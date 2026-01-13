@@ -94,10 +94,6 @@ const NetWorthTab = () => {
     setIsOpenInfoDialog(true);
   };
 
-  const handleCloseInfoDialog = () => {
-    setIsOpenInfoDialog(false);
-  };
-
   const fileType =
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
   const fileExtension = '.xlsx';
@@ -139,7 +135,7 @@ const NetWorthTab = () => {
           onClick={handleOpenInfoDialog}
         />
         <Typography variant="h2" fontSize="2rem" fontWeight={600} mt={3} mb={4}>
-          Transactions
+          Balance Sheet
         </Typography>
         <AssetsTable />
         <LiabilitiesTable />
@@ -221,7 +217,6 @@ const NetWorthTab = () => {
               </ol>
             </Box>
 
-            {/* Section 3 */}
             <Box>
               <Typography fontSize="1.4rem" fontWeight={600} color="var(--text-color-secondary)">
                 3. How can I estimate the appropriate capitalization rate for my own valuation?
@@ -277,7 +272,6 @@ const NetWorthTab = () => {
                 overflow: 'hidden',
               }}
             >
-              {/* Header */}
               <Box
                 display="flex"
                 justifyContent="space-between"
@@ -296,7 +290,6 @@ const NetWorthTab = () => {
                 </Typography>
               </Box>
 
-              {/* Rows */}
               {[
                 ['4 %', '$178 555 000'],
                 ['6 %', '$119 036 667'],
@@ -324,7 +317,6 @@ const NetWorthTab = () => {
               ))}
             </Box>
 
-            {/* Closing line */}
             <Box>
               <Typography fontSize="1.4rem" color="var(--text-color-secondary)">
                 Pick the cap rate that best matches the risk profile of the income stream (stable &

@@ -153,7 +153,7 @@ const NetWorthChart = () => {
         <Box>
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
-              Net Worth
+              Conventional Net Worth
             </Typography>
             <ButtonIcon onClick={handleOpenMenu}>
               <MoreHorizIcon sx={{ fontSize: '1.6rem' }} />
@@ -345,7 +345,6 @@ const NetWorthChart = () => {
         title="Cash Flow Net Worth"
         content={
           <Stack px={2} gap={3} mb={2}>
-            {/* Intro */}
             <Box>
               <Typography fontSize="1.4rem" color="var(--text-color-secondary)">
                 <strong>Two methods to calculate net worth:</strong>
@@ -357,7 +356,6 @@ const NetWorthChart = () => {
               </ol>
             </Box>
 
-            {/* Section 1 */}
             <Box>
               <Typography fontSize="1.4rem" fontWeight={600} color="var(--text-color-secondary)">
                 1. How do I calculate the capitalization rate on a property?
@@ -369,7 +367,6 @@ const NetWorthChart = () => {
               </Typography>
             </Box>
 
-            {/* Section 2 */}
             <Box>
               <Typography fontSize="1.4rem" fontWeight={600} color="var(--text-color-secondary)">
                 2. What’s a market-level capitalization rate?
@@ -396,7 +393,6 @@ const NetWorthChart = () => {
               </ul>
             </Box>
 
-            {/* Step by step */}
             <Box>
               <Typography fontSize="1.4rem" fontWeight={600} color="var(--text-color-secondary)">
                 Step-by-step
@@ -491,7 +487,6 @@ const NetWorthChart = () => {
                 </Typography>
               </Box>
 
-              {/* Rows */}
               {[
                 ['4 %', '$178 555 000'],
                 ['6 %', '$119 036 667'],
@@ -519,7 +514,6 @@ const NetWorthChart = () => {
               ))}
             </Box>
 
-            {/* Closing line */}
             <Box>
               <Typography fontSize="1.4rem" color="var(--text-color-secondary)">
                 Pick the cap rate that best matches the risk profile of the income stream (stable &

@@ -161,7 +161,7 @@ const BudgetChart = () => {
 
           <Box display="flex" alignItems="center" gap={1} mt={0.5}>
             <Typography fontSize="2.8rem" fontWeight={700} lineHeight={1}>
-              {savingsRate}%
+              ${totalNet.toLocaleString()}
             </Typography>
             <TrendingChip value={trendValue} />
           </Box>

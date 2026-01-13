@@ -6,12 +6,13 @@ import WorkIcon from '@mui/icons-material/Work';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import HelpIcon from '@mui/icons-material/Help';
 import SettingsIcon from '@mui/icons-material/Settings';
+import HomeIcon from '@mui/icons-material/Home';
 
 const navbar = () => {
   const location = useLocation();
 
   const isCashFlowActive =
-    location.pathname === '/' ||
+    location.pathname === '/cash-flow' ||
     location.pathname === '/cash-flow/analytics' ||
     location.pathname === '/cash-flow/net-worth/analytics';
 
@@ -35,6 +36,17 @@ const navbar = () => {
     >
       <NavLink
         to="/"
+        style={({ isActive }) => ({
+          color: isActive ? 'var(--text-color-primary)' : undefined,
+        })}
+      >
+        <Stack alignItems="center" gap={1}>
+          <HomeIcon sx={{ fontSize: '2.4rem' }} />
+          Home
+        </Stack>
+      </NavLink>
+      <NavLink
+        to="/cash-flow"
         style={{
           color: isCashFlowActive ? 'var(--text-color-primary)' : undefined,
         }}

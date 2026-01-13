@@ -14,6 +14,7 @@ import {
   Checkbox,
   Chip,
   type SelectChangeEvent,
+  Collapse,
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import TrendingChip from '~/components/trending-chip';
@@ -44,9 +45,33 @@ const rawData: ExpenseItem[] = [
 const columnOptions = ['Budget', 'Actual', 'Remaining'] as const;
 type ColumnKey = (typeof columnOptions)[number];
 
+const fixedCategories = [
+  'Primary-home mortgage (P&I)',
+  'Health-insurance premium',
+  'Rental-duplex mortgage (P&I)',
+  'Child-care / after-school',
+  'Life & umbrella insurance',
+] as const;
+
+const variableCategories = [
+  'Groceries / household',
+  'Fun money (couple)',
+  'Kid activities / sports',
+  'Utilities',
+  'Fuel & routine car maint',
+  'Phones & streaming',
+] as const;
+
+const occasionalCategories = ['Other Occasional/Unplanned'] as const;
+
+const unplannedCategories: string[] = [];
+
 const ExpensesBudgetTable = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [visibleColumns, setVisibleColumns] = useState<ColumnKey[]>([...columnOptions]);
+  const [openCategories, setOpenCategories] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   const handleColumnChange = (event: SelectChangeEvent<string | string[]>) => {
     const value = event.target.value;
@@ -58,6 +83,37 @@ const ExpensesBudgetTable = () => {
   const filteredData = useMemo(() => {
     return rawData.filter((row) => row.category.toLowerCase().includes(searchTerm.toLowerCase()));
   }, [searchTerm]);
+
+  const groups = useMemo(
+    () =>
+      [
+        {
+          category: 'Fixed',
+          items: filteredData.filter((item) =>
+            fixedCategories.includes(item.category as (typeof fixedCategories)[number])
+          ),
+        },
+        {
+          category: 'Variable',
+          items: filteredData.filter((item) =>
+            variableCategories.includes(item.category as (typeof variableCategories)[number])
+          ),
+        },
+        {
+          category: 'Occasional',
+          items: filteredData.filter((item) =>
+            occasionalCategories.includes(item.category as (typeof occasionalCategories)[number])
+          ),
+        },
+        {
+          category: 'Unplanned',
+          items: filteredData.filter((item) =>
+            unplannedCategories.includes(item.category as (typeof unplannedCategories)[number])
+          ),
+        },
+      ].filter((group) => group.items.length > 0),
+    [filteredData]
+  );
 
   const totals = useMemo(() => {
     return filteredData.reduce(
@@ -72,6 +128,13 @@ const ExpensesBudgetTable = () => {
 
   const totalRemaining = totals.budget - totals.actual;
   const format = (v: number) => (v === 0 ? '-' : `$${v.toLocaleString('en-US')}`);
+
+  const handleToggle = (category: string) => {
+    setOpenCategories((prev) => ({
+      ...prev,
+      [category]: !prev[category],
+    }));
+  };
 
   return (
     <Card sx={{ mb: 2 }}>
@@ -161,7 +224,7 @@ const ExpensesBudgetTable = () => {
                 </TableCell>
               )}
               {visibleColumns.includes('Remaining') && (
-                <TableCell align="center" sx={{ borderTop: '1px solid var(--neutral--600)' }}>
+                <TableCell align="right" sx={{ borderTop: '1px solid var(--neutral--600)' }}>
                   Remaining
                 </TableCell>
               )}
@@ -169,36 +232,135 @@ const ExpensesBudgetTable = () => {
           </TableHead>
 
           <TableBody>
-            {filteredData.map((row) => {
-              const remaining = row.budget - row.actual;
+            {groups.map((group) => {
+              const groupBudget = group.items.reduce((acc, item) => acc + item.budget, 0);
+              const groupActual = group.items.reduce((acc, item) => acc + item.actual, 0);
+              const groupRemaining = groupBudget - groupActual;
+              const isOpen = openCategories[group.category];
 
               return (
-                <TableRow key={row.category}>
-                  <TableCell>{row.category}</TableCell>
-                  {visibleColumns.includes('Budget') && (
-                    <TableCell align="right">{format(row.budget)}</TableCell>
-                  )}
-                  {visibleColumns.includes('Actual') && (
-                    <TableCell align="right">{format(row.actual)}</TableCell>
-                  )}
-                  {visibleColumns.includes('Remaining') && (
-                    <TableCell align="center">
-                      <TrendingChip value={remaining} />
+                <React.Fragment key={group.category}>
+                  <TableRow sx={{ 'td, th': { border: 0 } }}>
+                    <TableCell
+                      onClick={() => handleToggle(group.category)}
+                      sx={{
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        fontWeight: 'bold',
+                        p: 1,
+                      }}
+                    >
+                      <KeyboardArrowDownIcon
+                        sx={{
+                          mr: 1,
+                          transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                          transition: 'transform 0.3s',
+                        }}
+                      />
+                      {group.category}
+                      {group.items.length === 0 && (
+                        <Typography variant="body2" color="textSecondary" sx={{ ml: 1 }}>
+                          (No matches)
+                        </Typography>
+                      )}
                     </TableCell>
-                  )}
-                </TableRow>
+                    {visibleColumns.includes('Budget') && (
+                      <TableCell align="right" sx={{ fontWeight: 'bold', p: 1 }}>
+                        {format(groupBudget)}
+                      </TableCell>
+                    )}
+                    {visibleColumns.includes('Actual') && (
+                      <TableCell align="right" sx={{ fontWeight: 'bold', p: 1 }}>
+                        {format(groupActual)}
+                      </TableCell>
+                    )}
+                    {visibleColumns.includes('Remaining') && (
+                      <TableCell align="right" sx={{ fontWeight: 'bold', p: 1 }}>
+                        {format(groupRemaining)}
+                      </TableCell>
+                    )}
+                  </TableRow>
+                  <TableRow>
+                    <TableCell
+                      style={{
+                        padding: 0,
+                      }}
+                      colSpan={1 + visibleColumns.length}
+                    >
+                      <Collapse in={isOpen} timeout="auto" unmountOnExit>
+                        <Box sx={{ margin: 0 }}>
+                          <Table size="small" aria-label="child table">
+                            <TableBody>
+                              {group.items.map((row) => {
+                                const remaining = row.budget - row.actual;
+
+                                return (
+                                  <TableRow key={row.category}>
+                                    <TableCell
+                                      sx={{
+                                        borderTop: '1px solid var(--neutral--600)',
+                                        p: 1,
+                                      }}
+                                    >
+                                      {row.category}
+                                    </TableCell>
+                                    {visibleColumns.includes('Budget') && (
+                                      <TableCell
+                                        align="right"
+                                        sx={{
+                                          borderTop: '1px solid var(--neutral--600)',
+                                          p: 1,
+                                        }}
+                                      >
+                                        {format(row.budget)}
+                                      </TableCell>
+                                    )}
+                                    {visibleColumns.includes('Actual') && (
+                                      <TableCell
+                                        align="right"
+                                        sx={{
+                                          borderTop: '1px solid var(--neutral--600)',
+                                          p: 1,
+                                        }}
+                                      >
+                                        {format(row.actual)}
+                                      </TableCell>
+                                    )}
+                                    {visibleColumns.includes('Remaining') && (
+                                      <TableCell
+                                        align="right"
+                                        sx={{
+                                          borderTop: '1px solid var(--neutral--600)',
+                                          p: 1,
+                                        }}
+                                      >
+                                        {format(remaining)}
+                                      </TableCell>
+                                    )}
+                                  </TableRow>
+                                );
+                              })}
+                            </TableBody>
+                          </Table>
+                        </Box>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
               );
             })}
 
             <TableRow
               sx={{
-                backgroundColor: 'rgba(var(--system--300-alpha), 0.05)',
+                backgroundColor: 'rgba(var(--system--red-300-alpha), 0.1)',
               }}
             >
               <TableCell
                 sx={{
                   fontWeight: 'bold',
                   fontSize: '1.3rem',
+                  color: 'var(--system--red-700)',
                 }}
               >
                 Total
@@ -209,6 +371,7 @@ const ExpensesBudgetTable = () => {
                   sx={{
                     fontWeight: 700,
                     fontSize: '1.3rem',
+                    color: 'var(--system--red-700)',
                   }}
                 >
                   {format(totals.budget)}
@@ -220,15 +383,14 @@ const ExpensesBudgetTable = () => {
                   sx={{
                     fontWeight: 700,
                     fontSize: '1.3rem',
+                    color: 'var(--system--red-700)',
                   }}
                 >
                   {format(totals.actual)}
                 </TableCell>
               )}
               {visibleColumns.includes('Remaining') && (
-                <TableCell align="center">
-                  <TrendingChip value={totalRemaining} />
-                </TableCell>
+                <TableCell align="right">{format(totalRemaining)}</TableCell>
               )}
             </TableRow>
           </TableBody>
