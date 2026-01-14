@@ -10,12 +10,63 @@ import ButtonIcon from '~/components/button-icon';
 import InfoDialog from '~/components/info-dialog';
 import Dropdown from '~/components/dropdown';
 
+const data = [
+  { month: 'Jan', earnings: 110600, expenses: 29150 },
+  { month: 'Feb', earnings: 137600, expenses: 22650 },
+  { month: 'Mar', earnings: 103600, expenses: 23350 },
+  { month: 'Apr', earnings: 113100, expenses: 23550 },
+  { month: 'May', earnings: 105600, expenses: 23400 },
+  { month: 'Jun', earnings: 106600, expenses: 23650 },
+  { month: 'Jul', earnings: 117100, expenses: 75850 },
+  { month: 'Aug', earnings: 108600, expenses: 24050 },
+  { month: 'Sep', earnings: 109600, expenses: 24450 },
+  { month: 'Oct', earnings: 119600, expenses: 24650 },
+  { month: 'Nov', earnings: 111600, expenses: 52150 },
+  { month: 'Dec', earnings: 113600, expenses: 48850 },
+];
+
 const home = () => {
-  const [date, setDate] = useState('Y');
+  const [date, setDate] = useState('M');
   const [isOpenInfoDialog, setIsOpenInfoDialog] = useState(false);
   const [infoTitle, setInfoTitle] = useState('');
   const [infoContent, setInfoContent] = useState<ReactNode | null>(null);
   const [infoYoutubeUrl, setInfoYoutubeUrl] = useState('');
+
+  const getTotals = (timeframe: string) => {
+    let filtered = data;
+    switch (timeframe) {
+      case 'M':
+        filtered = data.slice(-1);
+        break;
+      case 'Q':
+        filtered = data.slice(-3);
+        break;
+      case '6M':
+        filtered = data.slice(-6);
+        break;
+      case 'Y':
+        filtered = data;
+        break;
+      case 'W':
+        const lastMonth = data[data.length - 1];
+        filtered = [
+          {
+            month: lastMonth.month,
+            earnings: Math.round(lastMonth.earnings / 4),
+            expenses: Math.round(lastMonth.expenses / 4),
+          },
+        ];
+        break;
+      default:
+        filtered = data;
+    }
+    const totalEarnings = filtered.reduce((acc, item) => acc + item.earnings, 0);
+    const totalExpenses = filtered.reduce((acc, item) => acc + item.expenses, 0);
+    return { totalEarnings, totalExpenses };
+  };
+
+  const { totalEarnings, totalExpenses } = getTotals(date);
+  const cashFlow = totalEarnings - totalExpenses;
 
   const handleOpenInfoDialog = ({
     title,
@@ -54,13 +105,22 @@ const home = () => {
         <Dropdown
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          input={<OutlinedInput startAdornment={<CalendarTodayIcon />} />}
+          input={<OutlinedInput startAdornment={<CalendarTodayIcon sx={{ fontSize: 18 }} />} />}
           size="small"
           IconComponent={KeyboardArrowDownIcon}
+          sx={{ width: '100%' }}
         >
-          {['W', 'M', 'Q', '6M', 'Y', '2Y', '5Y'].map((timeframe) => (
-            <MenuItem key={timeframe} value={timeframe}>
-              {timeframe}
+          {['W', 'M', 'Q', '6M', 'Y'].map((tf) => (
+            <MenuItem key={tf} value={tf}>
+              {tf === 'W'
+                ? 'This Week'
+                : tf === 'M'
+                  ? 'This Month'
+                  : tf === 'Q'
+                    ? 'This Quarter'
+                    : tf === '6M'
+                      ? 'Past 6 Months'
+                      : 'This Year'}
             </MenuItem>
           ))}
         </Dropdown>
@@ -82,7 +142,7 @@ const home = () => {
         </Typography>
         <Box display="flex" alignItems="center" gap={1}>
           <Typography fontSize="2.8rem" fontWeight={700}>
-            $9,312
+            ${cashFlow.toLocaleString()}
           </Typography>
           <TrendingChip value={25.4} />
           <ButtonIcon
@@ -177,7 +237,7 @@ const home = () => {
           <Box display="flex" alignItems="center" gap={1}>
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
               <Typography fontSize="2.8rem" fontWeight={700}>
-                $850,500
+                ${totalEarnings.toLocaleString()}
               </Typography>
               <TrendingChip value={2.2} />
             </Box>
@@ -201,7 +261,7 @@ const home = () => {
           <Box display="flex" alignItems="center" gap={1}>
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
               <Typography fontSize="2.8rem" fontWeight={700}>
-                $324,710
+                ${totalExpenses.toLocaleString()}
               </Typography>
               <TrendingChip value={2.4} />
             </Box>

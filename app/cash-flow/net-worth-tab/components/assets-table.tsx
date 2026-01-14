@@ -391,12 +391,7 @@ const AssetsTable = () => {
                     color: key === 'balance' ? 'var(--system--green-700)' : 'inherit',
                   }}
                 >
-                  {key === 'balance'
-                    ? `$${totalAssets.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}`
-                    : ''}
+                  {key === 'balance' ? `$${totalAssets.toLocaleString('en-US')}` : ''}
                 </TableCell>
               ))}
             </TableRow>

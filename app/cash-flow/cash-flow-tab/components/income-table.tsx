@@ -25,103 +25,103 @@ import dayjs from 'dayjs';
 const data = [
   {
     source: 'Parent-1 salary (take-home)',
-    amount: '$3,825,000.00',
+    amount: '$3,825,000',
     change: 6.9,
     date: '2025-12-15',
   },
   {
     source: 'Parent-2 salary (take-home)',
-    amount: '$780,000.00',
+    amount: '$780,000',
     change: 4.3,
     date: '2025-12-15',
   },
   {
     source: 'Online store net profit',
-    amount: '$750,200.00',
+    amount: '$750,200',
     change: 52.4,
     date: '2025-12-15',
   },
   {
     source: 'Dividends (quarterly)',
-    amount: '$170,700.00',
+    amount: '$170,700',
     change: 12.5,
     date: '2025-10-15',
   },
   {
     source: 'Rental duplex (net)',
-    amount: '$169,600.00',
+    amount: '$169,600',
     change: 0.0,
     date: '2023-12-15',
   },
   {
     source: 'Rental duplex AirBnB (net)',
-    amount: '$150,000.00',
+    amount: '$150,000',
     change: 27.3,
     date: '2025-12-15',
   },
   {
     source: 'Annual bonus (Mar)',
-    amount: '$105,000.00',
+    amount: '$105,000',
     change: 33.3,
     date: '2022-03-15',
   },
   {
     source: 'Child-tax credit (advance)',
-    amount: '$36,000.00',
+    amount: '$36,000',
     change: 0.0,
     date: '2025-12-15',
   },
   {
     source: 'Annual bonus (Feb)',
-    amount: '$35,000.00',
+    amount: '$35,000',
     change: 0.0,
     date: '2024-02-15',
   },
   {
     source: 'Annual bonus + equity vest (Feb)',
-    amount: '$35,000.00',
+    amount: '$35,000',
     change: 0.0,
     date: '2025-02-15',
   },
   {
     source: '2019 tax refund',
-    amount: '$18,000.00',
+    amount: '$18,000',
     change: 0.0,
     date: '2020-04-15',
   },
   {
     source: 'Tax refund (2023 overpayment)',
-    amount: '$6,200.00',
+    amount: '$6,200',
     change: 0.0,
     date: '2024-04-15',
   },
   {
     source: 'Child-tax credit',
-    amount: '$6,000.00',
+    amount: '$6,000',
     change: 0.0,
     date: '2020-12-15',
   },
   {
     source: 'Tax refund (2022 overpayment)',
-    amount: '$5,500.00',
+    amount: '$5,500',
     change: 0.0,
     date: '2023-04-15',
   },
   {
     source: 'House sold (net)',
-    amount: '$500,000.00',
+    amount: '$500,000',
     change: 0.0,
     date: '2025-11-20',
   },
   {
     source: 'Investment property sale',
-    amount: '$300,000.00',
+    amount: '$300,000',
     change: 15.2,
     date: '2025-08-15',
   },
   {
     source: 'Stock portfolio gains (capital)',
-    amount: '$250,000.00',
+    amount: '$250,000',
     change: 8.7,
     date: '2025-12-10',
   },
@@ -397,10 +397,7 @@ const IncomeTable = ({ timeframe = 'Y' }: { timeframe?: string }) => {
                         {key === 'change' ? (
                           <TrendingChip value={avgChange} />
                         ) : key === 'amount' ? (
-                          `$${groupTotal.toLocaleString('en-US', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}`
+                          `$${groupTotal.toLocaleString('en-US')}`
                         ) : (
                           ''
                         )}
@@ -464,12 +461,7 @@ const IncomeTable = ({ timeframe = 'Y' }: { timeframe?: string }) => {
                     key === 'amount' ? { fontWeight: 'bold', fontSize: '1.3rem', p: 1 } : { p: 1 }
                   }
                 >
-                  {key === 'amount'
-                    ? `$${totalIncome.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}`
-                    : ''}
+                  {key === 'amount' ? `$${totalIncome.toLocaleString('en-US')}` : ''}
                 </TableCell>
               ))}
             </TableRow>

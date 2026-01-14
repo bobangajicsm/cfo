@@ -268,12 +268,7 @@ const LiabilitiesTable = () => {
                     fontSize: '1.3rem',
                   }}
                 >
-                  {key === 'balance'
-                    ? `$${totalLiabilities.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}`
-                    : ''}
+                  {key === 'balance' ? `$${totalLiabilities.toLocaleString('en-US')}` : ''}
                 </TableCell>
               ))}
             </TableRow>

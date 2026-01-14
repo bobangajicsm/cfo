@@ -342,182 +342,39 @@ const NetWorthChart = () => {
       <InfoDialog
         open={isOpenInfoDialog}
         onClose={() => setIsOpenInfoDialog(false)}
-        title="Cash Flow Net Worth"
+        title="Conventional Net Worth"
         content={
           <Stack px={2} gap={3} mb={2}>
             <Box>
-              <Typography fontSize="1.4rem" color="var(--text-color-secondary)">
-                <strong>Two methods to calculate net worth:</strong>
-              </Typography>
-
-              <ol style={{ paddingLeft: 20, marginTop: 8 }}>
-                <li>Conventional Net Worth = Total Assets – Total Liabilities</li>
-                <li>Cash Flow Net Worth = Income / Capitalization Rate</li>
-              </ol>
-            </Box>
-
-            <Box>
               <Typography fontSize="1.4rem" fontWeight={600} color="var(--text-color-secondary)">
-                1. How do I calculate the capitalization rate on a property?
+                Formula:
               </Typography>
-
               <Typography fontSize="1.4rem" mt={1}>
-                <strong>Formula:</strong> Cap Rate (%) = (First-year Net Operating Income ÷ Purchase
-                Price or Market Value) × 100
+                Conventional Net Worth = Total Assets – Total Liabilities
               </Typography>
             </Box>
 
             <Box>
               <Typography fontSize="1.4rem" fontWeight={600} color="var(--text-color-secondary)">
-                2. What’s a market-level capitalization rate?
+                Overview:
               </Typography>
-
-              <ul style={{ paddingLeft: 20, marginTop: 8 }}>
-                <li>
-                  Typical range: 4 % – 10 % is the broad industry band most investors quote today
-                  for U.S. commercial or multifamily property.
-                </li>
-                <li>
-                  Low-risk / “A” locations: 4 % – 6 % (think downtown CBD, gateway cities, long-term
-                  triple-net leases).
-                </li>
-                <li>
-                  Value-add / higher-risk deals: 8 % – 12 % (secondary markets, older assets,
-                  turnaround stories).
-                </li>
-                <li>
-                  Anything below ~4 % implies a very safe, bond-like asset or a hot market; above
-                  ~12 % signals either a very distressed property or a market with weak
-                  fundamentals.
-                </li>
-              </ul>
-            </Box>
-
-            <Box>
-              <Typography fontSize="1.4rem" fontWeight={600} color="var(--text-color-secondary)">
-                Step-by-step
-              </Typography>
-
-              <ol style={{ paddingLeft: 20, marginTop: 8 }}>
-                <li>1. Start with gross scheduled rent and other income.</li>
-                <li>2. ubtract vacancy & credit loss to get Effective Gross Income.</li>
-                <li>
-                  3. Subtract all operating expenses (taxes, insurance, management, maintenance,
-                  utilities, reserves, etc.)—but <strong>not</strong> debt service or cap-ex
-                  improvement reserves.
-                </li>
-                <li>4. The result is NOI (Net Operating Income).</li>
-                <li>5. Divide NOI by the price you paid (or the current appraised value).</li>
-                <li>6. Move the decimal two places → cap rate.</li>
-              </ol>
-            </Box>
-
-            {/* Section 3 */}
-            <Box>
-              <Typography fontSize="1.4rem" fontWeight={600} color="var(--text-color-secondary)">
-                3. How can I estimate the appropriate capitalization rate for my own valuation?
-              </Typography>
-
-              <Stack gap={1} mt={1}>
-                <Typography fontSize="1.4rem">
-                  Survey recent comparable sales (same sub-market, similar age, tenant mix, lease
-                  length).
-                </Typography>
-                <Typography fontSize="1.4rem">
-                  Check broker “market snapshot” reports—most will list the going-in cap for the
-                  past quarter.
-                </Typography>
-                <Typography fontSize="1.4rem">
-                  Benchmark to the 10-year U.S. Treasury; investors commonly demand a 150–400 bps
-                  spread over the risk-free rate.
-                </Typography>
-                <Typography fontSize="1.4rem">
-                  If 10-yr T-note = 4 % and the spread for your risk class is 250 bps, expect a
-                  market cap rate around 6.5 %.
-                </Typography>
-                <Typography fontSize="1.4rem">
-                  Adjust for asset-specific risk (tenant credit, remaining lease term, deferred
-                  maintenance, growth outlook).
-                </Typography>
-              </Stack>
-            </Box>
-
-            <Box>
-              <Typography fontSize="1.4rem" fontWeight={600} color="var(--text-color-secondary)">
-                4. Now apply it to my income
-              </Typography>
-
               <Typography fontSize="1.4rem" mt={1}>
-                Income = $7,142,200
-                <br />
-                Using the mid-range cap rate of 8 % as an illustration:
+                Conventional net worth is calculated as Total Assets minus Total Liabilities,
+                providing a snapshot of financial position by showing what remains after settling
+                all debts. Assets include cash, investments, property, and vehicles; liabilities
+                cover loans, mortgages, and credit card balances.
               </Typography>
-
-              <Typography fontSize="1.4rem" mt={1}>
-                Net-Worth Estimate = Income ÷ Capitalization Rate
-                <br />
-                = $7,142,200 ÷ 0.08
-                <br />= <strong>$89,277,500</strong>
-              </Typography>
-            </Box>
-
-            <Box
-              sx={{
-                border: '1px solid var(--border-color-secondary)',
-                borderRadius: 2,
-                overflow: 'hidden',
-              }}
-            >
-              {/* Header */}
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                px={2}
-                py={1.2}
-                sx={{
-                  backgroundColor: 'var(--bg-color-secondary)',
-                  borderBottom: '1px solid var(--border-color-secondary)',
-                }}
-              >
-                <Typography fontSize="1.3rem" fontWeight={600}>
-                  Cap Rate (assumed)
-                </Typography>
-                <Typography fontSize="1.3rem" fontWeight={600}>
-                  Implied Net Worth
-                </Typography>
-              </Box>
-
-              {[
-                ['4 %', '$178 555 000'],
-                ['6 %', '$119 036 667'],
-                ['8 %', '$89 277 500'],
-                ['10 %', '$71 422 000'],
-                ['12 %', '$59 518 333'],
-              ].map(([rate, value], i) => (
-                <Box
-                  key={rate}
-                  display="flex"
-                  justifyContent="space-between"
-                  px={2}
-                  py={1.2}
-                  sx={{
-                    borderTop: '1px solid var(--border-color-secondary)',
-                  }}
-                >
-                  <Typography fontSize="1.3rem" color="var(--text-color-secondary)">
-                    {rate}
-                  </Typography>
-                  <Typography fontSize="1.3rem" fontWeight={600}>
-                    {value}
-                  </Typography>
-                </Box>
-              ))}
             </Box>
 
             <Box>
-              <Typography fontSize="1.4rem" color="var(--text-color-secondary)">
-                Pick the cap rate that best matches the risk profile of the income stream (stable &
-                bond-like → use 4-5 %; volatile or high-turnover → use 9-12 %).
+              <Typography fontSize="1.4rem" fontWeight={600} color="var(--text-color-secondary)">
+                Key Differences:
+              </Typography>
+              <Typography fontSize="1.4rem" mt={1}>
+                Conventional net worth focuses on current ownership minus debt, while cash flow net
+                worth emphasizes sustainable income streams for a forward-looking wealth measure.
+                Both track progress but suit different goals: balance sheet health versus investment
+                viability.
               </Typography>
             </Box>
           </Stack>
