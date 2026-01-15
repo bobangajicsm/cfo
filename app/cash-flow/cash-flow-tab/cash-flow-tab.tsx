@@ -196,6 +196,31 @@ const CashFlowTab = () => {
     saveAs(blob, 'cash_flow' + fileExtension);
   };
 
+  // Add growthRate memo (optional; compute previous period similarly)
+  const growthRate = useMemo(() => {
+    // Mirror periodData logic but for previous year(s)
+    const monthsNeeded = getPeriodMonths(date);
+    let prevData: TCashFlow[] = [];
+    if (monthsNeeded <= 12) {
+      const prevYearData = yearlyData[(currentYear - 1) as keyof typeof yearlyData] || [];
+      const numMonths = Math.min(fullMonthsCount, 12);
+      prevData = prevYearData.slice(-numMonths);
+    } else {
+      // Multi-year: shift back one full cycle
+      const numYears = monthsNeeded / 12;
+      const prevStartYear = currentYear - numYears - 1;
+      for (let y = prevStartYear; y < prevStartYear + numYears; y++) {
+        if (yearlyData[y as keyof typeof yearlyData]) {
+          prevData = [...prevData, ...yearlyData[y as keyof typeof yearlyData]];
+        }
+      }
+    }
+    const prevEarnings = prevData.reduce((acc, item) => acc + item.earnings, 0);
+    const prevExpenses = prevData.reduce((acc, item) => acc + item.expenses, 0);
+    const prevCashFlow = (prevEarnings - prevExpenses) * scaleFactor;
+    return prevCashFlow !== 0 ? ((currentCashFlow - prevCashFlow) / prevCashFlow) * 100 : 0;
+  }, [periodData, scaleFactor, date, currentYear, yearlyData, fullMonthsCount]);
+
   return (
     <Box
       sx={{
@@ -221,13 +246,19 @@ const CashFlowTab = () => {
           <ArrowDownwardIcon sx={{ fontSize: '1.2rem', ml: 0.5 }} />
         </ButtonPrimary>
       </Box>
-      <CashFlowChart date={date} />
+      <CashFlowChart
+        date={date}
+        periodData={periodData}
+        currentCashFlow={currentCashFlow}
+        scaleFactor={scaleFactor}
+        growthRate={growthRate}
+      />
       <DaysToGoalChart currentCashFlow={currentCashFlow} timeframe={date} />
       <Typography variant="h2" fontSize="2rem" fontWeight={600} mt={4} mb={4}>
         Transactions
       </Typography>
-      <IncomeTable timeframe={date} />
-      <ExpensesTable timeframe={date} />
+      <IncomeTable timeframe={date} periodData={periodData} scaleFactor={scaleFactor} />
+      <ExpensesTable timeframe={date} periodData={periodData} scaleFactor={scaleFactor} />
     </Box>
   );
 };

@@ -129,7 +129,7 @@ const DaysToGoalChart = ({
           }}
         >
           <Typography color="var(--text-color-secondary)" fontSize="1.2rem" mb={2}>
-            Cash flow goal
+            Cash Flow Goal
           </Typography>
           <Stack
             direction="row"

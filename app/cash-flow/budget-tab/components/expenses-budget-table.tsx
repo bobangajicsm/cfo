@@ -353,7 +353,10 @@ const ExpensesBudgetTable = () => {
 
             <TableRow
               sx={{
-                backgroundColor: 'rgba(var(--system--red-300-alpha), 0.1)',
+                backgroundColor:
+                  totals.budget > totals.actual
+                    ? 'rgba(var(--system--red-300-alpha), 0.1)'
+                    : 'transparent',
               }}
             >
               <TableCell

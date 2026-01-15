@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+
 import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 
 import { Box, Menu, MenuItem, OutlinedInput, Stack, Typography } from '@mui/material';
@@ -107,8 +106,7 @@ const formatNumber = (num: number): string => {
   }
 };
 
-const NetWorthChart = () => {
-  const [date, setDate] = useState('1Y');
+const NetWorthChart = ({ date }: { date: string }) => {
   const [isOpenInfoDialog, setIsOpenInfoDialog] = useState(false);
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -125,7 +123,7 @@ const NetWorthChart = () => {
     switch (date) {
       case '6M':
         return monthlyData.slice(-6);
-      case '1Y':
+      case 'Y':
         return monthlyData.slice(-12);
       case '2Y':
         return monthlyData.slice(-24);
@@ -142,6 +140,7 @@ const NetWorthChart = () => {
 
   const latest = displayData[displayData.length - 1];
   const first = displayData[0];
+  const delta = latest.netWorth - first.netWorth;
   const growthRate =
     displayData.length === 1 || first.netWorth === 0
       ? 0
@@ -149,7 +148,7 @@ const NetWorthChart = () => {
 
   return (
     <>
-      <Card sx={{ pb: 1, mb: 2 }}>
+      <Card sx={{ pb: 1, mb: 1, mt: 2 }}>
         <Box>
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
@@ -162,7 +161,7 @@ const NetWorthChart = () => {
 
           <Box display="flex" alignItems="center" gap={1}>
             <Typography fontSize="2.8rem" fontWeight={700}>
-              {formatNumber(latest.netWorth)}
+              {formatNumber(delta)}
             </Typography>
             <TrendingChip value={parseFloat(growthRate.toFixed(1))} />
           </Box>
@@ -217,20 +216,6 @@ const NetWorthChart = () => {
               </Typography>
             </Box>
           </Box>
-
-          <Dropdown
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            input={<OutlinedInput startAdornment={<CalendarTodayIcon />} />}
-            size="small"
-            IconComponent={KeyboardArrowDownIcon}
-          >
-            {['6M', '1Y', '2Y', '5Y', 'All'].map((tf) => (
-              <MenuItem key={tf} value={tf}>
-                {tf}
-              </MenuItem>
-            ))}
-          </Dropdown>
         </Box>
 
         <Box sx={{ width: '100%', height: { xs: 280, sm: 320, md: 360 }, position: 'relative' }}>

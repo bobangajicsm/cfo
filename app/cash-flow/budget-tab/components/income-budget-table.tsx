@@ -28,12 +28,12 @@ interface IncomeItem {
 }
 
 const rawData: IncomeItem[] = [
-  { category: 'Salaries (Parents)', budget: 74000, actual: 74000 },
-  { category: 'Online Store Profit', budget: 6250, actual: 32000 },
-  { category: 'Rental Income', budget: 583, actual: 7000 },
-  { category: 'Dividends', budget: 750, actual: 0 },
-  { category: 'Bonuses', budget: 1458, actual: 0 },
-  { category: 'Tax Credits/Refunds', budget: 50, actual: 600 },
+  { category: 'Salaries (Parents)', budget: 74000, actual: 740 },
+  { category: 'Online Store Profit', budget: 6250, actual: 63 },
+  { category: 'Rental Income', budget: 583, actual: 6 },
+  { category: 'Dividends', budget: 750, actual: 8 },
+  { category: 'Bonuses', budget: 1458, actual: 15 },
+  { category: 'Tax Credits/Refunds', budget: 50, actual: 1 },
 ];
 
 const columnOptions = ['Budget', 'Actual', 'Remaining'] as const;
@@ -250,7 +250,17 @@ const IncomeBudgetTable = () => {
                       </TableCell>
                     )}
                     {visibleColumns.includes('Remaining') && (
-                      <TableCell align="right" sx={{ fontWeight: 'bold', p: 1 }}>
+                      <TableCell
+                        align="right"
+                        sx={{
+                          fontWeight: 'bold',
+                          p: 1,
+                          color:
+                            groupRemaining <= 0
+                              ? 'var(--system--green-700)'
+                              : 'var(--text-color-primary)',
+                        }}
+                      >
                         {format(groupRemaining)}
                       </TableCell>
                     )}
@@ -307,6 +317,10 @@ const IncomeBudgetTable = () => {
                                         sx={{
                                           borderTop: '1px solid var(--neutral--600)',
                                           p: 1,
+                                          color:
+                                            remaining <= 0
+                                              ? 'var(--system--green-700)'
+                                              : 'var(--text-color-primary)',
                                         }}
                                       >
                                         {format(remaining)}
@@ -327,7 +341,10 @@ const IncomeBudgetTable = () => {
 
             <TableRow
               sx={{
-                backgroundColor: 'rgba(var(--system--green-300-alpha), 0.1)',
+                backgroundColor:
+                  totals.actual >= totals.budget
+                    ? 'rgba(var(--system--green-300-alpha), 0.1)'
+                    : 'transparent',
               }}
             >
               <TableCell
@@ -364,7 +381,19 @@ const IncomeBudgetTable = () => {
                 </TableCell>
               )}
               {visibleColumns.includes('Remaining') && (
-                <TableCell align="right">{format(totalRemaining)}</TableCell>
+                <TableCell
+                  align="right"
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: '1.3rem',
+                    color:
+                      totalRemaining <= 0
+                        ? 'var(--system--green-700)'
+                        : 'var(--text-color-primary)',
+                  }}
+                >
+                  {format(totalRemaining)}
+                </TableCell>
               )}
             </TableRow>
           </TableBody>

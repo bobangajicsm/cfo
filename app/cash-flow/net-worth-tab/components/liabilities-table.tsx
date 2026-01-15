@@ -96,7 +96,7 @@ const data = [
   },
 ];
 
-const LiabilitiesTable = () => {
+const LiabilitiesTable = ({ timeframe }: { timeframe: string }) => {
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
     'source',
     'interestRate',
@@ -105,10 +105,51 @@ const LiabilitiesTable = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   const columnOrder = ['source', 'dueDate', 'interestRate', 'balance'] as const;
+
+  const periodNames = {
+    '6M': '6 Months',
+    Y: '1 Year',
+    '2Y': '2 Years',
+    '5Y': '5 Years',
+    All: 'All Time',
+  } as const;
+
+  const periodLabel = periodNames[timeframe as keyof typeof periodNames] || timeframe;
+
+  const now = dayjs();
+  let startDate: dayjs.Dayjs | null = null;
+  if (timeframe !== 'All') {
+    let subtractUnit: dayjs.ManipulateType = 'month';
+    let subtractAmount = 0;
+    if (timeframe === '6M') {
+      subtractAmount = 6;
+    } else {
+      const years = parseInt(timeframe);
+      if (!isNaN(years)) {
+        subtractAmount = years * 12;
+      }
+    }
+    if (subtractAmount > 0) {
+      startDate = now.subtract(subtractAmount, subtractUnit);
+    }
+  }
+
+  const dateFilteredData =
+    timeframe === 'All'
+      ? data
+      : data.filter((item) => {
+          const itemDate = dayjs(item.dueDate);
+          return itemDate.isAfter(startDate!) || itemDate.isSame(startDate!, 'day');
+        });
+
+  const filteredData = dateFilteredData.filter((item) =>
+    item.source.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const labels = {
     source: 'Liability',
     dueDate: 'Due Date',
-    interestRate: 'Interest Rate',
+    interestRate: `${periodLabel} Interest Rate`,
     balance: 'Balance',
   } as const;
 
@@ -118,10 +159,6 @@ const LiabilitiesTable = () => {
     const value = event.target.value;
     setSelectedColumns(typeof value === 'string' ? value.split(',') : value);
   };
-
-  const filteredData = data.filter((item) =>
-    item.source.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const totalLiabilities = filteredData.reduce((acc, item) => {
     const numericBalance = parseFloat(item.balance.replace(/[^0-9.-]+/g, ''));
@@ -152,7 +189,7 @@ const LiabilitiesTable = () => {
         flexWrap="wrap"
         gap={1}
       >
-        <Typography fontSize="1.4rem">Total Liabilities</Typography>
+        <Typography fontSize="1.4rem">Total Liabilities ({periodLabel})</Typography>
 
         <Box display="flex" width={1} gap={1} justifyContent="space-between" alignItems="center">
           <TextField
@@ -198,15 +235,10 @@ const LiabilitiesTable = () => {
                 );
               }}
             >
-              {[
-                { value: 'source', label: 'Liability' },
-                { value: 'dueDate', label: 'Due Date' },
-                { value: 'interestRate', label: 'Interest Rate' },
-                { value: 'balance', label: 'Balance' },
-              ].map((item) => (
-                <MenuItem key={item.value} value={item.value}>
-                  <Checkbox checked={selectedColumns.includes(item.value)} size="small" />
-                  {item.label}
+              {columnOrder.map((key) => (
+                <MenuItem key={key} value={key}>
+                  <Checkbox checked={selectedColumns.includes(key)} size="small" />
+                  {labels[key]}
                 </MenuItem>
               ))}
             </Dropdown>

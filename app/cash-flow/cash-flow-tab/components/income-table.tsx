@@ -22,6 +22,8 @@ import Card from '~/components/card';
 import Dropdown from '~/components/dropdown';
 import dayjs from 'dayjs';
 
+import { type TCashFlow } from '~/cash-flow/cash-flow-tab/cash-flow-tab'; // Import type for consistency
+
 const data = [
   {
     source: 'Parent-1 salary (take-home)',
@@ -148,7 +150,15 @@ const getPeriodMonths = (timeframe: string): number => {
   }
 };
 
-const IncomeTable = ({ timeframe = 'Y' }: { timeframe?: string }) => {
+const IncomeTable = ({
+  timeframe = 'Y',
+  periodData = [],
+  scaleFactor = 1,
+}: {
+  timeframe?: string;
+  periodData?: TCashFlow[];
+  scaleFactor?: number;
+}) => {
   const [openCategories, setOpenCategories] = useState<{
     [key: string]: boolean;
   }>({});
@@ -169,6 +179,12 @@ const IncomeTable = ({ timeframe = 'Y' }: { timeframe?: string }) => {
     setSelectedColumns(typeof value === 'string' ? value.split(',') : value);
   };
 
+  // Use parent's periodData to compute synced totalIncome (ignores hardcoded data scale)
+  const totalIncome = periodData.reduce((acc, item) => acc + item.earnings, 0) * scaleFactor;
+
+  // For sources breakdown: Keep filtering hardcoded data by date for visualization,
+  // but note: this is approximate (hardcoded sums don't match monthly aggregates).
+  // In a full refactor, replace with source-level data that sums to periodData.earnings per month.
   const periodMonths = getPeriodMonths(timeframe);
   const cutoffDate = dayjs().subtract(periodMonths, 'month');
 
@@ -213,15 +229,13 @@ const IncomeTable = ({ timeframe = 'Y' }: { timeframe?: string }) => {
     },
   ];
 
-  const totalIncome = groups.reduce((acc, group) => {
-    return (
-      acc +
-      group.items.reduce((gAcc, item) => {
-        const numericAmount = parseFloat(item.amount.replace(/[^0-9.-]+/g, ''));
-        return gAcc + (isNaN(numericAmount) ? 0 : numericAmount);
-      }, 0)
-    );
-  }, 0);
+  // For group totals: Use approximate sum from filtered items (for display), but overall total is synced
+  const getGroupTotal = (groupItems: typeof data) => {
+    return groupItems.reduce((gAcc, item) => {
+      const numericAmount = parseFloat(item.amount.replace(/[^0-9.-]+/g, ''));
+      return gAcc + (isNaN(numericAmount) ? 0 : numericAmount);
+    }, 0);
+  };
 
   const getChildCellContent = (key: string, row: (typeof data)[0]) => {
     switch (key) {
@@ -343,10 +357,7 @@ const IncomeTable = ({ timeframe = 'Y' }: { timeframe?: string }) => {
           </TableHead>
           <TableBody>
             {groups.map((group) => {
-              const groupTotal = group.items.reduce((acc, item) => {
-                const numericAmount = parseFloat(item.amount.replace(/[^0-9.-]+/g, ''));
-                return acc + (isNaN(numericAmount) ? 0 : numericAmount);
-              }, 0);
+              const groupTotal = getGroupTotal(group.items); // Approximate group sum
 
               const avgChange =
                 group.items.length > 0

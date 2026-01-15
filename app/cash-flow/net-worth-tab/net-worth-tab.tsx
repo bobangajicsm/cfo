@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, MenuItem, OutlinedInput, Stack, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import ButtonPrimary from '~/components/button-primary';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
@@ -7,9 +7,12 @@ import AnalyticsCard from '~/components/analytics-card';
 import InfoDialog from '~/components/info-dialog';
 import LiabilitiesTable from './components/liabilities-table';
 import AssetsTable from './components/assets-table';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 
 import * as XLSX from 'xlsx';
 import pkg from 'file-saver';
+import Dropdown from '~/components/dropdown';
 const { saveAs } = pkg;
 
 const data = [
@@ -88,6 +91,7 @@ const data = [
 ];
 
 const NetWorthTab = () => {
+  const [date, setDate] = useState('Y');
   const [isOpenInfoDialog, setIsOpenInfoDialog] = useState(false);
 
   const handleOpenInfoDialog = () => {
@@ -118,27 +122,41 @@ const NetWorthTab = () => {
           p: 2,
         }}
       >
-        <Box my={1} display="flex" justifyContent="flex-end" mb={3}>
+        <Box my={1} display="flex" justifyContent="flex-end" mb={3} gap={2}>
+          <Dropdown
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            input={<OutlinedInput startAdornment={<CalendarTodayIcon />} />}
+            size="small"
+            IconComponent={KeyboardArrowDownIcon}
+          >
+            {['6M', 'Y', '2Y', '5Y', 'All'].map((tf) => (
+              <MenuItem key={tf} value={tf}>
+                {tf}
+              </MenuItem>
+            ))}
+          </Dropdown>
+
           <ButtonPrimary onClick={handleDownload}>
             Export data
             <ArrowDownwardIcon sx={{ fontSize: '1.2rem', ml: 0.5 }} />
           </ButtonPrimary>
         </Box>
-        <NetWorthChart />
         <AnalyticsCard
           item={{
             title: 'Cash Flow Net Worth',
-            description: 'Income / Capitalization Rate',
-            value: '13,664.03',
+            description: 'Income ÷ Capitalization Rate',
+            value: '$13,664',
             trend: 'up',
           }}
           onClick={handleOpenInfoDialog}
         />
+        <NetWorthChart date={date} />
         <Typography variant="h2" fontSize="2rem" fontWeight={600} mt={3} mb={4}>
           Balance Sheet
         </Typography>
-        <AssetsTable />
-        <LiabilitiesTable />
+        <AssetsTable timeframe={date} />
+        <LiabilitiesTable timeframe={date} />
       </Box>
       <InfoDialog
         open={isOpenInfoDialog}

@@ -21,7 +21,19 @@ import {
   type TCashFlow,
 } from '~/cash-flow/cash-flow-tab/cash-flow-tab';
 
-const CashFlowChart = ({ date }: { date: string }) => {
+const CashFlowChart = ({
+  date,
+  periodData,
+  currentCashFlow,
+  scaleFactor,
+  growthRate = 0, // Default to 0 if not passed
+}: {
+  date: string;
+  periodData: TCashFlow[];
+  currentCashFlow: number;
+  scaleFactor: number;
+  growthRate?: number;
+}) => {
   const yearData: Record<string, typeof data2025> = {
     '2020': data2020,
     '2021': data2021,
@@ -30,6 +42,7 @@ const CashFlowChart = ({ date }: { date: string }) => {
     '2024': data2024,
     '2025': data2025,
   };
+
   const [isOpenInfoDialog, setIsOpenInfoDialog] = useState(false);
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -49,118 +62,71 @@ const CashFlowChart = ({ date }: { date: string }) => {
     setMenuAnchorEl(null);
   };
 
-  let currentData: (TCashFlow & { cashFlow: number })[];
-  let prevData: (TCashFlow & { cashFlow: number })[] | null = null;
-  let totalMonths = 12;
-  let hasPrevious = true;
+  // Build chart data from passed periodData (already filtered/scaled in parent)
+  let currentData: (TCashFlow & { cashFlow: number })[] = periodData.map((d) => ({
+    ...d,
+    cashFlow: (d.earnings - d.expenses) * scaleFactor, // Apply scaling if needed (e.g., for 'W')
+  }));
 
-  const currentYearData = data2025;
-  const previousYearData = data2024;
+  // For multi-year periods ('2Y', '5Y'), re-aggregate if necessary—but since parent passes aggregated periodData, assume it's ready
+  // If needed, add logic here to quarter/year-ify like before, but parent's periodData should handle slicing
 
-  switch (date) {
-    case 'W':
-    case 'M':
-      totalMonths = 1;
-      currentData = currentYearData
-        .slice(-1)
-        .map((d) => ({ ...d, cashFlow: d.earnings - d.expenses }));
-      prevData = previousYearData
-        .slice(-1)
-        .map((d) => ({ ...d, cashFlow: d.earnings - d.expenses }));
-      break;
-    case 'Q':
-      totalMonths = 3;
-      currentData = currentYearData
-        .slice(-3)
-        .map((d) => ({ ...d, cashFlow: d.earnings - d.expenses }));
-      prevData = previousYearData
-        .slice(-3)
-        .map((d) => ({ ...d, cashFlow: d.earnings - d.expenses }));
-      break;
-    case '6M':
-      totalMonths = 6;
-      currentData = currentYearData
-        .slice(-6)
-        .map((d) => ({ ...d, cashFlow: d.earnings - d.expenses }));
-      prevData = previousYearData
-        .slice(-6)
-        .map((d) => ({ ...d, cashFlow: d.earnings - d.expenses }));
-      break;
-    case 'Y':
-      totalMonths = 12;
-      currentData = currentYearData.map((d) => ({ ...d, cashFlow: d.earnings - d.expenses }));
-      prevData = previousYearData.map((d) => ({ ...d, cashFlow: d.earnings - d.expenses }));
-      break;
-    case '2Y':
-      const quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
-      const currentYearOffset = [2024, 2025];
-      const currentYearDatas = [previousYearData, currentYearData];
-      currentData = [];
-      currentYearDatas.forEach((yData, y) => {
-        const year = currentYearOffset[y];
-        for (let q = 0; q < 4; q++) {
-          const months = yData.slice(q * 3, q * 3 + 3);
-          const sumEarnings = months.reduce((acc, m) => acc + m.earnings, 0);
-          const sumExpenses = months.reduce((acc, m) => acc + m.expenses, 0);
-          currentData.push({
-            month: `${quarters[q]} ${year}`,
-            earnings: sumEarnings,
-            expenses: sumExpenses,
-            cashFlow: sumEarnings - sumExpenses,
-          });
-        }
-      });
-      totalMonths = 24;
-
-      const prevYearOffset = [2022, 2023];
-      const prevYearDatas = [data2022, data2023];
-      prevData = [];
-      prevYearDatas.forEach((yData, y) => {
-        const year = prevYearOffset[y];
-        for (let q = 0; q < 4; q++) {
-          const months = yData.slice(q * 3, q * 3 + 3);
-          const sumEarnings = months.reduce((acc, m) => acc + m.earnings, 0);
-          const sumExpenses = months.reduce((acc, m) => acc + m.expenses, 0);
-          prevData?.push({
-            month: `${quarters[q]} ${year}`,
-            earnings: sumEarnings,
-            expenses: sumExpenses,
-            cashFlow: sumEarnings - sumExpenses,
-          });
-        }
-      });
-      break;
-    case '5Y':
-      const allYearKeys = ['2021', '2022', '2023', '2024', '2025'];
-      currentData = [];
-      allYearKeys.forEach((yearKey) => {
-        const yData = yearData[yearKey];
-        const sumEarnings = yData.reduce((acc, m) => acc + m.earnings, 0);
-        const sumExpenses = yData.reduce((acc, m) => acc + m.expenses, 0);
-        currentData.push({
-          month: yearKey,
-          earnings: sumEarnings,
-          expenses: sumExpenses,
-          cashFlow: sumEarnings - sumExpenses,
-        });
-      });
-      totalMonths = 60;
-      hasPrevious = false;
-      break;
-    default:
-      totalMonths = 12;
-      currentData = currentYearData.map((d) => ({ ...d, cashFlow: d.earnings - d.expenses }));
-      prevData = previousYearData.map((d) => ({ ...d, cashFlow: d.earnings - d.expenses }));
+  // Compute previous period for growth (mirrors parent's logic; pass from parent if possible for perf)
+  let prevData: (TCashFlow & { cashFlow: number })[] = [];
+  const currentYear = 2025; // From parent
+  const getPeriodMonths = (timeframe: string): number => {
+    switch (timeframe) {
+      case 'W':
+        return 0.25;
+      case 'M':
+        return 1;
+      case 'Q':
+        return 3;
+      case '6M':
+        return 6;
+      case 'Y':
+        return 12;
+      case '2Y':
+        return 24;
+      case '5Y':
+        return 60;
+      default:
+        return 12;
+    }
+  };
+  const monthsNeeded = getPeriodMonths(date);
+  let prevScaleFactor = scaleFactor; // Same as current for simplicity
+  if (monthsNeeded <= 12) {
+    // Previous year, same slice
+    const prevYearData = yearData['2024'] || [];
+    const fullMonthsCount = Math.floor(monthsNeeded);
+    const numMonths = Math.min(fullMonthsCount || 1, 12);
+    const prevSlice = prevYearData.slice(-numMonths);
+    prevData = prevSlice.map((d) => ({
+      ...d,
+      cashFlow: (d.earnings - d.expenses) * prevScaleFactor,
+    }));
+  } else {
+    // For multi-year, shift back (e.g., for '2Y' 2024-2025, prev is 2022-2023)
+    const numYears = monthsNeeded / 12;
+    const prevStartYear = currentYear - numYears - 1; // e.g., 2025 - 2 -1 = 2022
+    for (let y = prevStartYear; y < prevStartYear + numYears; y++) {
+      if (yearData[y]) {
+        prevData = [
+          ...prevData,
+          ...yearData[y].map((d) => ({
+            ...d,
+            cashFlow: (d.earnings - d.expenses) * prevScaleFactor,
+          })),
+        ];
+      }
+    }
   }
 
-  const netCurrent = currentData.reduce((acc, { cashFlow }) => acc + cashFlow, 0);
-  const avgNet = Math.round(netCurrent / totalMonths).toLocaleString('en-US');
-
-  const netPrevious = hasPrevious
-    ? prevData?.reduce((acc, { cashFlow }) => acc + cashFlow, 0) || 0
-    : 0;
-  const growthRate =
-    hasPrevious && netPrevious !== 0 ? ((netCurrent - netPrevious) / netPrevious) * 100 : 0;
+  const netPrevious = prevData.reduce((acc, { cashFlow }) => acc + cashFlow, 0);
+  // Use passed growthRate if available, else recompute
+  const finalGrowthRate =
+    growthRate || (netPrevious !== 0 ? ((currentCashFlow - netPrevious) / netPrevious) * 100 : 0);
 
   return (
     <>
@@ -181,9 +147,9 @@ const CashFlowChart = ({ date }: { date: string }) => {
           </Box>
           <Box display="flex" alignItems="center" gap={1}>
             <Typography fontSize="2.8rem" fontWeight={700}>
-              ${avgNet}
+              ${currentCashFlow.toLocaleString('en-US')} {/* Now shows TOTAL, not average */}
             </Typography>
-            <TrendingChip value={parseFloat(growthRate.toFixed(1))} />
+            <TrendingChip value={parseFloat(finalGrowthRate.toFixed(1))} />
           </Box>
         </Box>
         <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenu}>
@@ -199,6 +165,17 @@ const CashFlowChart = ({ date }: { date: string }) => {
         </Menu>
         <Box mb={2} display="flex" alignItems="center" justifyContent="space-between" mt={2}>
           <Box display="flex" alignItems="center" gap={1}>
+            <Box
+              sx={{
+                width: '0.8rem',
+                height: '0.8rem',
+                backgroundColor: 'white',
+                borderRadius: '100%',
+              }}
+            />
+            <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
+              Cash Flow
+            </Typography>
             <Box
               sx={{
                 width: '0.8rem',
@@ -220,17 +197,6 @@ const CashFlowChart = ({ date }: { date: string }) => {
             />
             <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
               Expenses
-            </Typography>
-            <Box
-              sx={{
-                width: '0.8rem',
-                height: '0.8rem',
-                backgroundColor: 'white',
-                borderRadius: '100%',
-              }}
-            />
-            <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
-              Cash Flow
             </Typography>
           </Box>
         </Box>
@@ -273,8 +239,8 @@ const CashFlowChart = ({ date }: { date: string }) => {
                 const earningsPayload = payload.find((entry) => entry.name === 'earnings');
                 const expensesPayload = payload.find((entry) => entry.name === 'expenses');
                 const cashFlowPayload = payload.find((entry) => entry.name === 'cashFlow');
-                const earnings = earningsPayload?.value || 0;
-                const expenses = expensesPayload?.value || 0;
+                const earnings = (earningsPayload?.value || 0) * scaleFactor; // Scale for tooltip too
+                const expenses = (expensesPayload?.value || 0) * scaleFactor;
                 const cashFlow = cashFlowPayload?.value ?? earnings - expenses;
 
                 return (

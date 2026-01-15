@@ -22,6 +22,8 @@ import Card from '~/components/card';
 import Dropdown from '~/components/dropdown';
 import dayjs from 'dayjs';
 
+import { type TCashFlow } from '~/cash-flow/cash-flow-tab/cash-flow-tab'; // Import type for consistency
+
 const data = [
   { source: 'Primary-home mortgage (P&I)', amount: '$576,000', change: 0.0, date: '2025-09-15' },
   { source: 'Groceries / household', amount: '$180,900', change: 10.8, date: '2025-09-15' },
@@ -120,7 +122,15 @@ const getPeriodMonths = (timeframe: string): number => {
   }
 };
 
-const ExpensesTable = ({ timeframe = 'Y' }: { timeframe?: string }) => {
+const ExpensesTable = ({
+  timeframe = 'Y',
+  periodData = [], // New prop: filtered monthly data from parent
+  scaleFactor = 1, // New prop: for weekly scaling
+}: {
+  timeframe?: string;
+  periodData?: TCashFlow[]; // Optional fallback to empty
+  scaleFactor?: number;
+}) => {
   const [openCategories, setOpenCategories] = useState<{
     [key: string]: boolean;
   }>({});
@@ -141,6 +151,12 @@ const ExpensesTable = ({ timeframe = 'Y' }: { timeframe?: string }) => {
     setSelectedColumns(typeof value === 'string' ? value.split(',') : value);
   };
 
+  // Use parent's periodData to compute synced totalExpenses (ignores hardcoded data scale)
+  const totalExpenses = periodData.reduce((acc, item) => acc + item.expenses, 0) * scaleFactor;
+
+  // For sources breakdown: Keep filtering hardcoded data by date for visualization,
+  // but note: this is approximate (hardcoded sums don't match monthly aggregates).
+  // In a full refactor, replace with source-level data that sums to periodData.expenses per month.
   const periodMonths = getPeriodMonths(timeframe);
   const cutoffDate = dayjs().subtract(periodMonths, 'month');
 
@@ -151,7 +167,6 @@ const ExpensesTable = ({ timeframe = 'Y' }: { timeframe?: string }) => {
     })
     .filter((item) => item.source.toLowerCase().includes(searchTerm.toLowerCase()));
 
-  // Define groups with all items (no slicing to show everything)
   const fixedSources = [
     'Primary-home mortgage (P&I)',
     'Health-insurance premium',
@@ -234,15 +249,13 @@ const ExpensesTable = ({ timeframe = 'Y' }: { timeframe?: string }) => {
     },
   ].filter((group) => group.items.length > 0); // Hide empty groups
 
-  const totalExpenses = groups.reduce((acc, group) => {
-    return (
-      acc +
-      group.items.reduce((gAcc, item) => {
-        const numericAmount = parseFloat(item.amount.replace(/[^0-9.-]+/g, ''));
-        return gAcc + (isNaN(numericAmount) ? 0 : numericAmount);
-      }, 0)
-    );
-  }, 0);
+  // For group totals: Use approximate sum from filtered items (for display), but overall total is synced
+  const getGroupTotal = (groupItems: typeof data) => {
+    return groupItems.reduce((gAcc, item) => {
+      const numericAmount = parseFloat(item.amount.replace(/[^0-9.-]+/g, ''));
+      return gAcc + (isNaN(numericAmount) ? 0 : numericAmount);
+    }, 0);
+  };
 
   const getChildCellContent = (key: string, row: (typeof data)[0]) => {
     switch (key) {
@@ -364,10 +377,7 @@ const ExpensesTable = ({ timeframe = 'Y' }: { timeframe?: string }) => {
           </TableHead>
           <TableBody>
             {groups.map((group) => {
-              const groupTotal = group.items.reduce((acc, item) => {
-                const numericAmount = parseFloat(item.amount.replace(/[^0-9.-]+/g, ''));
-                return acc + (isNaN(numericAmount) ? 0 : numericAmount);
-              }, 0);
+              const groupTotal = getGroupTotal(group.items); // Approximate group sum
 
               const avgChange =
                 group.items.length > 0
