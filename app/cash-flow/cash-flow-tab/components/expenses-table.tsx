@@ -25,21 +25,21 @@ import dayjs from 'dayjs';
 import { type TCashFlow } from '~/cash-flow/cash-flow-tab/cash-flow-tab'; // Import type for consistency
 
 const data = [
-  { source: 'Primary-home mortgage (P&I)', amount: '$576,000', change: 0.0, date: '2025-09-15' },
-  { source: 'Groceries / household', amount: '$180,900', change: 10.8, date: '2025-09-15' },
-  { source: 'Fun money (couple)', amount: '$137,600', change: 14.4, date: '2025-09-15' },
-  { source: 'Health-insurance premium', amount: '$129,600', change: 0.0, date: '2025-09-15' },
+  { source: 'Primary-home mortgage (P&I)', amount: '$576,000', change: 0.0, date: '2026-01-15' },
+  { source: 'Groceries / household', amount: '$180,900', change: 10.8, date: '2026-01-15' },
+  { source: 'Fun money (couple)', amount: '$137,600', change: 14.4, date: '2026-01-15' },
+  { source: 'Health-insurance premium', amount: '$129,600', change: 0.0, date: '2026-01-15' },
   {
     source: 'Rental-duplex mortgage (P&I)',
     amount: '$108,000',
     change: 0.0,
-    date: '2025-09-15',
+    date: '2026-01-15',
   },
   { source: 'Christmas & gifts', amount: '$91,000', change: 11.1, date: '2025-12-15' },
-  { source: 'Kid activities / sports', amount: '$79,110', change: 20.3, date: '2025-09-15' },
-  { source: 'Utilities', amount: '$75,270', change: 12.2, date: '2025-09-15' },
-  { source: 'Child-care / after-school', amount: '$72,000', change: 0.0, date: '2025-09-15' },
-  { source: 'Fuel & routine car maint', amount: '$69,690', change: 7.7, date: '2025-09-15' },
+  { source: 'Kid activities / sports', amount: '$79,110', change: 20.3, date: '2026-01-15' },
+  { source: 'Utilities', amount: '$75,270', change: 12.2, date: '2026-01-15' },
+  { source: 'Child-care / after-school', amount: '$72,000', change: 0.0, date: '2026-01-15' },
+  { source: 'Fuel & routine car maint', amount: '$69,690', change: 7.7, date: '2026-01-15' },
   { source: 'New SUV (cash, Sep)', amount: '$65,000', change: 0, date: '2020-09-15' },
   { source: 'Luxury anniversary holiday', amount: '$54,000', change: 0.0, date: '2025-11-15' },
   { source: 'Around-the-world luxury cruise', amount: '$52,000', change: 0, date: '2025-07-15' },
@@ -47,10 +47,10 @@ const data = [
   { source: 'Master-bath renovation', amount: '$36,000', change: 0.0, date: '2024-10-15' },
   { source: 'Home addition / extra garage', amount: '$35,000', change: 0, date: '2024-09-15' },
   { source: 'Parent-1 3-week unpaid leave', amount: '$33,000', change: 0, date: '2023-05-15' },
-  { source: 'Life & umbrella insurance', amount: '$28,800', change: 0.0, date: '2025-09-15' },
+  { source: 'Life & umbrella insurance', amount: '$28,800', change: 0.0, date: '2026-01-15' },
   { source: 'Rental major rehab', amount: '$28,000', change: 0, date: '2023-01-15' },
   { source: 'Early-pay 2020 property tax', amount: '$27,000', change: 0, date: '2020-02-15' },
-  { source: 'Phones & streaming', amount: '$25,200', change: 0.0, date: '2025-09-15' },
+  { source: 'Phones & streaming', amount: '$25,200', change: 0.0, date: '2026-01-15' },
   { source: 'Family vacation (Europe, Jul)', amount: '$25,000', change: 0, date: '2020-07-15' },
   { source: 'Used replacement car (Aug)', amount: '$25,000', change: 0, date: '2021-08-15' },
   { source: 'Medical (appendectomy)', amount: '$24,000', change: 0, date: '2020-11-15' },
@@ -74,7 +74,7 @@ const data = [
   },
   { source: 'Child-care contract', amount: '$14,400', change: 0, date: '2020-09-15' },
   { source: 'Rental HVAC sudden failure', amount: '$13,000', change: -26.7, date: '2023-11-15' },
-  { source: 'Emergency driveway rebuild', amount: '$13,000', change: 0.0, date: '2025-01-15' },
+  { source: 'Emergency driveway rebuild', amount: '$13,000', change: 0.0, date: '2026-01-15' },
   { source: 'Furnace puff-back cleanup', amount: '$12,500', change: 8.3, date: '2023-12-15' },
   { source: 'Private-school spring tuition', amount: '$12,000', change: 0, date: '2020-11-15' },
   { source: 'Parent-2 coding-boot-camp loan', amount: '$12,000', change: 0, date: '2021-05-15' },
@@ -90,7 +90,7 @@ const data = [
   },
   { source: 'Medical (braces / oral surgery)', amount: '$8,000', change: 0, date: '2020-02-15' },
   { source: 'Hurricane deductible roof fix', amount: '$8,000', change: 0, date: '2021-08-15' },
-  { source: 'Birthday / memberships', amount: '$7,000', change: 50.0, date: '2025-03-15' },
+  { source: 'Birthday / memberships', amount: '$7,000', change: 50.0, date: '2026-03-15' },
   { source: 'Laptops & camera crash', amount: '$6,600', change: 0, date: '2020-11-15' },
   { source: 'Emergency slab leak', amount: '$6,500', change: 0, date: '2024-04-15' },
   { source: 'Major transmission repair', amount: '$5,500', change: 0, date: '2021-05-15' },
@@ -101,25 +101,34 @@ const data = [
   { source: 'Summer camp / stay-cation', amount: '$3,000', change: 0, date: '2021-05-15' },
 ];
 
-const getPeriodMonths = (timeframe: string): number => {
+const getCutoffDate = (timeframe: string) => {
+  let cutoff;
   switch (timeframe) {
     case 'W':
-      return 0.25;
+      cutoff = dayjs().subtract(1, 'week').startOf('week');
+      break;
     case 'M':
-      return 1;
+      cutoff = dayjs().startOf('month').subtract(1, 'month');
+      break;
     case 'Q':
-      return 3;
+      cutoff = dayjs().startOf('month').subtract(3, 'month');
+      break;
     case '6M':
-      return 6;
+      cutoff = dayjs().startOf('month').subtract(6, 'month');
+      break;
     case 'Y':
-      return 12;
+      cutoff = dayjs().startOf('month').subtract(12, 'month');
+      break;
     case '2Y':
-      return 24;
+      cutoff = dayjs().startOf('month').subtract(24, 'month');
+      break;
     case '5Y':
-      return 60;
+      cutoff = dayjs().startOf('month').subtract(60, 'month');
+      break;
     default:
-      return 12;
+      cutoff = dayjs().startOf('month').subtract(12, 'month');
   }
+  return cutoff;
 };
 
 const ExpensesTable = ({
@@ -157,15 +166,28 @@ const ExpensesTable = ({
   // For sources breakdown: Keep filtering hardcoded data by date for visualization,
   // but note: this is approximate (hardcoded sums don't match monthly aggregates).
   // In a full refactor, replace with source-level data that sums to periodData.expenses per month.
-  const periodMonths = getPeriodMonths(timeframe);
-  const cutoffDate = dayjs().subtract(periodMonths, 'month');
+  const cutoffDate = getCutoffDate(timeframe);
 
-  const filteredData = data
-    .filter((item) => {
-      const itemDate = dayjs(item.date);
-      return itemDate.isAfter(cutoffDate) || itemDate.isSame(cutoffDate, 'day');
-    })
-    .filter((item) => item.source.toLowerCase().includes(searchTerm.toLowerCase()));
+  const parseAmount = (amount: string): number => {
+    return parseFloat(amount.replace(/[^0-9.-]+/g, '')) || 0;
+  };
+
+  const dateFilteredData = data.filter((item) => {
+    const itemDate = dayjs(item.date);
+    return itemDate.isAfter(cutoffDate) || itemDate.isSame(cutoffDate, 'day');
+  });
+
+  const fullHardcodedTotal = dateFilteredData.reduce(
+    (acc, item) => acc + parseAmount(item.amount),
+    0
+  );
+
+  const scaleForGroups =
+    totalExpenses > 0 && fullHardcodedTotal > 0 ? totalExpenses / fullHardcodedTotal : 0;
+
+  const filteredData = dateFilteredData.filter((item) =>
+    item.source.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const fixedSources = [
     'Primary-home mortgage (P&I)',
@@ -251,10 +273,7 @@ const ExpensesTable = ({
 
   // For group totals: Use approximate sum from filtered items (for display), but overall total is synced
   const getGroupTotal = (groupItems: typeof data) => {
-    return groupItems.reduce((gAcc, item) => {
-      const numericAmount = parseFloat(item.amount.replace(/[^0-9.-]+/g, ''));
-      return gAcc + (isNaN(numericAmount) ? 0 : numericAmount);
-    }, 0);
+    return groupItems.reduce((gAcc, item) => gAcc + parseAmount(item.amount), 0) * scaleForGroups;
   };
 
   const getChildCellContent = (key: string, row: (typeof data)[0]) => {
@@ -265,8 +284,10 @@ const ExpensesTable = ({
         return dayjs(row.date).format('MMM d, YYYY') || '';
       case 'change':
         return <TrendingChip value={row.change} />;
-      case 'amount':
-        return row.amount;
+      case 'amount': {
+        const num = parseAmount(row.amount) * scaleForGroups;
+        return `$${num.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+      }
       default:
         return null;
     }
@@ -428,7 +449,7 @@ const ExpensesTable = ({
                         {key === 'change' ? (
                           <TrendingChip value={avgChange} />
                         ) : key === 'amount' ? (
-                          `$${groupTotal.toLocaleString('en-US')}`
+                          `$${groupTotal.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
                         ) : (
                           ''
                         )}
@@ -492,7 +513,9 @@ const ExpensesTable = ({
                     key === 'amount' ? { fontWeight: 'bold', fontSize: '1.3rem', p: 1 } : { p: 1 }
                   }
                 >
-                  {key === 'amount' ? `$${totalExpenses.toLocaleString('en-US')}` : ''}
+                  {key === 'amount'
+                    ? `$${totalExpenses.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+                    : ''}
                 </TableCell>
               ))}
             </TableRow>

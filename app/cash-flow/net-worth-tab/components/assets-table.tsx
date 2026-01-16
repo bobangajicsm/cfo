@@ -238,7 +238,8 @@ const AssetsTable = ({ timeframe }: { timeframe: string }) => {
     if (timeframe === '6M') {
       subtractAmount = 6;
     } else {
-      const years = parseInt(timeframe);
+      const yearsStr = timeframe.replace('Y', '');
+      const years = parseInt(yearsStr) || 1;
       if (!isNaN(years)) {
         subtractAmount = years * 12;
       }

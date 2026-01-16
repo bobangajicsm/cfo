@@ -29,25 +29,25 @@ const data = [
     source: 'Parent-1 salary (take-home)',
     amount: '$3,825,000',
     change: 6.9,
-    date: '2025-12-15',
+    date: '2026-01-15',
   },
   {
     source: 'Parent-2 salary (take-home)',
     amount: '$780,000',
     change: 4.3,
-    date: '2025-12-15',
+    date: '2026-01-15',
   },
   {
     source: 'Online store net profit',
     amount: '$750,200',
     change: 52.4,
-    date: '2025-12-15',
+    date: '2026-01-15',
   },
   {
     source: 'Dividends (quarterly)',
     amount: '$170,700',
     change: 12.5,
-    date: '2025-10-15',
+    date: '2025-12-15',
   },
   {
     source: 'Rental duplex (net)',
@@ -59,7 +59,7 @@ const data = [
     source: 'Rental duplex AirBnB (net)',
     amount: '$150,000',
     change: 27.3,
-    date: '2025-12-15',
+    date: '2026-01-15',
   },
   {
     source: 'Annual bonus (Mar)',
@@ -71,7 +71,7 @@ const data = [
     source: 'Child-tax credit (advance)',
     amount: '$36,000',
     change: 0.0,
-    date: '2025-12-15',
+    date: '2026-01-15',
   },
   {
     source: 'Annual bonus (Feb)',
@@ -113,41 +113,50 @@ const data = [
     source: 'House sold (net)',
     amount: '$500,000',
     change: 0.0,
-    date: '2025-11-20',
+    date: '2025-12-20',
   },
   {
     source: 'Investment property sale',
     amount: '$300,000',
     change: 15.2,
-    date: '2025-08-15',
+    date: '2025-11-15',
   },
   {
     source: 'Stock portfolio gains (capital)',
     amount: '$250,000',
     change: 8.7,
-    date: '2025-12-10',
+    date: '2026-01-10',
   },
 ];
 
-const getPeriodMonths = (timeframe: string): number => {
+const getCutoffDate = (timeframe: string) => {
+  let cutoff;
   switch (timeframe) {
     case 'W':
-      return 0.25;
+      cutoff = dayjs().subtract(1, 'week').startOf('week');
+      break;
     case 'M':
-      return 1;
+      cutoff = dayjs().startOf('month').subtract(1, 'month');
+      break;
     case 'Q':
-      return 3;
+      cutoff = dayjs().startOf('month').subtract(3, 'month');
+      break;
     case '6M':
-      return 6;
+      cutoff = dayjs().startOf('month').subtract(6, 'month');
+      break;
     case 'Y':
-      return 12;
+      cutoff = dayjs().startOf('month').subtract(12, 'month');
+      break;
     case '2Y':
-      return 24;
+      cutoff = dayjs().startOf('month').subtract(24, 'month');
+      break;
     case '5Y':
-      return 60;
+      cutoff = dayjs().startOf('month').subtract(60, 'month');
+      break;
     default:
-      return 12;
+      cutoff = dayjs().startOf('month').subtract(12, 'month');
   }
+  return cutoff;
 };
 
 const IncomeTable = ({
@@ -185,15 +194,28 @@ const IncomeTable = ({
   // For sources breakdown: Keep filtering hardcoded data by date for visualization,
   // but note: this is approximate (hardcoded sums don't match monthly aggregates).
   // In a full refactor, replace with source-level data that sums to periodData.earnings per month.
-  const periodMonths = getPeriodMonths(timeframe);
-  const cutoffDate = dayjs().subtract(periodMonths, 'month');
+  const cutoffDate = getCutoffDate(timeframe);
 
-  const filteredData = data
-    .filter((item) => {
-      const itemDate = dayjs(item.date);
-      return itemDate.isAfter(cutoffDate) || itemDate.isSame(cutoffDate, 'day');
-    })
-    .filter((item) => item.source.toLowerCase().includes(searchTerm.toLowerCase()));
+  const parseAmount = (amount: string): number => {
+    return parseFloat(amount.replace(/[^0-9.-]+/g, '')) || 0;
+  };
+
+  const dateFilteredData = data.filter((item) => {
+    const itemDate = dayjs(item.date);
+    return itemDate.isAfter(cutoffDate) || itemDate.isSame(cutoffDate, 'day');
+  });
+
+  const fullHardcodedTotal = dateFilteredData.reduce(
+    (acc, item) => acc + parseAmount(item.amount),
+    0
+  );
+
+  const scaleForGroups =
+    totalIncome > 0 && fullHardcodedTotal > 0 ? totalIncome / fullHardcodedTotal : 0;
+
+  const filteredData = dateFilteredData.filter((item) =>
+    item.source.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const activeSources = [
     'Parent-1 salary (take-home)',
@@ -231,10 +253,7 @@ const IncomeTable = ({
 
   // For group totals: Use approximate sum from filtered items (for display), but overall total is synced
   const getGroupTotal = (groupItems: typeof data) => {
-    return groupItems.reduce((gAcc, item) => {
-      const numericAmount = parseFloat(item.amount.replace(/[^0-9.-]+/g, ''));
-      return gAcc + (isNaN(numericAmount) ? 0 : numericAmount);
-    }, 0);
+    return groupItems.reduce((gAcc, item) => gAcc + parseAmount(item.amount), 0) * scaleForGroups;
   };
 
   const getChildCellContent = (key: string, row: (typeof data)[0]) => {
@@ -245,8 +264,10 @@ const IncomeTable = ({
         return dayjs(row.date).format('MMM d, YYYY') || '';
       case 'change':
         return <TrendingChip value={row.change} />;
-      case 'amount':
-        return row.amount;
+      case 'amount': {
+        const num = parseAmount(row.amount) * scaleForGroups;
+        return `$${num.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+      }
       default:
         return null;
     }
@@ -408,7 +429,7 @@ const IncomeTable = ({
                         {key === 'change' ? (
                           <TrendingChip value={avgChange} />
                         ) : key === 'amount' ? (
-                          `$${groupTotal.toLocaleString('en-US')}`
+                          `$${groupTotal.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
                         ) : (
                           ''
                         )}
@@ -472,7 +493,9 @@ const IncomeTable = ({
                     key === 'amount' ? { fontWeight: 'bold', fontSize: '1.3rem', p: 1 } : { p: 1 }
                   }
                 >
-                  {key === 'amount' ? `$${totalIncome.toLocaleString('en-US')}` : ''}
+                  {key === 'amount'
+                    ? `$${totalIncome.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+                    : ''}
                 </TableCell>
               ))}
             </TableRow>
