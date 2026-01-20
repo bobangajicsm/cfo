@@ -69,7 +69,7 @@ const BudgetTab = () => {
           </ButtonPrimary>
         </Box>
       </Box>
-      {/* <BudgetChart /> */}
+      <BudgetChart />
       <Typography variant="h2" fontSize="2rem" fontWeight={600} mt={3} mb={4}>
         Transactions
       </Typography>

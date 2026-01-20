@@ -66,41 +66,79 @@ const BudgetChart = () => {
   const totalNet = totalEarnings - totalExpenses;
   const savingsRate = totalEarnings > 0 ? ((totalNet / totalEarnings) * 100).toFixed(1) : '0';
 
-  const majorIncomes = ['Parent-1 Salary', 'Parent-2 Salary', 'Online Store', 'Rentals/Bonuses'];
-  const incomeProps = [0.62, 0.12, 0.12, 0.14];
+  const expenseCategories = ['Fixed', 'Variable', 'Occasional', 'Unplanned'];
+  const expenseProps = [0.4, 0.3, 0.2, 0.1];
 
-  const majorExpenses = [
-    'Mortgage',
-    'Groceries',
-    'Fun Money',
-    'Health Insurance',
-    'Other Expenses',
-  ];
-  const expenseProps = [0.25, 0.08, 0.06, 0.06, 0.55];
+  const subExpenses = {
+    Fixed: [
+      { name: 'Mortgage', prop: 0.5 },
+      { name: 'Insurance', prop: 0.2 },
+      { name: 'Utilities', prop: 0.3 },
+    ],
+    Variable: [
+      { name: 'Groceries', prop: 0.4 },
+      { name: 'Dining', prop: 0.2 },
+      { name: 'Transportation', prop: 0.4 },
+    ],
+    Occasional: [
+      { name: 'Travel', prop: 0.5 },
+      { name: 'Entertainment', prop: 0.3 },
+      { name: 'Gifts', prop: 0.2 },
+    ],
+    Unplanned: [
+      { name: 'Repairs', prop: 0.4 },
+      { name: 'Medical', prop: 0.4 },
+      { name: 'Auto Repairs', prop: 0.2 },
+    ],
+  };
+
+  const incomeNode = `Income\n$${totalEarnings.toLocaleString()}\n(100%)`;
+  const savingsNode = `Savings\n$${totalNet.toLocaleString()}\n(${savingsRate}%)`;
+
+  const categoryNodes: string[] = [];
+  const categoryAmounts: number[] = [];
+  const subNodeData: { label: string; weight: number }[][] = [];
+
+  expenseCategories.forEach((cat, i) => {
+    const catAmt = totalExpenses * expenseProps[i];
+    const catPct = ((catAmt / totalEarnings) * 100).toFixed(1);
+    const catLabel = `${cat}\n$${Math.round(catAmt).toLocaleString()}\n(${catPct}%)`;
+    categoryNodes.push(catLabel);
+    categoryAmounts.push(catAmt);
+
+    const subs: { label: string; weight: number }[] = [];
+    subExpenses[cat as keyof typeof subExpenses].forEach((item) => {
+      const subAmt = catAmt * item.prop;
+      const subPct = ((subAmt / totalEarnings) * 100).toFixed(1);
+      const subLabel = `${item.name}\n$${Math.round(subAmt).toLocaleString()}\n(${subPct}%)`;
+      subs.push({ label: subLabel, weight: subAmt });
+    });
+    subNodeData.push(subs);
+  });
 
   const sankeyData: [string, string, number][] = [];
-  const expenseTotalProp = totalExpenses / totalEarnings;
-  const savingsProp = 1 - expenseTotalProp;
 
-  majorIncomes.forEach((inc, i) => {
-    const incAmount = totalEarnings * incomeProps[i];
-    majorExpenses.forEach((exp, j) => {
-      const flow = incAmount * expenseProps[j] * expenseTotalProp;
-      if (flow > 0) sankeyData.push([inc, exp, Math.round(flow)]);
+  // Add savings flow first
+  sankeyData.push([incomeNode, savingsNode, Math.round(totalNet)]);
+
+  expenseCategories.forEach((cat, i) => {
+    sankeyData.push([incomeNode, categoryNodes[i], Math.round(categoryAmounts[i])]);
+    subNodeData[i].forEach((sub) => {
+      sankeyData.push([categoryNodes[i], sub.label, Math.round(sub.weight)]);
     });
-    const savingsFlow = incAmount * savingsProp;
-    if (savingsFlow > 0) sankeyData.push([inc, 'Savings', Math.round(savingsFlow)]);
   });
 
   const tooltipHeader = { role: 'tooltip', p: { html: true } };
   const chartData = [
     ['From', 'To', 'Weight', tooltipHeader],
     ...sankeyData.map(([from, to, weight]) => {
+      const fromName = from.split('\n')[0];
+      const toName = to.split('\n')[0];
       const flow = Math.round(weight);
       const formattedValue = `$${flow.toLocaleString()}`;
       const html = `
         <div style="background: rgba(var(--bg-color-secondary-alpha), 0.96); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px 14px;">
-          <div style="color: var(--text-color-secondary); font-size: 0.9rem; margin-bottom: 8px;">${from} to ${to}</div>
+          <div style="color: var(--text-color-secondary); font-size: 0.9rem; margin-bottom: 8px;">${fromName} to ${toName}</div>
           <div style="padding: 4px 0; color: var(--text-color); font-weight: 500; font-size: 14px;">${formattedValue}</div>
         </div>
       `;
@@ -108,13 +146,15 @@ const BudgetChart = () => {
     }),
   ];
 
+  console.log(chartData);
+
   const options = {
     backgroundColor: 'transparent',
     tooltip: {
       isHtml: true,
     },
     sankey: {
-      orientation: 'vertical' as const,
+      orientation: 'horizontal' as const,
       node: {
         label: {
           fontName: '--var(--font-sans)',
@@ -125,21 +165,12 @@ const BudgetChart = () => {
         width: 0,
         labelPadding: 10,
         interactivity: true,
-        colors: [
-          '#8b5cf6',
-          '#3b82f6',
-          '#11845b',
-          '#d5691b',
-          '#dc2b2b',
-          '#8fc3ff',
-          '#fdb52a',
-          '#aeb9e1',
-        ],
+        colors: ['#8b5cf6', '#10b981', '#3b82f6', '#ef4444', '#f59e0b'],
       },
       link: {
-        colorMode: 'gradient' as const,
+        colorMode: 'source',
         fillOpacity: 0.75,
-        colors: ['#8b5cf6', '#3b82f6', '#11845b', '#d5691b'],
+        colors: ['#8b5cf6', '#10b981', '#3b82f6', '#ef4444', '#f59e0b'],
       },
     },
   };
@@ -179,7 +210,7 @@ const BudgetChart = () => {
           </MenuItem>
         </Menu>
 
-        <Box mb={2} display="flex" alignItems="center" justifyContent="space-between" mt={2}>
+        <Box mb={1} display="flex" alignItems="center" justifyContent="space-between" mt={2}>
           <Box
             display="flex"
             alignItems="center"
@@ -202,33 +233,8 @@ const BudgetChart = () => {
                 Income
               </Typography>
             </Box>
-            <Box display="flex" alignItems="center" gap={1}>
-              <Box
-                sx={{
-                  width: 10,
-                  height: 10,
-                  bgcolor: 'var(--secondary--color-3)',
-                  borderRadius: '50%',
-                }}
-              />
-              <Typography fontSize="1.2rem" color="var(--text-color-secondary)">
-                Expenses
-              </Typography>
-            </Box>
-            <Box display="flex" alignItems="center" gap={1}>
-              <Box
-                sx={{
-                  width: 10,
-                  height: 10,
-                  bgcolor: 'var(--system--green-400)',
-                  borderRadius: '50%',
-                }}
-              />
-              <Typography fontSize="1.2rem" color="var(--text-color-secondary)">
-                Savings
-              </Typography>
-            </Box>
           </Box>
+
           <Dropdown
             value={date}
             onChange={(e) => setDate(e.target.value)}
@@ -252,6 +258,65 @@ const BudgetChart = () => {
             ))}
           </Dropdown>
         </Box>
+        <Stack gap={1} pb={1}>
+          <Typography fontSize="1.2rem" color="var(--text-color-secondary)">
+            Expenses
+          </Typography>
+          <Box display="flex" alignItems="center" gap={1}>
+            <Box display="flex" alignItems="center" gap={1}>
+              <Box
+                sx={{
+                  width: 10,
+                  height: 10,
+                  bgcolor: '#10b981',
+                  borderRadius: '50%',
+                }}
+              />
+              <Typography fontSize="1rem" color="var(--text-color-secondary)">
+                Fixed
+              </Typography>
+            </Box>
+            <Box display="flex" alignItems="center" gap={1}>
+              <Box
+                sx={{
+                  width: 10,
+                  height: 10,
+                  bgcolor: '#3b82f6',
+                  borderRadius: '50%',
+                }}
+              />
+              <Typography fontSize="1rem" color="var(--text-color-secondary)">
+                Variable
+              </Typography>
+            </Box>
+            <Box display="flex" alignItems="center" gap={1}>
+              <Box
+                sx={{
+                  width: 10,
+                  height: 10,
+                  bgcolor: '#ef4444',
+                  borderRadius: '50%',
+                }}
+              />
+              <Typography fontSize="1rem" color="var(--text-color-secondary)">
+                Occasional
+              </Typography>
+            </Box>
+            <Box display="flex" alignItems="center" gap={1}>
+              <Box
+                sx={{
+                  width: 10,
+                  height: 10,
+                  bgcolor: '#f59e0b',
+                  borderRadius: '50%',
+                }}
+              />
+              <Typography fontSize="1rem" color="var(--text-color-secondary)">
+                Unplanned
+              </Typography>
+            </Box>
+          </Box>
+        </Stack>
 
         <Box sx={{ px: 1, overflow: 'hidden' }}>
           <Chart
@@ -262,6 +327,7 @@ const BudgetChart = () => {
             options={options}
           />
         </Box>
+
         <ButtonIcon
           sx={{
             position: 'absolute',
