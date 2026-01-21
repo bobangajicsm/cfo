@@ -22,7 +22,7 @@ import Card from '~/components/card';
 import Dropdown from '~/components/dropdown';
 import dayjs from 'dayjs';
 
-import { type TCashFlow } from '~/cash-flow/cash-flow-tab/cash-flow-tab'; // Import type for consistency
+import { type TCashFlow } from '~/cash-flow/cash-flow-tab/cash-flow-tab';
 
 const data = [
   {

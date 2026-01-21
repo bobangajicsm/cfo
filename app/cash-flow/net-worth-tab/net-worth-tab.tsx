@@ -1,4 +1,4 @@
-import { Box, MenuItem, OutlinedInput, Stack, Typography } from '@mui/material';
+import { Box, MenuItem, Select, Stack, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import ButtonPrimary from '~/components/button-primary';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
@@ -12,7 +12,6 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 
 import * as XLSX from 'xlsx';
 import pkg from 'file-saver';
-import Dropdown from '~/components/dropdown';
 const { saveAs } = pkg;
 
 const data = [
@@ -123,19 +122,37 @@ const NetWorthTab = () => {
         }}
       >
         <Box my={1} display="flex" justifyContent="flex-end" mb={3} gap={2}>
-          <Dropdown
+          <Select
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            input={<OutlinedInput startAdornment={<CalendarTodayIcon />} />}
             size="small"
             IconComponent={KeyboardArrowDownIcon}
+            startAdornment={<CalendarTodayIcon sx={{ fontSize: 18 }} />}
+            sx={{
+              '& .MuiOutlinedInput-notchedOutline': {
+                border: 'none',
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                border: 'none',
+              },
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                border: 'none',
+              },
+              '& .MuiSelect-select': {
+                paddingLeft: 0.5,
+                minHeight: 'auto !important',
+              },
+              '&.MuiOutlinedInput-root': {
+                borderRadius: '4px',
+              },
+            }}
           >
             {['6M', 'Y', '2Y', '5Y', 'All'].map((tf) => (
               <MenuItem key={tf} value={tf}>
                 {tf}
               </MenuItem>
             ))}
-          </Dropdown>
+          </Select>
 
           <ButtonPrimary onClick={handleDownload}>
             Export data

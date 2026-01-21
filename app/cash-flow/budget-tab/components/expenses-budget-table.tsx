@@ -20,26 +20,45 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import TrendingChip from '~/components/trending-chip';
 import Card from '~/components/card';
 import Dropdown from '~/components/dropdown';
+import dayjs from 'dayjs';
+
+import { type TCashFlow } from '~/cash-flow/cash-flow-tab/cash-flow-tab';
 
 interface ExpenseItem {
   category: string;
   budget: number;
   actual: number;
+  date: string;
 }
 
 const rawData: ExpenseItem[] = [
-  { category: 'Primary-home mortgage (P&I)', budget: 90000, actual: 96000 },
-  { category: 'Groceries / household', budget: 28000, actual: 34000 },
-  { category: 'Fun money (couple)', budget: 32000, actual: 38000 },
-  { category: 'Health-insurance premium', budget: 20000, actual: 21600 },
-  { category: 'Rental-duplex mortgage (P&I)', budget: 16000, actual: 18000 },
-  { category: 'Kid activities / sports', budget: 18000, actual: 21000 },
-  { category: 'Utilities', budget: 16000, actual: 17000 },
-  { category: 'Child-care / after-school', budget: 14000, actual: 14400 },
-  { category: 'Fuel & routine car maint', budget: 14000, actual: 16000 },
-  { category: 'Life & umbrella insurance', budget: 2800, actual: 4800 },
-  { category: 'Phones & streaming', budget: 4000, actual: 4200 },
-  { category: 'Other Occasional/Unplanned', budget: 50000, actual: 65000 },
+  { category: 'Primary-home mortgage (P&I)', budget: 100000, actual: 96000, date: '2026-01-01' },
+  { category: 'Groceries / household', budget: 48000, actual: 34000, date: '2026-01-15' },
+  { category: 'Fun money (couple)', budget: 42000, actual: 38000, date: '2026-01-15' },
+  { category: 'Health-insurance premium', budget: 30000, actual: 21600, date: '2026-01-01' },
+  { category: 'Rental-duplex mortgage (P&I)', budget: 26000, actual: 18000, date: '2026-01-01' },
+  { category: 'Kid activities / sports', budget: 28000, actual: 21000, date: '2026-01-15' },
+  { category: 'Utilities', budget: 26000, actual: 17000, date: '2026-01-01' },
+  { category: 'Child-care / after-school', budget: 24000, actual: 14400, date: '2026-01-15' },
+  { category: 'Fuel & routine car maint', budget: 24000, actual: 16000, date: '2026-01-15' },
+  { category: 'Life & umbrella insurance', budget: 4800, actual: 4800, date: '2026-01-01' },
+  { category: 'Phones & streaming', budget: 4000, actual: 4200, date: '2026-01-01' },
+  { category: 'Other Occasional/Unplanned', budget: 70000, actual: 65000, date: '2025-12-15' },
+];
+
+const monthlyExpenses = [
+  { month: 'Jan', expenses: 29150 },
+  { month: 'Feb', expenses: 22650 },
+  { month: 'Mar', expenses: 23350 },
+  { month: 'Apr', expenses: 23550 },
+  { month: 'May', expenses: 23400 },
+  { month: 'Jun', expenses: 23650 },
+  { month: 'Jul', expenses: 75850 },
+  { month: 'Aug', expenses: 24050 },
+  { month: 'Sep', expenses: 24450 },
+  { month: 'Oct', expenses: 24650 },
+  { month: 'Nov', expenses: 52150 },
+  { month: 'Dec', expenses: 48850 },
 ];
 
 const columnOptions = ['Budget', 'Actual', 'Remaining'] as const;
@@ -66,12 +85,147 @@ const occasionalCategories = ['Other Occasional/Unplanned'] as const;
 
 const unplannedCategories: string[] = [];
 
-const ExpensesBudgetTable = () => {
+interface Props {
+  timeframe?: string;
+}
+
+const getCutoffDate = (timeframe: string) => {
+  let cutoff;
+  switch (timeframe) {
+    case 'W':
+      cutoff = dayjs().subtract(1, 'week').startOf('week');
+      break;
+    case 'M':
+      cutoff = dayjs().startOf('month').subtract(1, 'month');
+      break;
+    case 'Q':
+      cutoff = dayjs().startOf('month').subtract(3, 'month');
+      break;
+    case '6M':
+      cutoff = dayjs().startOf('month').subtract(6, 'month');
+      break;
+    case 'Y':
+      cutoff = dayjs().startOf('month').subtract(12, 'month');
+      break;
+    case '2Y':
+      cutoff = dayjs().startOf('month').subtract(24, 'month');
+      break;
+    case '5Y':
+      cutoff = dayjs().startOf('month').subtract(60, 'month');
+      break;
+    default:
+      cutoff = dayjs().startOf('month').subtract(12, 'month');
+  }
+  return cutoff;
+};
+
+const getPeriodInMonths = (timeframe: string) => {
+  const periodMap: Record<string, number> = {
+    W: 7 / 30.4, // approx 1 week
+    M: 1,
+    Q: 3,
+    '6M': 6,
+    Y: 12,
+    '2Y': 24,
+    '5Y': 60,
+  };
+  return periodMap[timeframe] || 12;
+};
+
+const getFilteredMonthlyData = (timeframe: string) => {
+  const numMonthsMap: Record<string, number> = {
+    W: 1,
+    M: 1,
+    Q: 3,
+    '6M': 6,
+    Y: 12,
+    '2Y': 12, // cap at available data
+    '5Y': 12, // cap at available data
+  };
+  const numMonths = numMonthsMap[timeframe] || 12;
+  const recentData = monthlyExpenses.slice(-numMonths);
+  const sum = recentData.reduce((acc, item) => acc + item.expenses, 0);
+  const periodInMonths = getPeriodInMonths(timeframe);
+  return Math.round(sum * (periodInMonths / numMonths)); // prorate if needed
+};
+
+const ExpensesBudgetTable = ({ timeframe = 'Y' }: Props) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [visibleColumns, setVisibleColumns] = useState<ColumnKey[]>([...columnOptions]);
   const [openCategories, setOpenCategories] = useState<{
     [key: string]: boolean;
   }>({});
+
+  const cutoffDate = useMemo(() => getCutoffDate(timeframe), [timeframe]);
+
+  const dateFilteredData = useMemo(
+    () =>
+      rawData.filter((row) => {
+        const rowDate = dayjs(row.date);
+        return rowDate.isAfter(cutoffDate) || rowDate.isSame(cutoffDate, 'day');
+      }),
+    [cutoffDate]
+  );
+
+  const searchFilteredData = useMemo(
+    () =>
+      dateFilteredData.filter((row) =>
+        row.category.toLowerCase().includes(searchTerm.toLowerCase())
+      ),
+    [dateFilteredData, searchTerm]
+  );
+
+  const effectiveTotalActual = useMemo(() => getFilteredMonthlyData(timeframe), [timeframe]);
+
+  const periodInMonths = getPeriodInMonths(timeframe);
+  const budgetScale = periodInMonths / 12;
+
+  const hardcodedBudgetSum = useMemo(
+    () => dateFilteredData.reduce((acc, row) => acc + row.budget, 0),
+    [dateFilteredData]
+  );
+
+  const totalBudget = Math.round(hardcodedBudgetSum * budgetScale);
+
+  const hardcodedActualSum = useMemo(
+    () => dateFilteredData.reduce((acc, row) => acc + row.actual, 0),
+    [dateFilteredData]
+  );
+
+  const actualScale = hardcodedActualSum > 0 ? effectiveTotalActual / hardcodedActualSum : 0;
+
+  const totalRemaining = Math.max(0, totalBudget - effectiveTotalActual);
+
+  const groups = useMemo(
+    () =>
+      [
+        {
+          category: 'Fixed',
+          items: searchFilteredData.filter((item) =>
+            fixedCategories.includes(item.category as (typeof fixedCategories)[number])
+          ),
+        },
+        {
+          category: 'Variable',
+          items: searchFilteredData.filter((item) =>
+            variableCategories.includes(item.category as (typeof variableCategories)[number])
+          ),
+        },
+        {
+          category: 'Occasional',
+          items: searchFilteredData.filter((item) =>
+            occasionalCategories.includes(item.category as (typeof occasionalCategories)[number])
+          ),
+        },
+        {
+          category: 'Unplanned',
+          items: searchFilteredData.filter((item) => unplannedCategories.includes(item.category)),
+        },
+      ].filter((group) => group.items.length > 0),
+    [searchFilteredData]
+  );
+
+  const format = (v: number) => (v === 0 ? '-' : `$${v.toLocaleString('en-US')}`);
 
   const handleColumnChange = (event: SelectChangeEvent<string | string[]>) => {
     const value = event.target.value;
@@ -80,60 +234,15 @@ const ExpensesBudgetTable = () => {
     );
   };
 
-  const filteredData = useMemo(() => {
-    return rawData.filter((row) => row.category.toLowerCase().includes(searchTerm.toLowerCase()));
-  }, [searchTerm]);
-
-  const groups = useMemo(
-    () =>
-      [
-        {
-          category: 'Fixed',
-          items: filteredData.filter((item) =>
-            fixedCategories.includes(item.category as (typeof fixedCategories)[number])
-          ),
-        },
-        {
-          category: 'Variable',
-          items: filteredData.filter((item) =>
-            variableCategories.includes(item.category as (typeof variableCategories)[number])
-          ),
-        },
-        {
-          category: 'Occasional',
-          items: filteredData.filter((item) =>
-            occasionalCategories.includes(item.category as (typeof occasionalCategories)[number])
-          ),
-        },
-        {
-          category: 'Unplanned',
-          items: filteredData.filter((item) =>
-            unplannedCategories.includes(item.category as (typeof unplannedCategories)[number])
-          ),
-        },
-      ].filter((group) => group.items.length > 0),
-    [filteredData]
-  );
-
-  const totals = useMemo(() => {
-    return filteredData.reduce(
-      (acc, row) => {
-        acc.budget += row.budget;
-        acc.actual += row.actual;
-        return acc;
-      },
-      { budget: 0, actual: 0 }
-    );
-  }, [filteredData]);
-
-  const totalRemaining = totals.budget - totals.actual;
-  const format = (v: number) => (v === 0 ? '-' : `$${v.toLocaleString('en-US')}`);
-
   const handleToggle = (category: string) => {
     setOpenCategories((prev) => ({
       ...prev,
       [category]: !prev[category],
     }));
+  };
+
+  const getRemainingColor = (remaining: number) => {
+    return remaining < 0 ? 'var(--system--red-700)' : 'var(--text-color-primary)';
   };
 
   return (
@@ -233,9 +342,11 @@ const ExpensesBudgetTable = () => {
 
           <TableBody>
             {groups.map((group) => {
-              const groupBudget = group.items.reduce((acc, item) => acc + item.budget, 0);
-              const groupActual = group.items.reduce((acc, item) => acc + item.actual, 0);
-              const groupRemaining = groupBudget - groupActual;
+              const groupBudgetRaw = group.items.reduce((acc, item) => acc + item.budget, 0);
+              const groupBudget = Math.round(groupBudgetRaw * budgetScale);
+              const groupActualRaw = group.items.reduce((acc, item) => acc + item.actual, 0);
+              const groupActual = Math.round(groupActualRaw * actualScale);
+              const groupRemaining = Math.max(0, groupBudget - groupActual);
               const isOpen = openCategories[group.category];
 
               return (
@@ -276,7 +387,14 @@ const ExpensesBudgetTable = () => {
                       </TableCell>
                     )}
                     {visibleColumns.includes('Remaining') && (
-                      <TableCell align="right" sx={{ fontWeight: 'bold', p: 1 }}>
+                      <TableCell
+                        align="right"
+                        sx={{
+                          fontWeight: 'bold',
+                          p: 1,
+                          color: getRemainingColor(groupRemaining),
+                        }}
+                      >
                         {format(groupRemaining)}
                       </TableCell>
                     )}
@@ -293,7 +411,9 @@ const ExpensesBudgetTable = () => {
                           <Table size="small" aria-label="child table">
                             <TableBody>
                               {group.items.map((row) => {
-                                const remaining = row.budget - row.actual;
+                                const rowBudget = Math.round(row.budget * budgetScale);
+                                const rowActual = Math.round(row.actual * actualScale);
+                                const remaining = Math.max(0, rowBudget - rowActual);
 
                                 return (
                                   <TableRow key={row.category}>
@@ -313,7 +433,7 @@ const ExpensesBudgetTable = () => {
                                           p: 1,
                                         }}
                                       >
-                                        {format(row.budget)}
+                                        {format(rowBudget)}
                                       </TableCell>
                                     )}
                                     {visibleColumns.includes('Actual') && (
@@ -324,7 +444,7 @@ const ExpensesBudgetTable = () => {
                                           p: 1,
                                         }}
                                       >
-                                        {format(row.actual)}
+                                        {format(rowActual)}
                                       </TableCell>
                                     )}
                                     {visibleColumns.includes('Remaining') && (
@@ -333,6 +453,7 @@ const ExpensesBudgetTable = () => {
                                         sx={{
                                           borderTop: '1px solid var(--neutral--600)',
                                           p: 1,
+                                          color: getRemainingColor(remaining),
                                         }}
                                       >
                                         {format(remaining)}
@@ -354,9 +475,7 @@ const ExpensesBudgetTable = () => {
             <TableRow
               sx={{
                 backgroundColor:
-                  totals.budget > totals.actual
-                    ? 'rgba(var(--system--red-300-alpha), 0.1)'
-                    : 'transparent',
+                  totalRemaining < 0 ? 'rgba(var(--system--red-300-alpha), 0.1)' : 'transparent',
               }}
             >
               <TableCell
@@ -377,7 +496,7 @@ const ExpensesBudgetTable = () => {
                     color: 'var(--system--red-700)',
                   }}
                 >
-                  {format(totals.budget)}
+                  {format(totalBudget)}
                 </TableCell>
               )}
               {visibleColumns.includes('Actual') && (
@@ -389,11 +508,20 @@ const ExpensesBudgetTable = () => {
                     color: 'var(--system--red-700)',
                   }}
                 >
-                  {format(totals.actual)}
+                  {format(effectiveTotalActual)}
                 </TableCell>
               )}
               {visibleColumns.includes('Remaining') && (
-                <TableCell align="right">{format(totalRemaining)}</TableCell>
+                <TableCell
+                  align="right"
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: '1.3rem',
+                    color: getRemainingColor(totalRemaining),
+                  }}
+                >
+                  {format(totalRemaining)}
+                </TableCell>
               )}
             </TableRow>
           </TableBody>

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Chart } from 'react-google-charts';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+
 import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { Box, Menu, MenuItem, OutlinedInput, Stack, Typography } from '@mui/material';
@@ -9,7 +8,6 @@ import { Link } from 'react-router';
 
 import Card from '~/components/card';
 import ButtonIcon from '~/components/button-icon';
-import Dropdown from '~/components/dropdown';
 import InfoDialog from '~/components/info-dialog';
 import TrendingChip from '~/components/trending-chip';
 
@@ -28,8 +26,7 @@ const data2025 = [
   { month: 'Dec', earnings: 113600, expenses: 48850 },
 ];
 
-const BudgetChart = () => {
-  const [date, setDate] = useState('M');
+const BudgetChart = ({ date }: { date: string }) => {
   const [isOpenInfoDialog, setIsOpenInfoDialog] = useState(false);
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -93,7 +90,7 @@ const BudgetChart = () => {
   };
 
   const incomeNode = `Income\n$${totalEarnings.toLocaleString()}\n(100%)`;
-  const savingsNode = `Savings\n$${totalNet.toLocaleString()}\n(${savingsRate}%)`;
+  const savingsNode = `Cash Flow\n$${totalNet.toLocaleString()}\n(${savingsRate}%)`;
 
   const categoryNodes: string[] = [];
   const categoryAmounts: number[] = [];
@@ -118,7 +115,6 @@ const BudgetChart = () => {
 
   const sankeyData: [string, string, number][] = [];
 
-  // Add savings flow first
   sankeyData.push([incomeNode, savingsNode, Math.round(totalNet)]);
 
   expenseCategories.forEach((cat, i) => {
@@ -145,8 +141,6 @@ const BudgetChart = () => {
       return [from, to, flow, html];
     }),
   ];
-
-  console.log(chartData);
 
   const options = {
     backgroundColor: 'transparent',
@@ -183,7 +177,7 @@ const BudgetChart = () => {
         <Box>
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
-              Budget Flow
+              Cash Flow
             </Typography>
             <ButtonIcon onClick={handleOpenMenu}>
               <MoreHorizIcon sx={{ fontSize: '1.6rem' }} />
@@ -234,29 +228,6 @@ const BudgetChart = () => {
               </Typography>
             </Box>
           </Box>
-
-          <Dropdown
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            input={<OutlinedInput startAdornment={<CalendarTodayIcon sx={{ fontSize: 18 }} />} />}
-            size="small"
-            IconComponent={KeyboardArrowDownIcon}
-            sx={{ width: '100%' }}
-          >
-            {['W', 'M', 'Q', '6M', 'Y'].map((tf) => (
-              <MenuItem key={tf} value={tf}>
-                {tf === 'W'
-                  ? 'This Week'
-                  : tf === 'M'
-                    ? 'This Month'
-                    : tf === 'Q'
-                      ? 'This Quarter'
-                      : tf === '6M'
-                        ? 'Past 6 Months'
-                        : 'This Year'}
-              </MenuItem>
-            ))}
-          </Dropdown>
         </Box>
         <Stack gap={1} pb={1}>
           <Typography fontSize="1.2rem" color="var(--text-color-secondary)">

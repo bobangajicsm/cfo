@@ -20,20 +20,39 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import TrendingChip from '~/components/trending-chip';
 import Card from '~/components/card';
 import Dropdown from '~/components/dropdown';
+import dayjs from 'dayjs';
+
+import { type TCashFlow } from '~/cash-flow/cash-flow-tab/cash-flow-tab';
 
 interface IncomeItem {
   category: string;
   budget: number;
   actual: number;
+  date: string;
 }
 
 const rawData: IncomeItem[] = [
-  { category: 'Salaries (Parents)', budget: 74000, actual: 740 },
-  { category: 'Online Store Profit', budget: 6250, actual: 63 },
-  { category: 'Rental Income', budget: 583, actual: 6 },
-  { category: 'Dividends', budget: 750, actual: 8 },
-  { category: 'Bonuses', budget: 1458, actual: 15 },
-  { category: 'Tax Credits/Refunds', budget: 50, actual: 1 },
+  { category: 'Salaries (Parents)', budget: 74000, actual: 740, date: '2026-01-15' },
+  { category: 'Online Store Profit', budget: 6250, actual: 63, date: '2026-01-15' },
+  { category: 'Rental Income', budget: 583, actual: 6, date: '2026-01-15' },
+  { category: 'Dividends', budget: 750, actual: 8, date: '2025-10-15' },
+  { category: 'Bonuses', budget: 1458, actual: 15, date: '2025-12-15' },
+  { category: 'Tax Credits/Refunds', budget: 50, actual: 1, date: '2025-04-15' },
+];
+
+const monthlyEarnings = [
+  { month: 'Jan', earnings: 110600 },
+  { month: 'Feb', earnings: 137600 },
+  { month: 'Mar', earnings: 103600 },
+  { month: 'Apr', earnings: 113100 },
+  { month: 'May', earnings: 105600 },
+  { month: 'Jun', earnings: 106600 },
+  { month: 'Jul', earnings: 117100 },
+  { month: 'Aug', earnings: 108600 },
+  { month: 'Sep', earnings: 109600 },
+  { month: 'Oct', earnings: 119600 },
+  { month: 'Nov', earnings: 111600 },
+  { month: 'Dec', earnings: 113600 },
 ];
 
 const columnOptions = ['Budget', 'Actual', 'Remaining'] as const;
@@ -45,12 +64,144 @@ type ActiveCategory = (typeof activeCategories)[number];
 const portfolioCategories: (typeof rawData)[0]['category'][] = [];
 type PortfolioCategory = (typeof portfolioCategories)[number];
 
-const IncomeBudgetTable = () => {
+interface Props {
+  timeframe?: string;
+}
+
+const getCutoffDate = (timeframe: string) => {
+  let cutoff;
+  switch (timeframe) {
+    case 'W':
+      cutoff = dayjs().subtract(1, 'week').startOf('week');
+      break;
+    case 'M':
+      cutoff = dayjs().startOf('month').subtract(1, 'month');
+      break;
+    case 'Q':
+      cutoff = dayjs().startOf('month').subtract(3, 'month');
+      break;
+    case '6M':
+      cutoff = dayjs().startOf('month').subtract(6, 'month');
+      break;
+    case 'Y':
+      cutoff = dayjs().startOf('month').subtract(12, 'month');
+      break;
+    case '2Y':
+      cutoff = dayjs().startOf('month').subtract(24, 'month');
+      break;
+    case '5Y':
+      cutoff = dayjs().startOf('month').subtract(60, 'month');
+      break;
+    default:
+      cutoff = dayjs().startOf('month').subtract(12, 'month');
+  }
+  return cutoff;
+};
+
+const getPeriodInMonths = (timeframe: string) => {
+  const periodMap: Record<string, number> = {
+    W: 7 / 30.4, // approx 1 week
+    M: 1,
+    Q: 3,
+    '6M': 6,
+    Y: 12,
+    '2Y': 24,
+    '5Y': 60,
+  };
+  return periodMap[timeframe] || 12;
+};
+
+const getFilteredMonthlyData = (timeframe: string) => {
+  const numMonthsMap: Record<string, number> = {
+    W: 1,
+    M: 1,
+    Q: 3,
+    '6M': 6,
+    Y: 12,
+    '2Y': 12, // cap at available data
+    '5Y': 12, // cap at available data
+  };
+  const numMonths = numMonthsMap[timeframe] || 12;
+  const recentData = monthlyEarnings.slice(-numMonths);
+  const sum = recentData.reduce((acc, item) => acc + item.earnings, 0);
+  const periodInMonths = getPeriodInMonths(timeframe);
+  return Math.round(sum * (periodInMonths / numMonths)); // prorate if needed
+};
+
+const IncomeBudgetTable = ({ timeframe = 'Y' }: Props) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [visibleColumns, setVisibleColumns] = useState<ColumnKey[]>([...columnOptions]);
   const [openCategories, setOpenCategories] = useState<{
     [key: string]: boolean;
   }>({});
+
+  const cutoffDate = useMemo(() => getCutoffDate(timeframe), [timeframe]);
+
+  const dateFilteredData = useMemo(
+    () =>
+      rawData.filter((row) => {
+        const rowDate = dayjs(row.date);
+        return rowDate.isAfter(cutoffDate) || rowDate.isSame(cutoffDate, 'day');
+      }),
+    [cutoffDate]
+  );
+
+  const searchFilteredData = useMemo(
+    () =>
+      dateFilteredData.filter((row) =>
+        row.category.toLowerCase().includes(searchTerm.toLowerCase())
+      ),
+    [dateFilteredData, searchTerm]
+  );
+
+  const effectiveTotalActual = useMemo(() => getFilteredMonthlyData(timeframe), [timeframe]);
+
+  const periodInMonths = getPeriodInMonths(timeframe);
+  const budgetScale = periodInMonths / 12;
+
+  const hardcodedBudgetSum = useMemo(
+    () => dateFilteredData.reduce((acc, row) => acc + row.budget, 0),
+    [dateFilteredData]
+  );
+
+  const totalBudget = Math.round(hardcodedBudgetSum * budgetScale);
+
+  const hardcodedActualSum = useMemo(
+    () => dateFilteredData.reduce((acc, row) => acc + row.actual, 0),
+    [dateFilteredData]
+  );
+
+  const actualScale = hardcodedActualSum > 0 ? effectiveTotalActual / hardcodedActualSum : 0;
+
+  const totalRemaining = Math.max(0, totalBudget - effectiveTotalActual);
+
+  const groups = useMemo(
+    () => [
+      {
+        category: 'Active',
+        items: searchFilteredData.filter((item) =>
+          activeCategories.includes(item.category as ActiveCategory)
+        ),
+      },
+      {
+        category: 'Passive',
+        items: searchFilteredData.filter(
+          (item) =>
+            !activeCategories.includes(item.category as ActiveCategory) &&
+            !portfolioCategories.includes(item.category as PortfolioCategory)
+        ),
+      },
+      {
+        category: 'Portfolio',
+        items: searchFilteredData.filter((item) =>
+          portfolioCategories.includes(item.category as PortfolioCategory)
+        ),
+      },
+    ],
+    [searchFilteredData]
+  );
+
+  const format = (v: number) => (v === 0 ? '-' : `$${v.toLocaleString('en-US')}`);
 
   const handleColumnChange = (event: SelectChangeEvent<string | string[]>) => {
     const value = event.target.value;
@@ -59,55 +210,15 @@ const IncomeBudgetTable = () => {
     );
   };
 
-  const filteredData = useMemo(() => {
-    return rawData.filter((row) => row.category.toLowerCase().includes(searchTerm.toLowerCase()));
-  }, [searchTerm]);
-
-  const groups = useMemo(
-    () => [
-      {
-        category: 'Active',
-        items: filteredData.filter((item) =>
-          activeCategories.includes(item.category as ActiveCategory)
-        ),
-      },
-      {
-        category: 'Passive',
-        items: filteredData.filter(
-          (item) =>
-            !activeCategories.includes(item.category as ActiveCategory) &&
-            !portfolioCategories.includes(item.category as PortfolioCategory)
-        ),
-      },
-      {
-        category: 'Portfolio',
-        items: filteredData.filter((item) =>
-          portfolioCategories.includes(item.category as PortfolioCategory)
-        ),
-      },
-    ],
-    [filteredData]
-  );
-
-  const totals = useMemo(() => {
-    return filteredData.reduce(
-      (acc, row) => {
-        acc.budget += row.budget;
-        acc.actual += row.actual;
-        return acc;
-      },
-      { budget: 0, actual: 0 }
-    );
-  }, [filteredData]);
-
-  const totalRemaining = totals.budget - totals.actual;
-  const format = (v: number) => (v === 0 ? '-' : `$${v.toLocaleString('en-US')}`);
-
   const handleToggle = (category: string) => {
     setOpenCategories((prev) => ({
       ...prev,
       [category]: !prev[category],
     }));
+  };
+
+  const getRemainingColor = (remaining: number) => {
+    return remaining <= 0 ? 'var(--system--green-700)' : 'var(--text-color-primary)';
   };
 
   return (
@@ -207,9 +318,11 @@ const IncomeBudgetTable = () => {
 
           <TableBody>
             {groups.map((group) => {
-              const groupBudget = group.items.reduce((acc, item) => acc + item.budget, 0);
-              const groupActual = group.items.reduce((acc, item) => acc + item.actual, 0);
-              const groupRemaining = groupBudget - groupActual;
+              const groupBudgetRaw = group.items.reduce((acc, item) => acc + item.budget, 0);
+              const groupBudget = Math.round(groupBudgetRaw * budgetScale);
+              const groupActualRaw = group.items.reduce((acc, item) => acc + item.actual, 0);
+              const groupActual = Math.round(groupActualRaw * actualScale);
+              const groupRemaining = Math.max(0, groupBudget - groupActual);
               const isOpen = openCategories[group.category];
 
               return (
@@ -255,10 +368,7 @@ const IncomeBudgetTable = () => {
                         sx={{
                           fontWeight: 'bold',
                           p: 1,
-                          color:
-                            groupRemaining <= 0
-                              ? 'var(--system--green-700)'
-                              : 'var(--text-color-primary)',
+                          color: getRemainingColor(groupRemaining),
                         }}
                       >
                         {format(groupRemaining)}
@@ -277,7 +387,9 @@ const IncomeBudgetTable = () => {
                           <Table size="small" aria-label="child table">
                             <TableBody>
                               {group.items.map((row) => {
-                                const remaining = row.budget - row.actual;
+                                const rowBudget = Math.round(row.budget * budgetScale);
+                                const rowActual = Math.round(row.actual * actualScale);
+                                const remaining = Math.max(0, rowBudget - rowActual);
 
                                 return (
                                   <TableRow key={row.category}>
@@ -297,7 +409,7 @@ const IncomeBudgetTable = () => {
                                           p: 1,
                                         }}
                                       >
-                                        {format(row.budget)}
+                                        {format(rowBudget)}
                                       </TableCell>
                                     )}
                                     {visibleColumns.includes('Actual') && (
@@ -308,7 +420,7 @@ const IncomeBudgetTable = () => {
                                           p: 1,
                                         }}
                                       >
-                                        {format(row.actual)}
+                                        {format(rowActual)}
                                       </TableCell>
                                     )}
                                     {visibleColumns.includes('Remaining') && (
@@ -317,10 +429,7 @@ const IncomeBudgetTable = () => {
                                         sx={{
                                           borderTop: '1px solid var(--neutral--600)',
                                           p: 1,
-                                          color:
-                                            remaining <= 0
-                                              ? 'var(--system--green-700)'
-                                              : 'var(--text-color-primary)',
+                                          color: getRemainingColor(remaining),
                                         }}
                                       >
                                         {format(remaining)}
@@ -342,7 +451,7 @@ const IncomeBudgetTable = () => {
             <TableRow
               sx={{
                 backgroundColor:
-                  totals.actual >= totals.budget
+                  effectiveTotalActual >= totalBudget
                     ? 'rgba(var(--system--green-300-alpha), 0.1)'
                     : 'transparent',
               }}
@@ -365,7 +474,7 @@ const IncomeBudgetTable = () => {
                     color: 'var(--system--green-700)',
                   }}
                 >
-                  {format(totals.budget)}
+                  {format(totalBudget)}
                 </TableCell>
               )}
               {visibleColumns.includes('Actual') && (
@@ -377,7 +486,7 @@ const IncomeBudgetTable = () => {
                     color: 'var(--system--green-700)',
                   }}
                 >
-                  {format(totals.actual)}
+                  {format(effectiveTotalActual)}
                 </TableCell>
               )}
               {visibleColumns.includes('Remaining') && (
@@ -386,10 +495,7 @@ const IncomeBudgetTable = () => {
                   sx={{
                     fontWeight: 700,
                     fontSize: '1.3rem',
-                    color:
-                      totalRemaining <= 0
-                        ? 'var(--system--green-700)'
-                        : 'var(--text-color-primary)',
+                    color: getRemainingColor(totalRemaining),
                   }}
                 >
                   {format(totalRemaining)}

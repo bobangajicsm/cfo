@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import IncomeBudgetTable from './components/income-budget-table';
 import ExpensesBudgetTable from './components/expenses-budget-table';
 
-import { Stack } from '@mui/material';
+import { MenuItem, Select } from '@mui/material';
 
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ButtonPrimary from '~/components/button-primary';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 
 import { Box, Typography } from '@mui/material';
 import BudgetChart from './components/budget-chart';
@@ -30,6 +32,7 @@ const data = [
 ];
 
 const BudgetTab = () => {
+  const [date, setDate] = useState('Y');
   const fileType =
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
   const fileExtension = '.xlsx';
@@ -53,28 +56,50 @@ const BudgetTab = () => {
         p: 2,
       }}
     >
-      <Box my={1} display="flex" justifyContent="space-between" alignItems="fles-start">
-        <Stack sx={{ maxWidth: '60%' }}>
-          <Typography variant="h1" fontSize="2.2rem" fontWeight={600}>
-            Budget for 2025
-          </Typography>
-          <Typography color="var(--text-color-secondary)" mb={3} fontSize="1.2rem">
-            Plan further out than just this month
-          </Typography>
-        </Stack>
-        <Box>
-          <ButtonPrimary onClick={handleDownload}>
-            Export data
-            <ArrowDownwardIcon sx={{ fontSize: '1.2rem', ml: 0.5 }} />
-          </ButtonPrimary>
-        </Box>
+      <Box my={1} display="flex" justifyContent="flex-end" mb={3} gap={2}>
+        <Select
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          size="small"
+          IconComponent={KeyboardArrowDownIcon}
+          startAdornment={<CalendarTodayIcon sx={{ fontSize: 18 }} />}
+          sx={{
+            '& .MuiOutlinedInput-notchedOutline': {
+              border: 'none',
+            },
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              border: 'none',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              border: 'none',
+            },
+            '& .MuiSelect-select': {
+              paddingLeft: 0.5,
+              minHeight: 'auto !important',
+            },
+            '&.MuiOutlinedInput-root': {
+              borderRadius: '4px',
+            },
+          }}
+        >
+          {['W', 'M', 'Q', '6M', 'Y'].map((tf) => (
+            <MenuItem key={tf} value={tf}>
+              {tf}
+            </MenuItem>
+          ))}
+        </Select>
+
+        <ButtonPrimary onClick={handleDownload}>
+          Export data
+          <ArrowDownwardIcon sx={{ fontSize: '1.2rem', ml: 0.5 }} />
+        </ButtonPrimary>
       </Box>
-      <BudgetChart />
+      <BudgetChart date={date} />
       <Typography variant="h2" fontSize="2rem" fontWeight={600} mt={3} mb={4}>
         Transactions
       </Typography>
-      <IncomeBudgetTable />
-      <ExpensesBudgetTable />
+      <IncomeBudgetTable timeframe={date} />
+      <ExpensesBudgetTable timeframe={date} />
     </Box>
   );
 };
