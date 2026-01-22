@@ -17,12 +17,9 @@ import {
   Collapse,
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import TrendingChip from '~/components/trending-chip';
 import Card from '~/components/card';
 import Dropdown from '~/components/dropdown';
 import dayjs from 'dayjs';
-
-import { type TCashFlow } from '~/cash-flow/cash-flow-tab/cash-flow-tab';
 
 interface ExpenseItem {
   category: string;
@@ -41,9 +38,14 @@ const rawData: ExpenseItem[] = [
   { category: 'Utilities', budget: 26000, actual: 17000, date: '2026-01-01' },
   { category: 'Child-care / after-school', budget: 24000, actual: 14400, date: '2026-01-15' },
   { category: 'Fuel & routine car maint', budget: 24000, actual: 16000, date: '2026-01-15' },
-  { category: 'Life & umbrella insurance', budget: 4800, actual: 4800, date: '2026-01-01' },
-  { category: 'Phones & streaming', budget: 4000, actual: 4200, date: '2026-01-01' },
-  { category: 'Other Occasional/Unplanned', budget: 70000, actual: 65000, date: '2025-12-15' },
+  { category: 'Life & umbrella insurance', budget: 5000, actual: 4800, date: '2026-01-01' },
+  { category: 'Phones & streaming', budget: 5000, actual: 4200, date: '2026-01-01' },
+  { category: 'Travel', budget: 25000, actual: 24000, date: '2026-01-15' },
+  { category: 'Entertainment', budget: 23000, actual: 21000, date: '2026-01-15' },
+  { category: 'Gifts', budget: 22000, actual: 20000, date: '2026-01-15' },
+  { category: 'Emergency Repairs', budget: 4000, actual: 3000, date: '2026-01-01' },
+  { category: 'Unexpected Medical', budget: 3000, actual: 2000, date: '2026-01-01' },
+  { category: 'Auto Repairs', budget: 3000, actual: 2500, date: '2026-01-01' },
 ];
 
 const monthlyExpenses = [
@@ -81,47 +83,17 @@ const variableCategories = [
   'Phones & streaming',
 ] as const;
 
-const occasionalCategories = ['Other Occasional/Unplanned'] as const;
+const occasionalCategories = ['Travel', 'Entertainment', 'Gifts'] as const;
 
-const unplannedCategories: string[] = [];
+const unplannedCategories = ['Emergency Repairs', 'Unexpected Medical', 'Auto Repairs'] as const;
 
 interface Props {
   timeframe?: string;
 }
 
-const getCutoffDate = (timeframe: string) => {
-  let cutoff;
-  switch (timeframe) {
-    case 'W':
-      cutoff = dayjs().subtract(1, 'week').startOf('week');
-      break;
-    case 'M':
-      cutoff = dayjs().startOf('month').subtract(1, 'month');
-      break;
-    case 'Q':
-      cutoff = dayjs().startOf('month').subtract(3, 'month');
-      break;
-    case '6M':
-      cutoff = dayjs().startOf('month').subtract(6, 'month');
-      break;
-    case 'Y':
-      cutoff = dayjs().startOf('month').subtract(12, 'month');
-      break;
-    case '2Y':
-      cutoff = dayjs().startOf('month').subtract(24, 'month');
-      break;
-    case '5Y':
-      cutoff = dayjs().startOf('month').subtract(60, 'month');
-      break;
-    default:
-      cutoff = dayjs().startOf('month').subtract(12, 'month');
-  }
-  return cutoff;
-};
-
 const getPeriodInMonths = (timeframe: string) => {
   const periodMap: Record<string, number> = {
-    W: 7 / 30.4, // approx 1 week
+    W: 0.25,
     M: 1,
     Q: 3,
     '6M': 6,
@@ -139,14 +111,15 @@ const getFilteredMonthlyData = (timeframe: string) => {
     Q: 3,
     '6M': 6,
     Y: 12,
-    '2Y': 12, // cap at available data
-    '5Y': 12, // cap at available data
+    '2Y': 12,
+    '5Y': 12,
   };
   const numMonths = numMonthsMap[timeframe] || 12;
   const recentData = monthlyExpenses.slice(-numMonths);
   const sum = recentData.reduce((acc, item) => acc + item.expenses, 0);
   const periodInMonths = getPeriodInMonths(timeframe);
-  return Math.round(sum * (periodInMonths / numMonths)); // prorate if needed
+  const prorate = Math.min(periodInMonths / numMonths, 1);
+  return Math.round(sum * prorate);
 };
 
 const ExpensesBudgetTable = ({ timeframe = 'Y' }: Props) => {
@@ -156,16 +129,7 @@ const ExpensesBudgetTable = ({ timeframe = 'Y' }: Props) => {
     [key: string]: boolean;
   }>({});
 
-  const cutoffDate = useMemo(() => getCutoffDate(timeframe), [timeframe]);
-
-  const dateFilteredData = useMemo(
-    () =>
-      rawData.filter((row) => {
-        const rowDate = dayjs(row.date);
-        return rowDate.isAfter(cutoffDate) || rowDate.isSame(cutoffDate, 'day');
-      }),
-    [cutoffDate]
-  );
+  const dateFilteredData = useMemo(() => rawData, []);
 
   const searchFilteredData = useMemo(
     () =>
@@ -177,16 +141,6 @@ const ExpensesBudgetTable = ({ timeframe = 'Y' }: Props) => {
 
   const effectiveTotalActual = useMemo(() => getFilteredMonthlyData(timeframe), [timeframe]);
 
-  const periodInMonths = getPeriodInMonths(timeframe);
-  const budgetScale = periodInMonths / 12;
-
-  const hardcodedBudgetSum = useMemo(
-    () => dateFilteredData.reduce((acc, row) => acc + row.budget, 0),
-    [dateFilteredData]
-  );
-
-  const totalBudget = Math.round(hardcodedBudgetSum * budgetScale);
-
   const hardcodedActualSum = useMemo(
     () => dateFilteredData.reduce((acc, row) => acc + row.actual, 0),
     [dateFilteredData]
@@ -194,38 +148,48 @@ const ExpensesBudgetTable = ({ timeframe = 'Y' }: Props) => {
 
   const actualScale = hardcodedActualSum > 0 ? effectiveTotalActual / hardcodedActualSum : 0;
 
+  const hardcodedBudgetSum = useMemo(
+    () => dateFilteredData.reduce((acc, row) => acc + row.budget, 0),
+    [dateFilteredData]
+  );
+
+  const budgetScale = actualScale;
+
+  const totalBudget = Math.round(hardcodedBudgetSum * budgetScale);
+
   const totalRemaining = Math.max(0, totalBudget - effectiveTotalActual);
 
   const groups = useMemo(
-    () =>
-      [
-        {
-          category: 'Fixed',
-          items: searchFilteredData.filter((item) =>
-            fixedCategories.includes(item.category as (typeof fixedCategories)[number])
-          ),
-        },
-        {
-          category: 'Variable',
-          items: searchFilteredData.filter((item) =>
-            variableCategories.includes(item.category as (typeof variableCategories)[number])
-          ),
-        },
-        {
-          category: 'Occasional',
-          items: searchFilteredData.filter((item) =>
-            occasionalCategories.includes(item.category as (typeof occasionalCategories)[number])
-          ),
-        },
-        {
-          category: 'Unplanned',
-          items: searchFilteredData.filter((item) => unplannedCategories.includes(item.category)),
-        },
-      ].filter((group) => group.items.length > 0),
+    () => [
+      {
+        category: 'Fixed',
+        items: searchFilteredData.filter((item) =>
+          fixedCategories.includes(item.category as (typeof fixedCategories)[number])
+        ),
+      },
+      {
+        category: 'Variable',
+        items: searchFilteredData.filter((item) =>
+          variableCategories.includes(item.category as (typeof variableCategories)[number])
+        ),
+      },
+      {
+        category: 'Occasional',
+        items: searchFilteredData.filter((item) =>
+          occasionalCategories.includes(item.category as (typeof occasionalCategories)[number])
+        ),
+      },
+      {
+        category: 'Unplanned',
+        items: searchFilteredData.filter((item) =>
+          unplannedCategories.includes(item.category as (typeof unplannedCategories)[number])
+        ),
+      },
+    ],
     [searchFilteredData]
   );
 
-  const format = (v: number) => (v === 0 ? '-' : `$${v.toLocaleString('en-US')}`);
+  const format = (v: number) => `$${v.toLocaleString('en-US')}`;
 
   const handleColumnChange = (event: SelectChangeEvent<string | string[]>) => {
     const value = event.target.value;

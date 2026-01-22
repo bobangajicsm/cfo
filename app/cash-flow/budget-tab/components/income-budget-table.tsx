@@ -17,12 +17,9 @@ import {
   Collapse,
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import TrendingChip from '~/components/trending-chip';
 import Card from '~/components/card';
 import Dropdown from '~/components/dropdown';
 import dayjs from 'dayjs';
-
-import { type TCashFlow } from '~/cash-flow/cash-flow-tab/cash-flow-tab';
 
 interface IncomeItem {
   category: string;
@@ -68,39 +65,9 @@ interface Props {
   timeframe?: string;
 }
 
-const getCutoffDate = (timeframe: string) => {
-  let cutoff;
-  switch (timeframe) {
-    case 'W':
-      cutoff = dayjs().subtract(1, 'week').startOf('week');
-      break;
-    case 'M':
-      cutoff = dayjs().startOf('month').subtract(1, 'month');
-      break;
-    case 'Q':
-      cutoff = dayjs().startOf('month').subtract(3, 'month');
-      break;
-    case '6M':
-      cutoff = dayjs().startOf('month').subtract(6, 'month');
-      break;
-    case 'Y':
-      cutoff = dayjs().startOf('month').subtract(12, 'month');
-      break;
-    case '2Y':
-      cutoff = dayjs().startOf('month').subtract(24, 'month');
-      break;
-    case '5Y':
-      cutoff = dayjs().startOf('month').subtract(60, 'month');
-      break;
-    default:
-      cutoff = dayjs().startOf('month').subtract(12, 'month');
-  }
-  return cutoff;
-};
-
 const getPeriodInMonths = (timeframe: string) => {
   const periodMap: Record<string, number> = {
-    W: 7 / 30.4, // approx 1 week
+    W: 0.25,
     M: 1,
     Q: 3,
     '6M': 6,
@@ -118,14 +85,15 @@ const getFilteredMonthlyData = (timeframe: string) => {
     Q: 3,
     '6M': 6,
     Y: 12,
-    '2Y': 12, // cap at available data
-    '5Y': 12, // cap at available data
+    '2Y': 12,
+    '5Y': 12,
   };
   const numMonths = numMonthsMap[timeframe] || 12;
   const recentData = monthlyEarnings.slice(-numMonths);
   const sum = recentData.reduce((acc, item) => acc + item.earnings, 0);
   const periodInMonths = getPeriodInMonths(timeframe);
-  return Math.round(sum * (periodInMonths / numMonths)); // prorate if needed
+  const prorate = Math.min(periodInMonths / numMonths, 1);
+  return Math.round(sum * prorate);
 };
 
 const IncomeBudgetTable = ({ timeframe = 'Y' }: Props) => {
@@ -135,16 +103,7 @@ const IncomeBudgetTable = ({ timeframe = 'Y' }: Props) => {
     [key: string]: boolean;
   }>({});
 
-  const cutoffDate = useMemo(() => getCutoffDate(timeframe), [timeframe]);
-
-  const dateFilteredData = useMemo(
-    () =>
-      rawData.filter((row) => {
-        const rowDate = dayjs(row.date);
-        return rowDate.isAfter(cutoffDate) || rowDate.isSame(cutoffDate, 'day');
-      }),
-    [cutoffDate]
-  );
+  const dateFilteredData = useMemo(() => rawData, []);
 
   const searchFilteredData = useMemo(
     () =>
@@ -156,22 +115,21 @@ const IncomeBudgetTable = ({ timeframe = 'Y' }: Props) => {
 
   const effectiveTotalActual = useMemo(() => getFilteredMonthlyData(timeframe), [timeframe]);
 
-  const periodInMonths = getPeriodInMonths(timeframe);
-  const budgetScale = periodInMonths / 12;
-
-  const hardcodedBudgetSum = useMemo(
-    () => dateFilteredData.reduce((acc, row) => acc + row.budget, 0),
-    [dateFilteredData]
-  );
-
-  const totalBudget = Math.round(hardcodedBudgetSum * budgetScale);
-
   const hardcodedActualSum = useMemo(
     () => dateFilteredData.reduce((acc, row) => acc + row.actual, 0),
     [dateFilteredData]
   );
 
   const actualScale = hardcodedActualSum > 0 ? effectiveTotalActual / hardcodedActualSum : 0;
+
+  const hardcodedBudgetSum = useMemo(
+    () => dateFilteredData.reduce((acc, row) => acc + row.budget, 0),
+    [dateFilteredData]
+  );
+
+  const budgetScale = actualScale;
+
+  const totalBudget = Math.round(hardcodedBudgetSum * budgetScale);
 
   const totalRemaining = Math.max(0, totalBudget - effectiveTotalActual);
 
@@ -191,17 +149,11 @@ const IncomeBudgetTable = ({ timeframe = 'Y' }: Props) => {
             !portfolioCategories.includes(item.category as PortfolioCategory)
         ),
       },
-      {
-        category: 'Portfolio',
-        items: searchFilteredData.filter((item) =>
-          portfolioCategories.includes(item.category as PortfolioCategory)
-        ),
-      },
     ],
     [searchFilteredData]
   );
 
-  const format = (v: number) => (v === 0 ? '-' : `$${v.toLocaleString('en-US')}`);
+  const format = (v: number) => `$${v.toLocaleString('en-US')}`;
 
   const handleColumnChange = (event: SelectChangeEvent<string | string[]>) => {
     const value = event.target.value;

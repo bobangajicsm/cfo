@@ -26,6 +26,36 @@ const data2025 = [
   { month: 'Dec', earnings: 113600, expenses: 48850 },
 ];
 
+const expenseProps = [154800 / 357500, 130200 / 357500, 65000 / 357500, 7500 / 357500];
+
+const subExpenses = {
+  Fixed: [
+    { name: 'Primary-home mortgage (P&I)', prop: 96000 / 154800 },
+    { name: 'Rental-duplex mortgage (P&I)', prop: 18000 / 154800 },
+    { name: 'Health-insurance premium', prop: 21600 / 154800 },
+    { name: 'Life & umbrella insurance', prop: 4800 / 154800 },
+    { name: 'Child-care / after-school', prop: 14400 / 154800 },
+  ],
+  Variable: [
+    { name: 'Groceries / household', prop: 34000 / 130200 },
+    { name: 'Fun money (couple)', prop: 38000 / 130200 },
+    { name: 'Kid activities / sports', prop: 21000 / 130200 },
+    { name: 'Utilities', prop: 17000 / 130200 },
+    { name: 'Fuel & routine car maint', prop: 16000 / 130200 },
+    { name: 'Phones & streaming', prop: 4200 / 130200 },
+  ],
+  Occasional: [
+    { name: 'Travel', prop: 24000 / 65000 },
+    { name: 'Entertainment', prop: 21000 / 65000 },
+    { name: 'Gifts', prop: 20000 / 65000 },
+  ],
+  Unplanned: [
+    { name: 'Emergency Repairs', prop: 3000 / 7500 },
+    { name: 'Unexpected Medical', prop: 2000 / 7500 },
+    { name: 'Auto Repairs', prop: 2500 / 7500 },
+  ],
+};
+
 const BudgetChart = ({ date }: { date: string }) => {
   const [isOpenInfoDialog, setIsOpenInfoDialog] = useState(false);
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
@@ -64,30 +94,6 @@ const BudgetChart = ({ date }: { date: string }) => {
   const savingsRate = totalEarnings > 0 ? ((totalNet / totalEarnings) * 100).toFixed(1) : '0';
 
   const expenseCategories = ['Fixed', 'Variable', 'Occasional', 'Unplanned'];
-  const expenseProps = [0.4, 0.3, 0.2, 0.1];
-
-  const subExpenses = {
-    Fixed: [
-      { name: 'Mortgage', prop: 0.5 },
-      { name: 'Insurance', prop: 0.2 },
-      { name: 'Utilities', prop: 0.3 },
-    ],
-    Variable: [
-      { name: 'Groceries', prop: 0.4 },
-      { name: 'Dining', prop: 0.2 },
-      { name: 'Transportation', prop: 0.4 },
-    ],
-    Occasional: [
-      { name: 'Travel', prop: 0.5 },
-      { name: 'Entertainment', prop: 0.3 },
-      { name: 'Gifts', prop: 0.2 },
-    ],
-    Unplanned: [
-      { name: 'Repairs', prop: 0.4 },
-      { name: 'Medical', prop: 0.4 },
-      { name: 'Auto Repairs', prop: 0.2 },
-    ],
-  };
 
   const incomeNode = `Income\n$${totalEarnings.toLocaleString()}\n(100%)`;
   const savingsNode = `Cash Flow\n$${totalNet.toLocaleString()}\n(${savingsRate}%)`;
@@ -118,10 +124,12 @@ const BudgetChart = ({ date }: { date: string }) => {
   sankeyData.push([incomeNode, savingsNode, Math.round(totalNet)]);
 
   expenseCategories.forEach((cat, i) => {
-    sankeyData.push([incomeNode, categoryNodes[i], Math.round(categoryAmounts[i])]);
-    subNodeData[i].forEach((sub) => {
-      sankeyData.push([categoryNodes[i], sub.label, Math.round(sub.weight)]);
-    });
+    if (categoryAmounts[i] > 0) {
+      sankeyData.push([incomeNode, categoryNodes[i], Math.round(categoryAmounts[i])]);
+      subNodeData[i].forEach((sub) => {
+        sankeyData.push([categoryNodes[i], sub.label, Math.round(sub.weight)]);
+      });
+    }
   });
 
   const tooltipHeader = { role: 'tooltip', p: { html: true } };
@@ -233,7 +241,7 @@ const BudgetChart = ({ date }: { date: string }) => {
           <Typography fontSize="1.2rem" color="var(--text-color-secondary)">
             Expenses
           </Typography>
-          <Box display="flex" alignItems="center" gap={1}>
+          <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
             <Box display="flex" alignItems="center" gap={1}>
               <Box
                 sx={{
