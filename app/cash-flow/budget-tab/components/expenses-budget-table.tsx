@@ -33,13 +33,8 @@ const rawData: ExpenseItem[] = [
   { category: 'Groceries / household', budget: 48000, actual: 34000, date: '2026-01-15' },
   { category: 'Fun money (couple)', budget: 42000, actual: 38000, date: '2026-01-15' },
   { category: 'Health-insurance premium', budget: 30000, actual: 21600, date: '2026-01-01' },
-  { category: 'Rental-duplex mortgage (P&I)', budget: 26000, actual: 18000, date: '2026-01-01' },
-  { category: 'Kid activities / sports', budget: 28000, actual: 21000, date: '2026-01-15' },
-  { category: 'Utilities', budget: 26000, actual: 17000, date: '2026-01-01' },
-  { category: 'Child-care / after-school', budget: 24000, actual: 14400, date: '2026-01-15' },
-  { category: 'Fuel & routine car maint', budget: 24000, actual: 16000, date: '2026-01-15' },
-  { category: 'Life & umbrella insurance', budget: 5000, actual: 4800, date: '2026-01-01' },
-  { category: 'Phones & streaming', budget: 5000, actual: 4200, date: '2026-01-01' },
+  { category: 'Other Fixed', budget: 55000, actual: 37200, date: '2026-01-01' },
+  { category: 'Other Variable', budget: 83000, actual: 58200, date: '2026-01-15' },
   { category: 'Travel', budget: 25000, actual: 24000, date: '2026-01-15' },
   { category: 'Entertainment', budget: 23000, actual: 21000, date: '2026-01-15' },
   { category: 'Gifts', budget: 22000, actual: 20000, date: '2026-01-15' },
@@ -69,18 +64,13 @@ type ColumnKey = (typeof columnOptions)[number];
 const fixedCategories = [
   'Primary-home mortgage (P&I)',
   'Health-insurance premium',
-  'Rental-duplex mortgage (P&I)',
-  'Child-care / after-school',
-  'Life & umbrella insurance',
+  'Other Fixed',
 ] as const;
 
 const variableCategories = [
   'Groceries / household',
   'Fun money (couple)',
-  'Kid activities / sports',
-  'Utilities',
-  'Fuel & routine car maint',
-  'Phones & streaming',
+  'Other Variable',
 ] as const;
 
 const occasionalCategories = ['Travel', 'Entertainment', 'Gifts'] as const;

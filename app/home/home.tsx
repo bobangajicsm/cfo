@@ -1,4 +1,4 @@
-import { Box, Typography, Stack, MenuItem, OutlinedInput } from '@mui/material';
+import { Box, Typography, Stack, MenuItem, OutlinedInput, Select } from '@mui/material';
 
 import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 import TrendingChip from '~/components/trending-chip';
@@ -8,7 +8,6 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import React, { useState, type ReactNode, useMemo } from 'react';
 import ButtonIcon from '~/components/button-icon';
 import InfoDialog from '~/components/info-dialog';
-import Dropdown from '~/components/dropdown';
 
 export type TCashFlow = {
   month: string;
@@ -219,13 +218,30 @@ const home = () => {
             Track spending and build savings.
           </Typography>
         </Stack>
-        <Dropdown
+        <Select
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          input={<OutlinedInput startAdornment={<CalendarTodayIcon sx={{ fontSize: 18 }} />} />}
           size="small"
           IconComponent={KeyboardArrowDownIcon}
-          sx={{ width: '100%' }}
+          startAdornment={<CalendarTodayIcon sx={{ fontSize: 18 }} />}
+          sx={{
+            '& .MuiOutlinedInput-notchedOutline': {
+              border: 'none',
+            },
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              border: 'none',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              border: 'none',
+            },
+            '& .MuiSelect-select': {
+              paddingLeft: 0.5,
+              minHeight: 'auto !important',
+            },
+            '&.MuiOutlinedInput-root': {
+              borderRadius: '4px',
+            },
+          }}
         >
           {['W', 'M', 'Q', '6M', 'Y'].map((tf) => (
             <MenuItem key={tf} value={tf}>
@@ -240,7 +256,7 @@ const home = () => {
                       : 'This Year'}
             </MenuItem>
           ))}
-        </Dropdown>
+        </Select>
       </Box>
 
       <Box

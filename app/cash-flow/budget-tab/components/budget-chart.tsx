@@ -31,18 +31,13 @@ const expenseProps = [154800 / 357500, 130200 / 357500, 65000 / 357500, 7500 / 3
 const subExpenses = {
   Fixed: [
     { name: 'Primary-home mortgage (P&I)', prop: 96000 / 154800 },
-    { name: 'Rental-duplex mortgage (P&I)', prop: 18000 / 154800 },
     { name: 'Health-insurance premium', prop: 21600 / 154800 },
-    { name: 'Life & umbrella insurance', prop: 4800 / 154800 },
-    { name: 'Child-care / after-school', prop: 14400 / 154800 },
+    { name: 'Other Fixed', prop: 37200 / 154800 },
   ],
   Variable: [
     { name: 'Groceries / household', prop: 34000 / 130200 },
     { name: 'Fun money (couple)', prop: 38000 / 130200 },
-    { name: 'Kid activities / sports', prop: 21000 / 130200 },
-    { name: 'Utilities', prop: 17000 / 130200 },
-    { name: 'Fuel & routine car maint', prop: 16000 / 130200 },
-    { name: 'Phones & streaming', prop: 4200 / 130200 },
+    { name: 'Other Variable', prop: 58200 / 130200 },
   ],
   Occasional: [
     { name: 'Travel', prop: 24000 / 65000 },
