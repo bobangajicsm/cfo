@@ -184,6 +184,69 @@ const home = () => {
 
   const cashFlow = totalEarnings - totalExpenses;
 
+  // UPDATED: Compute prior period for dynamic trends (exact match to charts; now with prior year for 'Y')
+  const prevPeriodData = useMemo((): TCashFlow[] => {
+    let prevData: TCashFlow[] = [];
+    const currentData = yearlyData[currentYear as keyof typeof yearlyData] || [];
+    if (date === 'W' || date === 'M') {
+      // Prior: Nov (index 10)
+      if (currentData[10]) prevData = [currentData[10]];
+    } else if (date === 'Q') {
+      // Prior: Jul-Sep (indices 6-8)
+      prevData = currentData.slice(6, 9);
+    } else if (date === '6M') {
+      // Prior: Jan-Jun (indices 0-5)
+      prevData = currentData.slice(0, 6);
+    } else if (date === 'Y') {
+      // UPDATED: Prior full year (2024 for 2025)
+      const prevYear = currentYear - 1;
+      if (yearlyData[prevYear as keyof typeof yearlyData]) {
+        prevData = yearlyData[prevYear as keyof typeof yearlyData];
+      }
+    } else {
+      // Multi-year fallback: Prior full years (e.g., '2Y' prev=2023-2022 if current=2025-2024)
+      const monthsNeeded = getPeriodMonths(date);
+      const numYears = monthsNeeded / 12;
+      const prevStartYear = currentYear - numYears - 1; // Shift back
+      for (let y = prevStartYear; y < prevStartYear + numYears; y++) {
+        if (yearlyData[y as keyof typeof yearlyData]) {
+          prevData = [...prevData, ...yearlyData[y as keyof typeof yearlyData]];
+        }
+      }
+    }
+    return prevData;
+  }, [date, currentYear, yearlyData, getPeriodMonths]);
+
+  const prevTotalEarnings = useMemo(
+    () => prevPeriodData.reduce((acc, item) => acc + item.earnings, 0) * scaleFactor,
+    [prevPeriodData, scaleFactor]
+  );
+
+  const prevTotalExpenses = useMemo(
+    () => prevPeriodData.reduce((acc, item) => acc + item.expenses, 0) * scaleFactor,
+    [prevPeriodData, scaleFactor]
+  );
+
+  const prevCashFlow = prevTotalEarnings - prevTotalExpenses;
+
+  // Dynamic % changes in total $ (matches charts; 0 if no prior)
+  const cashFlowTrend =
+    prevCashFlow !== 0 ? Math.round(((cashFlow - prevCashFlow) / prevCashFlow) * 100 * 10) / 10 : 0;
+  const earningsTrend =
+    prevTotalEarnings !== 0
+      ? Math.round(((totalEarnings - prevTotalEarnings) / prevTotalEarnings) * 100 * 10) / 10
+      : 0;
+  const expensesTrend =
+    prevTotalExpenses !== 0
+      ? Math.round(((totalExpenses - prevTotalExpenses) / prevTotalExpenses) * 100 * 10) / 10
+      : 0;
+
+  // Dynamic DSCR and Resilience (derive from data; adjust monthlyDebtService as needed)
+  const monthlyDebtService = 20000; // Example fixed debt; prop-ify for real use
+  const avgMonthlyNet = fullMonthsCount > 0 ? cashFlow / fullMonthsCount : 0;
+  const dscr = avgMonthlyNet > 0 ? (avgMonthlyNet / monthlyDebtService).toFixed(2) : '0.00';
+  const resilience = parseFloat(dscr) > 0 ? Math.round((1 - 1 / parseFloat(dscr)) * 100) : 0;
+
   const handleOpenInfoDialog = ({
     title,
     content,
@@ -277,7 +340,8 @@ const home = () => {
           <Typography fontSize="2.8rem" fontWeight={700}>
             ${cashFlow.toLocaleString()}
           </Typography>
-          <TrendingChip value={25.4} />
+          {/* UPDATED: Dynamic trend matching charts */}
+          <TrendingChip value={cashFlowTrend} />
           <ButtonIcon
             onClick={() =>
               handleOpenInfoDialog({
@@ -372,7 +436,8 @@ const home = () => {
               <Typography fontSize="2.8rem" fontWeight={700}>
                 ${totalEarnings.toLocaleString()}
               </Typography>
-              <TrendingChip value={2.2} />
+              {/* UPDATED: Dynamic trend matching charts */}
+              <TrendingChip value={earningsTrend} />
             </Box>
           </Box>
         </Box>
@@ -396,7 +461,8 @@ const home = () => {
               <Typography fontSize="2.8rem" fontWeight={700}>
                 ${totalExpenses.toLocaleString()}
               </Typography>
-              <TrendingChip value={2.4} />
+              {/* UPDATED: Dynamic trend matching charts */}
+              <TrendingChip value={expensesTrend} />
             </Box>
           </Box>
         </Box>
@@ -416,8 +482,9 @@ const home = () => {
           Debt Service Coverage Ratio (DSCR)
         </Typography>
         <Box display="flex" alignItems="center" gap={1}>
+          {/* UPDATED: Dynamic value */}
           <Typography fontSize="2.8rem" fontWeight={700}>
-            1.39
+            {dscr}
           </Typography>
           <ButtonIcon
             onClick={() =>
@@ -475,8 +542,9 @@ const home = () => {
           Debt-Coverage Resilience
         </Typography>
         <Box display="flex" alignItems="center" gap={1}>
+          {/* UPDATED: Dynamic value */}
           <Typography fontSize="2.8rem" fontWeight={700}>
-            22%
+            {resilience}%
           </Typography>
           <ButtonIcon
             onClick={() =>

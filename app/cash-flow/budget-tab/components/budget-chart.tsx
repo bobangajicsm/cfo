@@ -11,6 +11,21 @@ import ButtonIcon from '~/components/button-icon';
 import InfoDialog from '~/components/info-dialog';
 import TrendingChip from '~/components/trending-chip';
 
+const data2024 = [
+  { month: 'Jan', earnings: 97600, expenses: 27600 },
+  { month: 'Feb', earnings: 125100, expenses: 21000 },
+  { month: 'Mar', earnings: 90600, expenses: 22000 },
+  { month: 'Apr', earnings: 104800, expenses: 46100 },
+  { month: 'May', earnings: 91600, expenses: 21800 },
+  { month: 'Jun', earnings: 92100, expenses: 22300 },
+  { month: 'Jul', earnings: 101100, expenses: 23000 },
+  { month: 'Aug', earnings: 93100, expenses: 23200 },
+  { month: 'Sep', earnings: 93600, expenses: 67100 },
+  { month: 'Oct', earnings: 102100, expenses: 45300 },
+  { month: 'Nov', earnings: 94600, expenses: 49800 },
+  { month: 'Dec', earnings: 95600, expenses: 45850 },
+];
+
 const data2025 = [
   { month: 'Jan', earnings: 110600, expenses: 29150 },
   { month: 'Feb', earnings: 137600, expenses: 22650 },
@@ -61,10 +76,16 @@ const BudgetChart = ({ date }: { date: string }) => {
   const handleCloseMenu = () => setMenuAnchorEl(null);
 
   let periodData = data2025;
+  let scaleFactor = 1;
   switch (date) {
     case 'W':
+      scaleFactor = 0.25;
       periodData = [
-        { month: 'Week', earnings: data2025[11].earnings / 4, expenses: data2025[11].expenses / 4 },
+        {
+          month: 'Week',
+          earnings: data2025[11].earnings * scaleFactor,
+          expenses: data2025[11].expenses * scaleFactor,
+        },
       ];
       break;
     case 'M':
@@ -87,6 +108,50 @@ const BudgetChart = ({ date }: { date: string }) => {
   const totalExpenses = periodData.reduce((sum, d) => sum + d.expenses, 0);
   const totalNet = totalEarnings - totalExpenses;
   const savingsRate = totalEarnings > 0 ? ((totalNet / totalEarnings) * 100).toFixed(1) : '0';
+
+  // UPDATED: Compute prior period for total cash flow $ change (now with prior year for 'Y'; scale for 'W')
+  let prevPeriodData: typeof periodData = [];
+  let prevScaleFactor = scaleFactor; // Match current scaling
+  switch (date) {
+    case 'W':
+    case 'M':
+      prevPeriodData = [data2025[10]]; // Prior: Nov (full month; approx for weekly)
+      if (date === 'W') {
+        // FIXED: Scale prev for weekly comparison
+        prevPeriodData = [
+          {
+            month: 'Prior Week',
+            earnings: data2025[10].earnings * prevScaleFactor,
+            expenses: data2025[10].expenses * prevScaleFactor,
+          },
+        ];
+      }
+      break;
+    case 'Q':
+      prevPeriodData = data2025.slice(6, 9); // Prior: Jul-Sep
+      break;
+    case '6M':
+      prevPeriodData = data2025.slice(0, 6); // Prior: Jan-Jun
+      break;
+    case 'Y':
+      // Prior full year (2024 for 2025)
+      prevPeriodData = data2024;
+      break;
+    default:
+      prevPeriodData = []; // No prior for full year
+      break;
+  }
+
+  let prevTotalNet = 0;
+  if (prevPeriodData.length > 0) {
+    const prevTotalEarnings = prevPeriodData.reduce((sum, d) => sum + d.earnings, 0);
+    const prevTotalExpenses = prevPeriodData.reduce((sum, d) => sum + d.expenses, 0);
+    prevTotalNet = prevTotalEarnings - prevTotalExpenses;
+  }
+
+  // Dynamic trendValue as % change in TOTAL CASH FLOW $ (vs. prior); 0 if no prior
+  const trendValue =
+    prevTotalNet !== 0 ? Math.round(((totalNet - prevTotalNet) / prevTotalNet) * 100 * 10) / 10 : 0;
 
   const expenseCategories = ['Fixed', 'Variable', 'Occasional', 'Unplanned'];
 
@@ -171,8 +236,6 @@ const BudgetChart = ({ date }: { date: string }) => {
       },
     },
   };
-
-  const trendValue = +savingsRate > 25 ? 12 : +savingsRate > 15 ? 4 : -3;
 
   return (
     <>
