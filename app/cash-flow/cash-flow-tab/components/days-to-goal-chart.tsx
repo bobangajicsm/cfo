@@ -114,89 +114,13 @@ const DaysToGoalChart = ({
 
   const monthlyEquivalent = currentCashFlow / getPeriodMonths(timeframe);
 
-  if (monthlyTarget === null || targetDate === null) {
-    return (
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Box
-          sx={{
-            position: 'relative',
-            backgroundColor: 'var(--bg-color-secondary)',
-            borderRadius: 2,
-            border: '1px solid var(--border-color)',
-            px: 2,
-            py: 2,
-            mb: 2,
-          }}
-        >
-          <Typography color="var(--text-color-secondary)" fontSize="1.2rem" mb={2}>
-            Cash Flow Goal
-          </Typography>
-          <Stack
-            direction="row"
-            gap={2}
-            alignItems="center"
-            justifyContent="center"
-            flexWrap="wrap"
-          >
-            <TextField
-              variant="outlined"
-              size="small"
-              placeholder="Target monthly cash flow"
-              value={targetInput}
-              onChange={(e) => setTargetInput(e.target.value)}
-              type="number"
-              inputProps={{
-                min: monthlyEquivalent,
-                step: 0.01,
-              }}
-              helperText={`Must be higher than current monthly equivalent ($${monthlyEquivalent.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })})`}
-            />
-            <DatePicker
-              label="Target date"
-              value={targetDateInput}
-              onChange={(newValue) => setTargetDateInput(newValue)}
-              minDate={new Date()}
-              slotProps={{
-                textField: { variant: 'outlined', size: 'small' },
-              }}
-            />
-            <Button variant="contained" onClick={handleSubmit} size="small">
-              Set Goal
-            </Button>
-          </Stack>
-          {monthlyTarget !== null && targetDate === null && (
-            <Typography color="error.main" variant="caption" display="block" mt={1}>
-              Please select a target date.
-            </Typography>
-          )}
-          {targetDate !== null && monthlyTarget === null && (
-            <Typography color="error.main" variant="caption" display="block" mt={1}>
-              Please enter a target monthly cash flow higher than current.
-            </Typography>
-          )}
-          <ButtonIcon
-            onClick={handleOpenInfoDialog}
-            sx={{
-              position: 'absolute',
-              top: '-13px',
-              left: '-13px',
-              opacity: 0.7,
-            }}
-          >
-            <InfoOutlineIcon sx={{ fontSize: '2rem' }} />
-          </ButtonIcon>
-        </Box>
-      </LocalizationProvider>
-    );
-  }
-
   const periodMonths = getPeriodMonths(timeframe);
-  const periodTarget = monthlyTarget * periodMonths;
+  const periodTarget = (monthlyTarget || 0) * periodMonths;
   const safeCurrent = Math.max(1, currentCashFlow);
   const rawPercentage = (safeCurrent / periodTarget) * 100;
   const percentage = Math.min(100, Math.round(rawPercentage));
   const today = new Date();
-  const timeDiff = targetDate.getTime() - today.getTime();
+  const timeDiff = (targetDate?.getTime() || 0) - today.getTime();
   const daysToTarget = Math.max(0, Math.ceil(timeDiff / (1000 * 60 * 60 * 24)));
 
   const achieved = safeCurrent;
@@ -222,136 +146,210 @@ const DaysToGoalChart = ({
     statusMessage = 'Target Missed';
   }
 
-  const formattedTarget = `$${monthlyTarget.toLocaleString()}`;
+  const formattedTarget = `$${monthlyTarget?.toLocaleString()}`;
   const periodLabel = getPeriodLabel(timeframe);
 
   return (
     <>
-      <Box
-        sx={{
-          position: 'relative',
-          backgroundColor: 'var(--bg-color-secondary)',
-          borderRadius: 2,
-          border: '1px solid var(--border-color)',
-          px: 2,
-          py: 2,
-          mb: 2,
-        }}
-      >
-        <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-          <Box>
-            <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
-              Cash Flow Goal ({periodLabel})
+      {monthlyTarget === null || targetDate === null ? (
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <Box
+            sx={{
+              position: 'relative',
+              backgroundColor: 'var(--bg-color-secondary)',
+              borderRadius: 2,
+              border: '1px solid var(--border-color)',
+              px: 2,
+              py: 2,
+              mb: 2,
+            }}
+          >
+            <Typography color="var(--text-color-secondary)" fontSize="1.2rem" mb={2}>
+              Cash Flow Goal
             </Typography>
-            {statusMessage && (
-              <Typography
-                fontSize="1.4rem"
-                fontWeight={600}
-                color={status === 'accomplished' ? 'success.main' : 'error.main'}
-                mb={2}
-              >
-                {statusMessage}
+            <Stack
+              direction="row"
+              gap={2}
+              alignItems="center"
+              justifyContent="center"
+              flexWrap="wrap"
+            >
+              <TextField
+                variant="outlined"
+                size="small"
+                placeholder="Target monthly cash flow"
+                value={targetInput}
+                onChange={(e) => setTargetInput(e.target.value)}
+                type="number"
+                inputProps={{
+                  min: monthlyEquivalent,
+                  step: 0.01,
+                }}
+                helperText={`Must be higher than current monthly equivalent ($${monthlyEquivalent.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })})`}
+              />
+              <DatePicker
+                label="Target date"
+                value={targetDateInput}
+                onChange={(newValue) => setTargetDateInput(newValue)}
+                minDate={new Date()}
+                slotProps={{
+                  textField: { variant: 'outlined', size: 'small' },
+                }}
+              />
+              <Button variant="contained" onClick={handleSubmit} size="small">
+                Set Goal
+              </Button>
+            </Stack>
+            {monthlyTarget !== null && targetDate === null && (
+              <Typography color="error.main" variant="caption" display="block" mt={1}>
+                Please select a target date.
               </Typography>
             )}
-            <Box display="flex" alignItems="center" gap={1} mb={4}>
-              <Typography fontSize="2.8rem" fontWeight={700}>
-                {formattedTarget}
+            {targetDate !== null && monthlyTarget === null && (
+              <Typography color="error.main" variant="caption" display="block" mt={1}>
+                Please enter a target monthly cash flow higher than current.
               </Typography>
-              <TrendingChip value={25.4} />
-            </Box>
-          </Box>
-          <Button variant="outlined" size="small" onClick={resetTarget}>
-            {status === 'accomplished' ? 'Set New Goal' : 'Reset'}
-          </Button>
-        </Box>
-        <PieChart width={210} height={120} style={{ margin: '0 auto' }}>
-          <Pie
-            stroke="none"
-            dataKey="value"
-            startAngle={180}
-            endAngle={0}
-            data={chartData}
-            cx={100}
-            cy={100}
-            innerRadius={status === 'accomplished' ? 0 : 70}
-            outerRadius={100}
-            labelLine={false}
-          />
-          <Tooltip />
-        </PieChart>
-        <Stack display="flex" alignItems="center" gap={1} mt={-6}>
-          <Typography fontSize="2.2rem" aria-label={`Progress: ${displayPercentage}`}>
-            {displayPercentage}
-          </Typography>
-          <Typography fontSize="1.2rem" color="var(--text-color-secondary)">
-            Days to target
-          </Typography>
-          <Typography fontSize="1.8rem">{displayDays}</Typography>
-        </Stack>
-        {showRemaining && (
-          <Stack mt={3}>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-              mb={1}
-              sx={{ borderBottom: '1px solid var(--border-color)', pb: 1 }}
+            )}
+            <ButtonIcon
+              onClick={handleOpenInfoDialog}
+              sx={{
+                position: 'absolute',
+                top: '-13px',
+                left: '-13px',
+                opacity: 0.7,
+              }}
             >
-              <Box display="flex" alignItems="center" gap={1}>
-                <Box
-                  sx={{
-                    width: '8px',
-                    height: '8px',
-                    backgroundColor: 'var(--accent--primary-1)',
-                    borderRadius: '100%',
-                  }}
-                />
-                <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
-                  Achieved cash flow
-                </Typography>
-              </Box>
-
-              <Typography fontSize="1.2rem">${achieved.toLocaleString()}</Typography>
-            </Box>
-            <Box display="flex" alignItems="center" justifyContent="space-between">
-              <Box display="flex" alignItems="center" gap={1}>
-                <Box
-                  sx={{
-                    width: '8px',
-                    height: '8px',
-                    backgroundColor: 'var(--neutral--600)',
-                    borderRadius: '100%',
-                  }}
-                />
-                <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
-                  Remaining to target
-                </Typography>
-              </Box>
-
-              <Typography fontSize="1.2rem">${remaining.toLocaleString()}</Typography>
-            </Box>
-          </Stack>
-        )}
-        {status === 'accomplished' && (
-          <Box mt={3} textAlign="center">
-            <Typography color="success.main" fontSize="1.4rem">
-              You've reached your goal! 🎉
-            </Typography>
+              <InfoOutlineIcon sx={{ fontSize: '2rem' }} />
+            </ButtonIcon>
           </Box>
-        )}
-
-        <ButtonIcon
-          onClick={handleOpenInfoDialog}
+        </LocalizationProvider>
+      ) : (
+        <Box
           sx={{
-            position: 'absolute',
-            top: '-13px',
-            left: '-13px',
-            opacity: 0.7,
+            position: 'relative',
+            backgroundColor: 'var(--bg-color-secondary)',
+            borderRadius: 2,
+            border: '1px solid var(--border-color)',
+            px: 2,
+            py: 2,
+            mb: 2,
           }}
         >
-          <InfoOutlineIcon sx={{ fontSize: '2rem' }} />
-        </ButtonIcon>
-      </Box>
+          <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+            <Box>
+              <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
+                Cash Flow Goal ({periodLabel})
+              </Typography>
+              {statusMessage && (
+                <Typography
+                  fontSize="1.4rem"
+                  fontWeight={600}
+                  color={status === 'accomplished' ? 'success.main' : 'error.main'}
+                  mb={2}
+                >
+                  {statusMessage}
+                </Typography>
+              )}
+              <Box display="flex" alignItems="center" gap={1} mb={4}>
+                <Typography fontSize="2.8rem" fontWeight={700}>
+                  {formattedTarget}
+                </Typography>
+                <TrendingChip value={25.4} />
+              </Box>
+            </Box>
+            <Button variant="outlined" size="small" onClick={resetTarget}>
+              {status === 'accomplished' ? 'Set New Goal' : 'Reset'}
+            </Button>
+          </Box>
+          <PieChart width={210} height={120} style={{ margin: '0 auto' }}>
+            <Pie
+              stroke="none"
+              dataKey="value"
+              startAngle={180}
+              endAngle={0}
+              data={chartData}
+              cx={100}
+              cy={100}
+              innerRadius={status === 'accomplished' ? 0 : 70}
+              outerRadius={100}
+              labelLine={false}
+            />
+            <Tooltip />
+          </PieChart>
+          <Stack display="flex" alignItems="center" gap={1} mt={-6}>
+            <Typography fontSize="2.2rem" aria-label={`Progress: ${displayPercentage}`}>
+              {displayPercentage}
+            </Typography>
+            <Typography fontSize="1.2rem" color="var(--text-color-secondary)">
+              Days to target
+            </Typography>
+            <Typography fontSize="1.8rem">{displayDays}</Typography>
+          </Stack>
+          {showRemaining && (
+            <Stack mt={3}>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                mb={1}
+                sx={{ borderBottom: '1px solid var(--border-color)', pb: 1 }}
+              >
+                <Box display="flex" alignItems="center" gap={1}>
+                  <Box
+                    sx={{
+                      width: '8px',
+                      height: '8px',
+                      backgroundColor: 'var(--accent--primary-1)',
+                      borderRadius: '100%',
+                    }}
+                  />
+                  <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
+                    Achieved cash flow
+                  </Typography>
+                </Box>
+
+                <Typography fontSize="1.2rem">${achieved.toLocaleString()}</Typography>
+              </Box>
+              <Box display="flex" alignItems="center" justifyContent="space-between">
+                <Box display="flex" alignItems="center" gap={1}>
+                  <Box
+                    sx={{
+                      width: '8px',
+                      height: '8px',
+                      backgroundColor: 'var(--neutral--600)',
+                      borderRadius: '100%',
+                    }}
+                  />
+                  <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
+                    Remaining to target
+                  </Typography>
+                </Box>
+
+                <Typography fontSize="1.2rem">${remaining.toLocaleString()}</Typography>
+              </Box>
+            </Stack>
+          )}
+          {status === 'accomplished' && (
+            <Box mt={3} textAlign="center">
+              <Typography color="success.main" fontSize="1.4rem">
+                You've reached your goal! 🎉
+              </Typography>
+            </Box>
+          )}
+
+          <ButtonIcon
+            onClick={handleOpenInfoDialog}
+            sx={{
+              position: 'absolute',
+              top: '-13px',
+              left: '-13px',
+              opacity: 0.7,
+            }}
+          >
+            <InfoOutlineIcon sx={{ fontSize: '2rem' }} />
+          </ButtonIcon>
+        </Box>
+      )}
       <InfoDialog
         title="Cash Flow Goal"
         shortDescription="This chart shows your progress towards your monthly cash flow goal, scaled to the selected timeframe. The pie chart illustrates the achieved cash flow compared to the remaining amount needed to reach your target. The 'Progress %' indicates current cash flow as a percentage of the goal (capped at 100%). 'Days to target' shows the number of days until your set target date."

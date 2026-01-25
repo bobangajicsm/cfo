@@ -77,7 +77,7 @@ const data = [
     lastUpdated: '12-31-2025',
   },
   {
-    source: 'Holiday Residence',
+    source: 'Vacation Residence',
     balance: '$520,000',
     returnRate: 4.8,
     lastUpdated: '12-31-2025',

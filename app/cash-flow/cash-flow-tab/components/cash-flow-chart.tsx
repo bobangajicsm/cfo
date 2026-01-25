@@ -26,13 +26,11 @@ const CashFlowChart = ({
   periodData,
   currentCashFlow,
   scaleFactor,
-  growthRate, // Ignore if passed; recompute for consistency
 }: {
   date: string;
   periodData: TCashFlow[];
   currentCashFlow: number;
   scaleFactor: number;
-  growthRate?: number;
 }) => {
   const yearData: Record<string, typeof data2025> = {
     '2020': data2020,
@@ -75,75 +73,93 @@ const CashFlowChart = ({
       };
     });
 
-  // UPDATED: Compute previous period for total cash flow $ change (aligned with BudgetChart; now with prior year for 'Y')
-  let prevData: (TCashFlow & { cashFlow: number; earnings: number; expenses: number })[] = [];
+  // Aggregate to quarterly for 5Y view
+  let chartData = currentData;
+  if (date === '5Y') {
+    chartData = [];
+    const monthToNum: Record<string, number> = {
+      January: 1,
+      Jan: 1,
+      February: 2,
+      Feb: 2,
+      March: 3,
+      Mar: 3,
+      April: 4,
+      Apr: 4,
+      May: 5,
+      June: 6,
+      July: 7,
+      Jul: 7,
+      August: 8,
+      Aug: 8,
+      September: 9,
+      Sep: 9,
+      October: 10,
+      Oct: 10,
+      November: 11,
+      Nov: 11,
+      December: 12,
+      Dec: 12,
+    };
+    for (let i = 0; i < currentData.length; i += 3) {
+      const slice = currentData.slice(i, i + 3);
+      if (slice.length === 0) break;
+      const earnings = slice.reduce((s, d) => s + d.earnings, 0);
+      const expenses = slice.reduce((s, d) => s + d.expenses, 0);
+      const cashFlow = earnings - expenses;
+      // Get quarter label from first month
+      const firstMonthStr = slice[0].month;
+      const parts = firstMonthStr.trim().split(/\s+/);
+      const monthName = parts[0];
+      const yearStr = parts[parts.length - 1];
+      const monthNum = monthToNum[monthName];
+      let quarterLabel: string;
+      if (monthNum) {
+        const quarter = Math.ceil(monthNum / 3);
+        quarterLabel = `Q${quarter} ${yearStr}`;
+      } else {
+        // Fallback to first month if parsing fails
+        quarterLabel = firstMonthStr;
+      }
+      chartData.push({
+        ...slice[0], // Preserve other fields (spread first to avoid duplicate key warnings)
+        month: quarterLabel,
+        earnings,
+        expenses,
+        cashFlow,
+      });
+    }
+  }
+
+  // UPDATED: Compute previous period total cash flow for % change (now handles multi-year properly)
+  let netPrevious = 0;
   const currentYear = 2025; // TODO: Pass as prop if dynamic
   if (date === 'M' || date === 'W') {
     // Match Budget: Prior month (e.g., Nov for Dec)
-    prevData = [data2025[10]].map((d) => ({
-      // Nov
-      ...d,
-      earnings: d.earnings * scaleFactor,
-      expenses: d.expenses * scaleFactor,
-      cashFlow: (d.earnings - d.expenses) * scaleFactor,
-    }));
+    netPrevious = (data2025[10].earnings - data2025[10].expenses) * scaleFactor;
   } else if (date === 'Q') {
     // Match Budget: Prior Q (Jul-Sep, indices 6-8)
-    prevData = data2025.slice(6, 9).map((d) => ({
-      ...d,
-      earnings: d.earnings * scaleFactor,
-      expenses: d.expenses * scaleFactor,
-      cashFlow: (d.earnings - d.expenses) * scaleFactor,
-    }));
+    netPrevious =
+      data2025.slice(6, 9).reduce((sum, d) => sum + (d.earnings - d.expenses), 0) * scaleFactor;
   } else if (date === '6M') {
     // Match Budget: Prior 6M (Jan-Jun, indices 0-5)
-    prevData = data2025.slice(0, 6).map((d) => ({
-      ...d,
-      earnings: d.earnings * scaleFactor,
-      expenses: d.expenses * scaleFactor,
-      cashFlow: (d.earnings - d.expenses) * scaleFactor,
-    }));
+    netPrevious =
+      data2025.slice(0, 6).reduce((sum, d) => sum + (d.earnings - d.expenses), 0) * scaleFactor;
   } else if (date === 'Y') {
-    // UPDATED: Prior full year (2024 for 2025)
-    prevData = yearData['2024'].map((d) => ({
-      ...d,
-      earnings: d.earnings * scaleFactor,
-      expenses: d.expenses * scaleFactor,
-      cashFlow: (d.earnings - d.expenses) * scaleFactor,
-    }));
+    // Prior full year (2024 for 2025)
+    netPrevious =
+      yearData['2024'].reduce((sum, d) => sum + (d.earnings - d.expenses), 0) * scaleFactor;
   } else {
-    // Fallback for multi-year/other: Prior year slice (adjust as needed)
-    const getPeriodMonths = (timeframe: string): number => {
-      switch (timeframe) {
-        case 'W':
-          return 0.25;
-        case 'M':
-          return 1;
-        case 'Q':
-          return 3;
-        case '6M':
-          return 6;
-        case 'Y':
-        case '2Y':
-        case '5Y':
-          return 12 * (timeframe === '2Y' ? 2 : timeframe === '5Y' ? 5 : 1);
-        default:
-          return 12;
-      }
-    };
-    const monthsNeeded = getPeriodMonths(date);
-    const fullMonthsCount = Math.floor(monthsNeeded);
-    const numMonths = Math.min(fullMonthsCount || 1, 12);
-    const prevYearData = yearData['2024'] || [];
-    prevData = prevYearData.slice(-numMonths).map((d) => ({
-      ...d,
-      earnings: d.earnings * scaleFactor,
-      expenses: d.expenses * scaleFactor,
-      cashFlow: (d.earnings - d.expenses) * scaleFactor,
-    }));
+    // Multi-year: Prior equivalent period (e.g., for 5Y: sum 2020-2024)
+    const nyears = date === '2Y' ? 2 : date === '5Y' ? 5 : 1;
+    let prevSum = 0;
+    for (let y = currentYear - nyears; y < currentYear; y++) {
+      const yStr = y.toString();
+      const yData = yearData[yStr] || [];
+      prevSum += yData.reduce((sum, d) => sum + (d.earnings - d.expenses), 0);
+    }
+    netPrevious = prevSum * scaleFactor;
   }
-
-  const netPrevious = prevData.reduce((acc, { cashFlow }) => acc + cashFlow, 0);
 
   // UPDATED: Compute as % change in TOTAL CASH FLOW $ (not savings rate); round to 1 decimal
   const finalGrowthRate =
@@ -230,7 +246,7 @@ const CashFlowChart = ({
             aspectRatio: 1.618,
           }}
           responsive
-          data={currentData}
+          data={chartData}
           margin={{
             top: 5,
             right: 0,

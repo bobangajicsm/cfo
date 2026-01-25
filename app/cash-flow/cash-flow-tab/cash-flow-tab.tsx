@@ -1,4 +1,12 @@
-import { Box, MenuItem, Select, Typography } from '@mui/material';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  MenuItem,
+  Select,
+  Typography,
+} from '@mui/material';
 
 import CashFlowChart from '~/cash-flow/cash-flow-tab/components/cash-flow-chart';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
@@ -8,10 +16,12 @@ import ExpensesTable from '~/cash-flow/cash-flow-tab/components/expenses-table';
 import ButtonPrimary from '~/components/button-primary';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import * as XLSX from 'xlsx';
 import pkg from 'file-saver';
 import { useState, useMemo } from 'react';
+import IncomeExpenseChart from '~/cash-flow/cash-flow-tab/components/income-expense-chart';
 const { saveAs } = pkg;
 
 export type TCashFlow = {
@@ -195,31 +205,6 @@ const CashFlowTab = () => {
     saveAs(blob, 'cash_flow' + fileExtension);
   };
 
-  // Add growthRate memo (optional; compute previous period similarly)
-  const growthRate = useMemo(() => {
-    // Mirror periodData logic but for previous year(s)
-    const monthsNeeded = getPeriodMonths(date);
-    let prevData: TCashFlow[] = [];
-    if (monthsNeeded <= 12) {
-      const prevYearData = yearlyData[(currentYear - 1) as keyof typeof yearlyData] || [];
-      const numMonths = Math.min(fullMonthsCount, 12);
-      prevData = prevYearData.slice(-numMonths);
-    } else {
-      // Multi-year: shift back one full cycle
-      const numYears = monthsNeeded / 12;
-      const prevStartYear = currentYear - numYears - 1;
-      for (let y = prevStartYear; y < prevStartYear + numYears; y++) {
-        if (yearlyData[y as keyof typeof yearlyData]) {
-          prevData = [...prevData, ...yearlyData[y as keyof typeof yearlyData]];
-        }
-      }
-    }
-    const prevEarnings = prevData.reduce((acc, item) => acc + item.earnings, 0);
-    const prevExpenses = prevData.reduce((acc, item) => acc + item.expenses, 0);
-    const prevCashFlow = (prevEarnings - prevExpenses) * scaleFactor;
-    return prevCashFlow !== 0 ? ((currentCashFlow - prevCashFlow) / prevCashFlow) * 100 : 0;
-  }, [periodData, scaleFactor, date, currentYear, yearlyData, fullMonthsCount]);
-
   return (
     <Box
       sx={{
@@ -268,7 +253,6 @@ const CashFlowTab = () => {
         periodData={periodData}
         currentCashFlow={currentCashFlow}
         scaleFactor={scaleFactor}
-        growthRate={growthRate}
       />
       <DaysToGoalChart currentCashFlow={currentCashFlow} timeframe={date} />
       <Typography variant="h2" fontSize="2rem" fontWeight={600} mt={4} mb={4}>
@@ -276,6 +260,19 @@ const CashFlowTab = () => {
       </Typography>
       <IncomeTable timeframe={date} periodData={periodData} scaleFactor={scaleFactor} />
       <ExpensesTable timeframe={date} periodData={periodData} scaleFactor={scaleFactor} />
+
+      <Accordion sx={{ mb: 1 }}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+          <Typography component="span">Income and Expense Graph</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <IncomeExpenseChart date={date} />
+        </AccordionDetails>
+      </Accordion>
     </Box>
   );
 };

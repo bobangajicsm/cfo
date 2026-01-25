@@ -41,7 +41,7 @@ const data = [
   { source: 'Child-care / after-school', amount: '$72,000', change: 0.0, date: '2026-01-15' },
   { source: 'Fuel & routine car maint', amount: '$69,690', change: 7.7, date: '2026-01-15' },
   { source: 'New SUV (cash, Sep)', amount: '$65,000', change: 0, date: '2020-09-15' },
-  { source: 'Luxury anniversary holiday', amount: '$54,000', change: 0.0, date: '2025-11-15' },
+  { source: 'Luxury anniversary vacation', amount: '$54,000', change: 0.0, date: '2025-11-15' },
   { source: 'Around-the-world luxury cruise', amount: '$52,000', change: 0, date: '2025-07-15' },
   { source: 'IVF / fertility treatment', amount: '$37,000', change: 0.0, date: '2022-02-15' },
   { source: 'Master-bath renovation', amount: '$36,000', change: 0.0, date: '2024-10-15' },
@@ -207,7 +207,7 @@ const ExpensesTable = ({
   ];
   const occasionalSources = [
     'Christmas & gifts',
-    'Luxury anniversary holiday',
+    'Luxury anniversary vacation',
     'New SUV (cash, Sep)',
     'Around-the-world luxury cruise',
     'Master-bath renovation',
@@ -295,6 +295,7 @@ const ExpensesTable = ({
 
   return (
     <Card
+      id="expenses-table"
       sx={{
         mb: 2,
       }}

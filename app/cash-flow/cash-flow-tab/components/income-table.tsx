@@ -275,6 +275,7 @@ const IncomeTable = ({
 
   return (
     <Card
+      id="income-table"
       sx={{
         mb: 2,
       }}

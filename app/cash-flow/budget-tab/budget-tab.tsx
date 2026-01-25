@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, type ReactNode, useMemo } from 'react';
 import IncomeBudgetTable from './components/income-budget-table';
 import ExpensesBudgetTable from './components/expenses-budget-table';
+import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 
-import { MenuItem, Select } from '@mui/material';
+import { MenuItem, Select, Stack } from '@mui/material';
 
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ButtonPrimary from '~/components/button-primary';
@@ -14,9 +15,92 @@ import BudgetChart from './components/budget-chart';
 
 import * as XLSX from 'xlsx';
 import pkg from 'file-saver';
+import ButtonIcon from '~/components/button-icon';
+import InfoDialog from '~/components/info-dialog';
 const { saveAs } = pkg;
 
-const data = [
+export type TCashFlow = {
+  month: string;
+  earnings: number;
+  expenses: number;
+};
+
+export const data2020: TCashFlow[] = [
+  { month: 'Jan', earnings: 80600, expenses: 26450 },
+  { month: 'Feb', earnings: 72200, expenses: 74700 },
+  { month: 'Mar', earnings: 142500, expenses: 26450 },
+  { month: 'Apr', earnings: 99200, expenses: 18320 },
+  { month: 'May', earnings: 72900, expenses: 17780 },
+  { month: 'Jun', earnings: 73000, expenses: 18590 },
+  { month: 'Jul', earnings: 82600, expenses: 43730 },
+  { month: 'Aug', earnings: 73400, expenses: 18270 },
+  { month: 'Sep', earnings: 73200, expenses: 83180 },
+  { month: 'Oct', earnings: 81500, expenses: 21900 },
+  { month: 'Nov', earnings: 74600, expenses: 80520 },
+  { month: 'Dec', earnings: 75600, expenses: 19500 },
+];
+
+export const data2021: TCashFlow[] = [
+  { month: 'Jan', earnings: 64100, expenses: 17950 },
+  { month: 'Feb', earnings: 58400, expenses: 40200 },
+  { month: 'Mar', earnings: 72300, expenses: 30920 },
+  { month: 'Apr', earnings: 62000, expenses: 18280 },
+  { month: 'May', earnings: 57400, expenses: 39100 },
+  { month: 'Jun', earnings: 58900, expenses: 18490 },
+  { month: 'Jul', earnings: 63300, expenses: 19100 },
+  { month: 'Aug', earnings: 59000, expenses: 52050 },
+  { month: 'Sep', earnings: 59200, expenses: 18920 },
+  { month: 'Oct', earnings: 62400, expenses: 40730 },
+  { month: 'Nov', earnings: 59600, expenses: 28200 },
+  { month: 'Dec', earnings: 60100, expenses: 42850 },
+];
+
+export const data2022: TCashFlow[] = [
+  { month: 'Jan', earnings: 72100, expenses: 18950 },
+  { month: 'Feb', earnings: 65800, expenses: 40850 },
+  { month: 'Mar', earnings: 86400, expenses: 19100 },
+  { month: 'Apr', earnings: 71700, expenses: 18980 },
+  { month: 'May', earnings: 66500, expenses: 19210 },
+  { month: 'Jun', earnings: 66800, expenses: 48850 },
+  { month: 'Jul', earnings: 73600, expenses: 19850 },
+  { month: 'Aug', earnings: 67400, expenses: 19990 },
+  { month: 'Sep', earnings: 67700, expenses: 20150 },
+  { month: 'Oct', earnings: 74100, expenses: 20310 },
+  { month: 'Nov', earnings: 68800, expenses: 40270 },
+  { month: 'Dec', earnings: 69600, expenses: 38200 },
+];
+
+export const data2023: TCashFlow[] = [
+  { month: 'Jan', earnings: 85100, expenses: 48150 },
+  { month: 'Feb', earnings: 78400, expenses: 21050 },
+  { month: 'Mar', earnings: 78800, expenses: 20750 },
+  { month: 'Apr', earnings: 91100, expenses: 20890 },
+  { month: 'May', earnings: 46400, expenses: 58550 },
+  { month: 'Jun', earnings: 79800, expenses: 21410 },
+  { month: 'Jul', earnings: 87900, expenses: 21870 },
+  { month: 'Aug', earnings: 80800, expenses: 22050 },
+  { month: 'Sep', earnings: 81300, expenses: 22210 },
+  { month: 'Oct', earnings: 88800, expenses: 43850 },
+  { month: 'Nov', earnings: 82600, expenses: 46350 },
+  { month: 'Dec', earnings: 83600, expenses: 42350 },
+];
+
+export const data2024: TCashFlow[] = [
+  { month: 'Jan', earnings: 97600, expenses: 27600 },
+  { month: 'Feb', earnings: 125100, expenses: 21000 },
+  { month: 'Mar', earnings: 90600, expenses: 22000 },
+  { month: 'Apr', earnings: 104800, expenses: 46100 },
+  { month: 'May', earnings: 91600, expenses: 21800 },
+  { month: 'Jun', earnings: 92100, expenses: 22300 },
+  { month: 'Jul', earnings: 101100, expenses: 23000 },
+  { month: 'Aug', earnings: 93100, expenses: 23200 },
+  { month: 'Sep', earnings: 93600, expenses: 67100 },
+  { month: 'Oct', earnings: 102100, expenses: 45300 },
+  { month: 'Nov', earnings: 94600, expenses: 49800 },
+  { month: 'Dec', earnings: 95600, expenses: 45850 },
+];
+
+export const data2025: TCashFlow[] = [
   { month: 'Jan', earnings: 110600, expenses: 29150 },
   { month: 'Feb', earnings: 137600, expenses: 22650 },
   { month: 'Mar', earnings: 103600, expenses: 23350 },
@@ -31,16 +115,143 @@ const data = [
   { month: 'Dec', earnings: 113600, expenses: 48850 },
 ];
 
+export const yearlyData = {
+  2020: data2020,
+  2021: data2021,
+  2022: data2022,
+  2023: data2023,
+  2024: data2024,
+  2025: data2025,
+} as const;
+
+const passiveData2020 = data2020.map((d) => ({ month: d.month, earnings: 5000, expenses: 0 }));
+const passiveData2021 = data2021.map((d) => ({ month: d.month, earnings: 6000, expenses: 0 }));
+const passiveData2022 = data2022.map((d) => ({ month: d.month, earnings: 8000, expenses: 0 }));
+const passiveData2023 = data2023.map((d) => ({ month: d.month, earnings: 15000, expenses: 0 }));
+const passiveData2024 = data2024.map((d) => ({ month: d.month, earnings: 18000, expenses: 0 }));
+const passiveData2025 = data2025.map((d) => ({ month: d.month, earnings: 20000, expenses: 0 }));
+
+const passiveYearlyData = {
+  2020: passiveData2020,
+  2021: passiveData2021,
+  2022: passiveData2022,
+  2023: passiveData2023,
+  2024: passiveData2024,
+  2025: passiveData2025,
+} as const;
+
 const BudgetTab = () => {
   const [date, setDate] = useState('Y');
+  const [isOpenInfoDialog, setIsOpenInfoDialog] = useState(false);
+  const [infoTitle, setInfoTitle] = useState('');
+  const [infoContent, setInfoContent] = useState<ReactNode | null>(null);
+  const [infoYoutubeUrl, setInfoYoutubeUrl] = useState('');
+
   const fileType =
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
   const fileExtension = '.xlsx';
 
+  const years = Object.keys(yearlyData).map(Number);
+  const currentYear = Math.max(...years);
+
+  const getPeriodMonths = (timeframe: string): number => {
+    switch (timeframe) {
+      case 'W':
+        return 0.25;
+      case 'M':
+        return 1;
+      case 'Q':
+        return 3;
+      case '6M':
+        return 6;
+      case 'Y':
+        return 12;
+      case '2Y':
+        return 24;
+      case '5Y':
+        return 60;
+      default:
+        return 12;
+    }
+  };
+
+  const [fullMonthsCount, scaleFactor] = useMemo(() => {
+    const months = getPeriodMonths(date);
+    if (months < 1) {
+      return [1, months];
+    }
+    return [Math.min(Math.floor(months), 12), 1];
+  }, [date]);
+
+  const periodData = useMemo((): TCashFlow[] => {
+    const monthsNeeded = getPeriodMonths(date);
+    let data: TCashFlow[] = [];
+    if (monthsNeeded <= 12) {
+      const currentData = yearlyData[currentYear as keyof typeof yearlyData] || [];
+      const numMonths = Math.min(fullMonthsCount, 12);
+      data = currentData.slice(-numMonths);
+    } else {
+      const numYears = monthsNeeded / 12;
+      const startYear = currentYear - numYears + 1;
+      for (let y = startYear; y <= currentYear; y++) {
+        if (yearlyData[y as keyof typeof yearlyData]) {
+          data = [...data, ...yearlyData[y as keyof typeof yearlyData]];
+        }
+      }
+    }
+    return data;
+  }, [date, currentYear, yearlyData, fullMonthsCount]);
+
+  const totalEarnings = useMemo(
+    () => periodData.reduce((acc, item) => acc + item.earnings, 0) * scaleFactor,
+    [periodData, scaleFactor]
+  );
+
+  const totalExpenses = useMemo(
+    () => periodData.reduce((acc, item) => acc + item.expenses, 0) * scaleFactor,
+    [periodData, scaleFactor]
+  );
+
+  // Dynamic passive period data (mirrors periodData logic but uses passiveYearlyData)
+  const passivePeriodData = useMemo((): TCashFlow[] => {
+    const monthsNeeded = getPeriodMonths(date);
+    let data: TCashFlow[] = [];
+    if (monthsNeeded <= 12) {
+      const currentData = passiveYearlyData[currentYear as keyof typeof passiveYearlyData] || [];
+      const numMonths = Math.min(fullMonthsCount, 12);
+      data = currentData.slice(-numMonths);
+    } else {
+      const numYears = monthsNeeded / 12;
+      const startYear = currentYear - numYears + 1;
+      for (let y = startYear; y <= currentYear; y++) {
+        if (passiveYearlyData[y as keyof typeof passiveYearlyData]) {
+          data = [...data, ...passiveYearlyData[y as keyof typeof passiveYearlyData]];
+        }
+      }
+    }
+    return data;
+  }, [date, currentYear, passiveYearlyData, fullMonthsCount]);
+
+  const totalPassive = useMemo(
+    () => passivePeriodData.reduce((acc, item) => acc + item.earnings, 0) * scaleFactor,
+    [passivePeriodData, scaleFactor]
+  );
+
+  // Lifestyle Coverage calculations (dynamic based on period data)
+  const lifestyleCombined = useMemo(
+    () => (totalExpenses > 0 ? Math.round((totalEarnings / totalExpenses) * 100 * 10) / 10 : 0),
+    [totalEarnings, totalExpenses]
+  );
+
+  const lifestylePassive = useMemo(
+    () => (totalExpenses > 0 ? Math.round((totalPassive / totalExpenses) * 100 * 10) / 10 : 0),
+    [totalPassive, totalExpenses]
+  );
+
   const handleDownload = () => {
     const wb = XLSX.utils.book_new();
 
-    const ws = XLSX.utils.json_to_sheet(data);
+    const ws = XLSX.utils.json_to_sheet(data2025);
 
     XLSX.utils.book_append_sheet(wb, ws, 'BudgetFlow');
 
@@ -48,6 +259,25 @@ const BudgetTab = () => {
 
     const blob = new Blob([excelBuffer], { type: fileType });
     saveAs(blob, 'budget_flow' + fileExtension);
+  };
+
+  const handleOpenInfoDialog = ({
+    title,
+    content,
+    youtubeUrl,
+  }: {
+    title: string;
+    content: React.ReactNode;
+    youtubeUrl: string;
+  }) => {
+    setInfoTitle(title);
+    setInfoContent(content);
+    setInfoYoutubeUrl(youtubeUrl);
+    setIsOpenInfoDialog(true);
+  };
+
+  const handleCloseInfoDialog = () => {
+    setIsOpenInfoDialog(false);
   };
 
   return (
@@ -82,7 +312,7 @@ const BudgetTab = () => {
             },
           }}
         >
-          {['W', 'M', 'Q', '6M', 'Y'].map((tf) => (
+          {['W', 'M', 'Q', '6M', 'Y', '2Y', '5Y'].map((tf) => (
             <MenuItem key={tf} value={tf}>
               {tf}
             </MenuItem>
@@ -95,11 +325,203 @@ const BudgetTab = () => {
         </ButtonPrimary>
       </Box>
       <BudgetChart date={date} />
+      <Box
+        sx={{
+          position: 'relative',
+          backgroundColor: 'var(--bg-color-secondary)',
+          borderRadius: 2,
+          border: '1px solid var(--border-color)',
+          px: 2,
+          py: 2,
+          mb: 2,
+        }}
+      >
+        <Typography color="var(--text-color-primary)" fontSize="1.2rem">
+          Life Style Coverage Percentage (Combined)
+        </Typography>
+        <Typography color="var(--text-color-secondary)" fontSize="1rem">
+          (Total Income ÷ Total Expenses) x 100
+        </Typography>
+        <Box display="flex" alignItems="center" gap={1}>
+          <Typography fontSize="2.8rem" fontWeight={700}>
+            {lifestyleCombined}%
+          </Typography>
+          <ButtonIcon
+            onClick={() =>
+              handleOpenInfoDialog({
+                title: 'Life Style Coverage Percentage (Combined)',
+                content: (
+                  <Stack px={2} gap={3} mb={2}>
+                    <Box>
+                      <Typography
+                        sx={{ fontWeight: '400' }}
+                        fontSize="1.4rem"
+                        color="var(--text-color-secondary)"
+                      >
+                        This metric shows the percentage of your total expenses covered by your
+                        combined income sources (active, passive, and portfolio). It helps assess
+                        your overall financial health and ability to sustain your lifestyle.
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
+                      <Typography
+                        sx={{ fontWeight: '400' }}
+                        fontSize="1.4rem"
+                        color="var(--text-color-secondary)"
+                      >
+                        (Total Income ÷ Total Expenses) × 100
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography sx={{ fontWeight: '700' }}>What It Means</Typography>
+                      <Typography
+                        sx={{ fontWeight: '400' }}
+                        fontSize="1.4rem"
+                        color="var(--text-color-secondary)"
+                      >
+                        - 100%: Your income exactly covers expenses (break-even).
+                        <br />
+                        - &gt; 100%: Surplus for savings, investments, or debt reduction.
+                        <br />
+                        - &lt; 100%: Deficit; review spending or boost income.
+                        <br />
+                        Track this over time to spot trends and plan for financial goals like
+                        retirement.
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography sx={{ fontWeight: '700' }}>Tip</Typography>
+                      <Typography
+                        sx={{ fontWeight: '400' }}
+                        fontSize="1.4rem"
+                        color="var(--text-color-secondary)"
+                      >
+                        Aim for 120-150%+ to build resilience against unexpected expenses or income
+                        dips.
+                      </Typography>
+                    </Box>
+                  </Stack>
+                ),
+                youtubeUrl: '',
+              })
+            }
+            sx={{
+              position: 'absolute',
+              top: '-13px',
+              left: '-13px',
+              opacity: 0.7,
+            }}
+          >
+            <InfoOutlineIcon sx={{ fontSize: '2rem' }} />
+          </ButtonIcon>
+        </Box>
+      </Box>
+      <Box
+        sx={{
+          position: 'relative',
+          backgroundColor: 'var(--bg-color-secondary)',
+          borderRadius: 2,
+          border: '1px solid var(--border-color)',
+          px: 2,
+          py: 2,
+          mb: 2,
+        }}
+      >
+        <Typography color="var(--text-color-primary)" fontSize="1.2rem">
+          Life Style Coverage Percentage (Passive)
+        </Typography>
+        <Typography color="var(--text-color-secondary)" fontSize="1rem">
+          (Passive Income ÷ Total Expenses) x 100
+        </Typography>
+        <Box display="flex" alignItems="center" gap={1}>
+          <Typography fontSize="2.8rem" fontWeight={700}>
+            {lifestylePassive}%
+          </Typography>
+          <ButtonIcon
+            onClick={() =>
+              handleOpenInfoDialog({
+                title: 'Life Style Coverage Percentage (Passive)',
+                content: (
+                  <Stack px={2} gap={3} mb={2}>
+                    <Box>
+                      <Typography
+                        sx={{ fontWeight: '400' }}
+                        fontSize="1.4rem"
+                        color="var(--text-color-secondary)"
+                      >
+                        This measures how much of your expenses are covered solely by passive income
+                        sources (e.g., rentals, dividends, royalties). It's a key indicator of
+                        progress toward financial independence, where passive income fully funds
+                        your lifestyle.
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
+                      <Typography
+                        sx={{ fontWeight: '400' }}
+                        fontSize="1.4rem"
+                        color="var(--text-color-secondary)"
+                      >
+                        (Passive Income ÷ Total Expenses) × 100
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography sx={{ fontWeight: '700' }}>What It Means</Typography>
+                      <Typography
+                        sx={{ fontWeight: '400' }}
+                        fontSize="1.4rem"
+                        color="var(--text-color-secondary)"
+                      >
+                        - 0-50%: Early stage; passive income supplements but doesn't cover much.
+                        <br />
+                        - 50-100%: Building momentum; halfway to passive-funded lifestyle.
+                        <br />
+                        - &gt; 100%: Financial independence milestone—your passive streams sustain
+                        or exceed expenses.
+                        <br />
+                        Monitor growth by diversifying passive sources and reinvesting surpluses.
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography sx={{ fontWeight: '700' }}>Tip</Typography>
+                      <Typography
+                        sx={{ fontWeight: '400' }}
+                        fontSize="1.4rem"
+                        color="var(--text-color-secondary)"
+                      >
+                        The "4% rule" suggests you can withdraw 4% of investments annually; aim for
+                        passive coverage to hit 100% over time.
+                      </Typography>
+                    </Box>
+                  </Stack>
+                ),
+                youtubeUrl: '',
+              })
+            }
+            sx={{
+              position: 'absolute',
+              top: '-13px',
+              left: '-13px',
+              opacity: 0.7,
+            }}
+          >
+            <InfoOutlineIcon sx={{ fontSize: '2rem' }} />
+          </ButtonIcon>
+        </Box>
+      </Box>
       <Typography variant="h2" fontSize="2rem" fontWeight={600} mt={3} mb={4}>
         Transactions
       </Typography>
       <IncomeBudgetTable timeframe={date} />
       <ExpensesBudgetTable timeframe={date} />
+      <InfoDialog
+        title={infoTitle}
+        content={infoContent}
+        youtubeUrl={infoYoutubeUrl}
+        open={isOpenInfoDialog}
+        onClose={handleCloseInfoDialog}
+      />
     </Box>
   );
 };

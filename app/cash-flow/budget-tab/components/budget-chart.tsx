@@ -1,70 +1,64 @@
 import React, { useState } from 'react';
-import { Chart } from 'react-google-charts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Line,
+} from 'recharts';
 
 import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { Box, Menu, MenuItem, OutlinedInput, Stack, Typography } from '@mui/material';
+import { Box, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import { Link } from 'react-router';
 
 import Card from '~/components/card';
 import ButtonIcon from '~/components/button-icon';
 import InfoDialog from '~/components/info-dialog';
 import TrendingChip from '~/components/trending-chip';
+import {
+  data2020,
+  data2021,
+  data2022,
+  data2023,
+  data2024,
+  data2025,
+} from '~/cash-flow/budget-tab/budget-tab';
 
-const data2024 = [
-  { month: 'Jan', earnings: 97600, expenses: 27600 },
-  { month: 'Feb', earnings: 125100, expenses: 21000 },
-  { month: 'Mar', earnings: 90600, expenses: 22000 },
-  { month: 'Apr', earnings: 104800, expenses: 46100 },
-  { month: 'May', earnings: 91600, expenses: 21800 },
-  { month: 'Jun', earnings: 92100, expenses: 22300 },
-  { month: 'Jul', earnings: 101100, expenses: 23000 },
-  { month: 'Aug', earnings: 93100, expenses: 23200 },
-  { month: 'Sep', earnings: 93600, expenses: 67100 },
-  { month: 'Oct', earnings: 102100, expenses: 45300 },
-  { month: 'Nov', earnings: 94600, expenses: 49800 },
-  { month: 'Dec', earnings: 95600, expenses: 45850 },
-];
+// const data2024 = [
+//   { month: 'Jan', earnings: 97600, expenses: 27600 },
+//   { month: 'Feb', earnings: 125100, expenses: 21000 },
+//   { month: 'Mar', earnings: 90600, expenses: 22000 },
+//   { month: 'Apr', earnings: 104800, expenses: 46100 },
+//   { month: 'May', earnings: 91600, expenses: 21800 },
+//   { month: 'Jun', earnings: 92100, expenses: 22300 },
+//   { month: 'Jul', earnings: 101100, expenses: 23000 },
+//   { month: 'Aug', earnings: 93100, expenses: 23200 },
+//   { month: 'Sep', earnings: 93600, expenses: 67100 },
+//   { month: 'Oct', earnings: 102100, expenses: 45300 },
+//   { month: 'Nov', earnings: 94600, expenses: 49800 },
+//   { month: 'Dec', earnings: 95600, expenses: 45850 },
+// ];
 
-const data2025 = [
-  { month: 'Jan', earnings: 110600, expenses: 29150 },
-  { month: 'Feb', earnings: 137600, expenses: 22650 },
-  { month: 'Mar', earnings: 103600, expenses: 23350 },
-  { month: 'Apr', earnings: 113100, expenses: 23550 },
-  { month: 'May', earnings: 105600, expenses: 23400 },
-  { month: 'Jun', earnings: 106600, expenses: 23650 },
-  { month: 'Jul', earnings: 117100, expenses: 75850 },
-  { month: 'Aug', earnings: 108600, expenses: 24050 },
-  { month: 'Sep', earnings: 109600, expenses: 24450 },
-  { month: 'Oct', earnings: 119600, expenses: 24650 },
-  { month: 'Nov', earnings: 111600, expenses: 52150 },
-  { month: 'Dec', earnings: 113600, expenses: 48850 },
-];
+// const data2025 = [
+//   { month: 'Jan', earnings: 110600, expenses: 29150 },
+//   { month: 'Feb', earnings: 137600, expenses: 22650 },
+//   { month: 'Mar', earnings: 103600, expenses: 23350 },
+//   { month: 'Apr', earnings: 113100, expenses: 23550 },
+//   { month: 'May', earnings: 105600, expenses: 23400 },
+//   { month: 'Jun', earnings: 106600, expenses: 23650 },
+//   { month: 'Jul', earnings: 117100, expenses: 75850 },
+//   { month: 'Aug', earnings: 108600, expenses: 24050 },
+//   { month: 'Sep', earnings: 109600, expenses: 24450 },
+//   { month: 'Oct', earnings: 119600, expenses: 24650 },
+//   { month: 'Nov', earnings: 111600, expenses: 52150 },
+//   { month: 'Dec', earnings: 113600, expenses: 48850 },
+// ];
 
 const expenseProps = [154800 / 357500, 130200 / 357500, 65000 / 357500, 7500 / 357500];
-
-const subExpenses = {
-  Fixed: [
-    { name: 'Primary-home mortgage (P&I)', prop: 96000 / 154800 },
-    { name: 'Health-insurance premium', prop: 21600 / 154800 },
-    { name: 'Other Fixed', prop: 37200 / 154800 },
-  ],
-  Variable: [
-    { name: 'Groceries / household', prop: 34000 / 130200 },
-    { name: 'Fun money (couple)', prop: 38000 / 130200 },
-    { name: 'Other Variable', prop: 58200 / 130200 },
-  ],
-  Occasional: [
-    { name: 'Travel', prop: 24000 / 65000 },
-    { name: 'Entertainment', prop: 21000 / 65000 },
-    { name: 'Gifts', prop: 20000 / 65000 },
-  ],
-  Unplanned: [
-    { name: 'Emergency Repairs', prop: 3000 / 7500 },
-    { name: 'Unexpected Medical', prop: 2000 / 7500 },
-    { name: 'Auto Repairs', prop: 2500 / 7500 },
-  ],
-};
 
 const BudgetChart = ({ date }: { date: string }) => {
   const [isOpenInfoDialog, setIsOpenInfoDialog] = useState(false);
@@ -100,6 +94,12 @@ const BudgetChart = ({ date }: { date: string }) => {
     case 'Y':
       periodData = data2025;
       break;
+    case '2Y':
+      periodData = [...data2024, ...data2025];
+      break;
+    case '5Y':
+      periodData = [...data2021, ...data2022, ...data2023, ...data2024, ...data2025];
+      break;
     default:
       periodData = [data2025[11]];
   }
@@ -109,15 +109,13 @@ const BudgetChart = ({ date }: { date: string }) => {
   const totalNet = totalEarnings - totalExpenses;
   const savingsRate = totalEarnings > 0 ? ((totalNet / totalEarnings) * 100).toFixed(1) : '0';
 
-  // UPDATED: Compute prior period for total cash flow $ change (now with prior year for 'Y'; scale for 'W')
   let prevPeriodData: typeof periodData = [];
-  let prevScaleFactor = scaleFactor; // Match current scaling
+  let prevScaleFactor = scaleFactor;
   switch (date) {
     case 'W':
     case 'M':
-      prevPeriodData = [data2025[10]]; // Prior: Nov (full month; approx for weekly)
+      prevPeriodData = [data2025[10]];
       if (date === 'W') {
-        // FIXED: Scale prev for weekly comparison
         prevPeriodData = [
           {
             month: 'Prior Week',
@@ -137,6 +135,12 @@ const BudgetChart = ({ date }: { date: string }) => {
       // Prior full year (2024 for 2025)
       prevPeriodData = data2024;
       break;
+    case '2Y':
+      prevPeriodData = [...data2022, ...data2023];
+      break;
+    case '5Y':
+      prevPeriodData = []; // No full prior 5Y data available
+      break;
     default:
       prevPeriodData = []; // No prior for full year
       break;
@@ -153,88 +157,134 @@ const BudgetChart = ({ date }: { date: string }) => {
   const trendValue =
     prevTotalNet !== 0 ? Math.round(((totalNet - prevTotalNet) / prevTotalNet) * 100 * 10) / 10 : 0;
 
-  const expenseCategories = ['Fixed', 'Variable', 'Occasional', 'Unplanned'];
+  const expenseCategories = ['Fixed', 'Variable', 'Occasional', 'Planned'];
 
-  const incomeNode = `Income\n$${totalEarnings.toLocaleString()}\n(100%)`;
-  const savingsNode = `Cash Flow\n$${totalNet.toLocaleString()}\n(${savingsRate}%)`;
+  const incomeCategories = ['Passive', 'Active', 'Portfolio'];
+  const incomeProps = [0.3, 0.6, 0.1]; // Placeholder proportions; adjust as needed
+  const incomeAmounts = incomeCategories.map((_, i) => totalEarnings * incomeProps[i]);
+  const passiveIncome = incomeAmounts[0];
 
-  const categoryNodes: string[] = [];
   const categoryAmounts: number[] = [];
-  const subNodeData: { label: string; weight: number }[][] = [];
-
   expenseCategories.forEach((cat, i) => {
     const catAmt = totalExpenses * expenseProps[i];
-    const catPct = ((catAmt / totalEarnings) * 100).toFixed(1);
-    const catLabel = `${cat}\n$${Math.round(catAmt).toLocaleString()}\n(${catPct}%)`;
-    categoryNodes.push(catLabel);
     categoryAmounts.push(catAmt);
-
-    const subs: { label: string; weight: number }[] = [];
-    subExpenses[cat as keyof typeof subExpenses].forEach((item) => {
-      const subAmt = catAmt * item.prop;
-      const subPct = ((subAmt / totalEarnings) * 100).toFixed(1);
-      const subLabel = `${item.name}\n$${Math.round(subAmt).toLocaleString()}\n(${subPct}%)`;
-      subs.push({ label: subLabel, weight: subAmt });
-    });
-    subNodeData.push(subs);
   });
 
-  const sankeyData: [string, string, number][] = [];
-
-  sankeyData.push([incomeNode, savingsNode, Math.round(totalNet)]);
-
-  expenseCategories.forEach((cat, i) => {
-    if (categoryAmounts[i] > 0) {
-      sankeyData.push([incomeNode, categoryNodes[i], Math.round(categoryAmounts[i])]);
-      subNodeData[i].forEach((sub) => {
-        sankeyData.push([categoryNodes[i], sub.label, Math.round(sub.weight)]);
-      });
-    }
-  });
-
-  const tooltipHeader = { role: 'tooltip', p: { html: true } };
   const chartData = [
-    ['From', 'To', 'Weight', tooltipHeader],
-    ...sankeyData.map(([from, to, weight]) => {
-      const fromName = from.split('\n')[0];
-      const toName = to.split('\n')[0];
-      const flow = Math.round(weight);
-      const formattedValue = `$${flow.toLocaleString()}`;
-      const html = `
-        <div style="background: rgba(var(--bg-color-secondary-alpha), 0.96); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px 14px;">
-          <div style="color: var(--text-color-secondary); font-size: 0.9rem; margin-bottom: 8px;">${fromName} to ${toName}</div>
-          <div style="padding: 4px 0; color: var(--text-color); font-weight: 500; font-size: 14px;">${formattedValue}</div>
-        </div>
-      `;
-      return [from, to, flow, html];
-    }),
+    {
+      category: 'Income',
+      Passive: incomeAmounts[0],
+      Active: incomeAmounts[1],
+      Portfolio: incomeAmounts[2],
+      Fixed: 0,
+      Variable: 0,
+      Occasional: 0,
+      Planned: 0,
+      passiveIncome,
+    },
+    {
+      category: 'Expenses',
+      Passive: 0,
+      Active: 0,
+      Portfolio: 0,
+      Fixed: categoryAmounts[0],
+      Variable: categoryAmounts[1],
+      Occasional: categoryAmounts[2],
+      Planned: categoryAmounts[3],
+      passiveIncome,
+    },
   ];
 
-  const options = {
-    backgroundColor: 'transparent',
-    tooltip: {
-      isHtml: true,
-    },
-    sankey: {
-      orientation: 'horizontal' as const,
-      node: {
-        label: {
-          fontName: '--var(--font-sans)',
-          fontSize: '1.2rem',
-          color: 'white',
-        },
-        nodePadding: 32,
-        width: 0,
-        labelPadding: 10,
-        interactivity: true,
-        colors: ['#8b5cf6', '#10b981', '#3b82f6', '#ef4444', '#f59e0b'],
-      },
-      link: {
-        colorMode: 'source',
-        fillOpacity: 0.75,
-        colors: ['#8b5cf6', '#10b981', '#3b82f6', '#ef4444', '#f59e0b'],
-      },
-    },
+  const colors = {
+    passive: '#10b981',
+    active: '#3b82f6',
+    portfolio: '#8b5cf6',
+    fixed: '#10b981',
+    variable: '#3b82f6',
+    occasional: '#ef4444',
+    planned: '#f59e0b',
+  };
+
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const dataPoint = payload[0].payload;
+      const category = dataPoint.category;
+      let content = null;
+      if (category === 'Income') {
+        content = (
+          <div
+            style={{
+              background: 'rgba(var(--bg-color-secondary-alpha), 0.96)',
+              border: '1px solid var(--border-color)',
+              borderRadius: 12,
+              padding: '10px 14px',
+            }}
+          >
+            <p
+              style={{
+                color: 'var(--text-color-secondary)',
+                fontSize: '0.9rem',
+                marginBottom: 8,
+              }}
+            >
+              {category}
+            </p>
+            <p style={{ padding: '4px 0', color: colors.passive }}>
+              Passive: ${Math.round(dataPoint.Passive).toLocaleString()}
+            </p>
+            <p style={{ padding: '4px 0', color: colors.active }}>
+              Active: ${Math.round(dataPoint.Active).toLocaleString()}
+            </p>
+            <p style={{ padding: '4px 0', color: colors.portfolio }}>
+              Portfolio: ${Math.round(dataPoint.Portfolio).toLocaleString()}
+            </p>
+            <p style={{ padding: '4px 0', color: 'var(--text-color)', fontWeight: 500 }}>
+              Total: ${totalEarnings.toLocaleString()}
+            </p>
+          </div>
+        );
+      } else if (category === 'Expenses') {
+        content = (
+          <div
+            style={{
+              background: 'rgba(var(--bg-color-secondary-alpha), 0.96)',
+              border: '1px solid var(--border-color)',
+              borderRadius: 12,
+              padding: '10px 14px',
+            }}
+          >
+            <p
+              style={{
+                color: 'var(--text-color-secondary)',
+                fontSize: '0.9rem',
+                marginBottom: 8,
+              }}
+            >
+              {category}
+            </p>
+            <p style={{ padding: '4px 0', color: colors.fixed }}>
+              Fixed: ${Math.round(dataPoint.Fixed).toLocaleString()}
+            </p>
+            <p style={{ padding: '4px 0', color: colors.variable }}>
+              Variable: ${Math.round(dataPoint.Variable).toLocaleString()}
+            </p>
+            <p style={{ padding: '4px 0', color: colors.occasional }}>
+              Occasional: ${Math.round(dataPoint.Occasional).toLocaleString()}
+            </p>
+            <p style={{ padding: '4px 0', color: colors.planned }}>
+              Planned: ${Math.round(dataPoint.Planned).toLocaleString()}
+            </p>
+            <p style={{ padding: '4px 0', color: 'var(--text-color)', fontWeight: 500 }}>
+              Total: ${totalExpenses.toLocaleString()}
+            </p>
+          </div>
+        );
+      }
+      if (content) {
+        return content;
+      }
+    }
+    return null;
   };
 
   return (
@@ -270,99 +320,161 @@ const BudgetChart = ({ date }: { date: string }) => {
           </MenuItem>
         </Menu>
 
-        <Box mb={1} display="flex" alignItems="center" justifyContent="space-between" mt={2}>
-          <Box
-            display="flex"
-            alignItems="center"
-            gap={1}
-            sx={{
-              maxWidth: '50%',
-              flexWrap: 'wrap',
-            }}
-          >
-            <Box display="flex" alignItems="center" gap={1}>
-              <Box
-                sx={{
-                  width: 10,
-                  height: 10,
-                  bgcolor: 'var(--accent--primary-1)',
-                  borderRadius: '50%',
-                }}
-              />
-              <Typography fontSize="1.2rem" color="var(--text-color-secondary)">
-                Income
-              </Typography>
+        <Stack gap={2} pb={1} mt={2}>
+          <Box>
+            <Typography fontSize="1.2rem" color="var(--text-color-secondary)">
+              Income
+            </Typography>
+            <Box display="flex" alignItems="center" gap={1} flexWrap="wrap" mt={0.5}>
+              <Box display="flex" alignItems="center" gap={1}>
+                <Box
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    bgcolor: colors.passive,
+                    borderRadius: '50%',
+                  }}
+                />
+                <Typography fontSize="1rem" color="var(--text-color-secondary)">
+                  Passive
+                </Typography>
+              </Box>
+              <Box display="flex" alignItems="center" gap={1}>
+                <Box
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    bgcolor: colors.active,
+                    borderRadius: '50%',
+                  }}
+                />
+                <Typography fontSize="1rem" color="var(--text-color-secondary)">
+                  Active
+                </Typography>
+              </Box>
+              <Box display="flex" alignItems="center" gap={1}>
+                <Box
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    bgcolor: colors.portfolio,
+                    borderRadius: '50%',
+                  }}
+                />
+                <Typography fontSize="1rem" color="var(--text-color-secondary)">
+                  Portfolio
+                </Typography>
+              </Box>
             </Box>
           </Box>
-        </Box>
-        <Stack gap={1} pb={1}>
-          <Typography fontSize="1.2rem" color="var(--text-color-secondary)">
-            Expenses
-          </Typography>
-          <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
-            <Box display="flex" alignItems="center" gap={1}>
-              <Box
-                sx={{
-                  width: 10,
-                  height: 10,
-                  bgcolor: '#10b981',
-                  borderRadius: '50%',
-                }}
-              />
-              <Typography fontSize="1rem" color="var(--text-color-secondary)">
-                Fixed
-              </Typography>
-            </Box>
-            <Box display="flex" alignItems="center" gap={1}>
-              <Box
-                sx={{
-                  width: 10,
-                  height: 10,
-                  bgcolor: '#3b82f6',
-                  borderRadius: '50%',
-                }}
-              />
-              <Typography fontSize="1rem" color="var(--text-color-secondary)">
-                Variable
-              </Typography>
-            </Box>
-            <Box display="flex" alignItems="center" gap={1}>
-              <Box
-                sx={{
-                  width: 10,
-                  height: 10,
-                  bgcolor: '#ef4444',
-                  borderRadius: '50%',
-                }}
-              />
-              <Typography fontSize="1rem" color="var(--text-color-secondary)">
-                Occasional
-              </Typography>
-            </Box>
-            <Box display="flex" alignItems="center" gap={1}>
-              <Box
-                sx={{
-                  width: 10,
-                  height: 10,
-                  bgcolor: '#f59e0b',
-                  borderRadius: '50%',
-                }}
-              />
-              <Typography fontSize="1rem" color="var(--text-color-secondary)">
-                Unplanned
-              </Typography>
+          <Box>
+            <Typography fontSize="1.2rem" color="var(--text-color-secondary)">
+              Expenses
+            </Typography>
+            <Box display="flex" alignItems="center" gap={1} flexWrap="wrap" mt={0.5}>
+              <Box display="flex" alignItems="center" gap={1}>
+                <Box
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    bgcolor: colors.fixed,
+                    borderRadius: '50%',
+                  }}
+                />
+                <Typography fontSize="1rem" color="var(--text-color-secondary)">
+                  Fixed
+                </Typography>
+              </Box>
+              <Box display="flex" alignItems="center" gap={1}>
+                <Box
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    bgcolor: colors.variable,
+                    borderRadius: '50%',
+                  }}
+                />
+                <Typography fontSize="1rem" color="var(--text-color-secondary)">
+                  Variable
+                </Typography>
+              </Box>
+              <Box display="flex" alignItems="center" gap={1}>
+                <Box
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    bgcolor: colors.occasional,
+                    borderRadius: '50%',
+                  }}
+                />
+                <Typography fontSize="1rem" color="var(--text-color-secondary)">
+                  Occasional
+                </Typography>
+              </Box>
+              <Box display="flex" alignItems="center" gap={1}>
+                <Box
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    bgcolor: colors.planned,
+                    borderRadius: '50%',
+                  }}
+                />
+                <Typography fontSize="1rem" color="var(--text-color-secondary)">
+                  Planned
+                </Typography>
+              </Box>
             </Box>
           </Box>
         </Stack>
 
-        <Box sx={{ px: 1, overflow: 'hidden' }}>
-          <Chart
-            chartType="Sankey"
-            width="100%"
-            height="680px"
-            data={chartData}
-            options={options}
-          />
+        <Box sx={{ height: 500, px: 1 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={chartData}
+              margin={{
+                top: 20,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
+            >
+              <CartesianGrid
+                strokeDasharray=""
+                vertical={false}
+                stroke="var(--border-color-secondary)"
+              />
+              <XAxis
+                dataKey="category"
+                stroke="var(--text-color-secondary)"
+                tickLine={false}
+                fontSize="1rem"
+              />
+              <YAxis
+                stroke="var(--text-color-secondary)"
+                tickLine={false}
+                axisLine={false}
+                fontSize="1.2rem"
+                tickFormatter={(value: number) => `$${Math.round(value).toLocaleString()}`}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="Passive" stackId="stack" fill={colors.passive} />
+              <Bar dataKey="Active" stackId="stack" fill={colors.active} />
+              <Bar dataKey="Portfolio" stackId="stack" fill={colors.portfolio} />
+              <Bar dataKey="Fixed" stackId="stack" fill={colors.fixed} />
+              <Bar dataKey="Variable" stackId="stack" fill={colors.variable} />
+              <Bar dataKey="Occasional" stackId="stack" fill={colors.occasional} />
+              <Bar dataKey="Planned" stackId="stack" fill={colors.planned} />
+              <Line
+                type="monotone"
+                dataKey="passiveIncome"
+                stroke="#fff"
+                strokeWidth={2}
+                dot={false}
+                activeDot={false}
+              />
+            </BarChart>
+          </ResponsiveContainer>
         </Box>
 
         <ButtonIcon

@@ -65,7 +65,7 @@ const data = [
     dueDate: '12-31-2025',
   },
   {
-    source: 'Mortgage - Holiday Residence',
+    source: 'Mortgage - Vacation Residence',
     balance: '$230,000',
     interestRate: 4.1,
     dueDate: '12-31-2025',

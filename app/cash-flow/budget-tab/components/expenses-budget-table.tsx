@@ -21,6 +21,15 @@ import Card from '~/components/card';
 import Dropdown from '~/components/dropdown';
 import dayjs from 'dayjs';
 
+import {
+  data2020,
+  data2021,
+  data2022,
+  data2023,
+  data2024,
+  data2025,
+} from '~/cash-flow/budget-tab/budget-tab';
+
 interface ExpenseItem {
   category: string;
   budget: number;
@@ -41,21 +50,6 @@ const rawData: ExpenseItem[] = [
   { category: 'Emergency Repairs', budget: 4000, actual: 3000, date: '2026-01-01' },
   { category: 'Unexpected Medical', budget: 3000, actual: 2000, date: '2026-01-01' },
   { category: 'Auto Repairs', budget: 3000, actual: 2500, date: '2026-01-01' },
-];
-
-const monthlyExpenses = [
-  { month: 'Jan', expenses: 29150 },
-  { month: 'Feb', expenses: 22650 },
-  { month: 'Mar', expenses: 23350 },
-  { month: 'Apr', expenses: 23550 },
-  { month: 'May', expenses: 23400 },
-  { month: 'Jun', expenses: 23650 },
-  { month: 'Jul', expenses: 75850 },
-  { month: 'Aug', expenses: 24050 },
-  { month: 'Sep', expenses: 24450 },
-  { month: 'Oct', expenses: 24650 },
-  { month: 'Nov', expenses: 52150 },
-  { month: 'Dec', expenses: 48850 },
 ];
 
 const columnOptions = ['Budget', 'Actual', 'Remaining'] as const;
@@ -94,30 +88,35 @@ const getPeriodInMonths = (timeframe: string) => {
   return periodMap[timeframe] || 12;
 };
 
-const getFilteredMonthlyData = (timeframe: string) => {
-  const numMonthsMap: Record<string, number> = {
-    W: 1,
-    M: 1,
-    Q: 3,
-    '6M': 6,
-    Y: 12,
-    '2Y': 12,
-    '5Y': 12,
-  };
-  const numMonths = numMonthsMap[timeframe] || 12;
-  const recentData = monthlyExpenses.slice(-numMonths);
-  const sum = recentData.reduce((acc, item) => acc + item.expenses, 0);
-  const periodInMonths = getPeriodInMonths(timeframe);
-  const prorate = Math.min(periodInMonths / numMonths, 1);
-  return Math.round(sum * prorate);
-};
-
 const ExpensesBudgetTable = ({ timeframe = 'Y' }: Props) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [visibleColumns, setVisibleColumns] = useState<ColumnKey[]>([...columnOptions]);
   const [openCategories, setOpenCategories] = useState<{
     [key: string]: boolean;
   }>({});
+
+  const fullMonthlyData = useMemo(
+    () => [...data2020, ...data2021, ...data2022, ...data2023, ...data2024, ...data2025],
+    []
+  );
+
+  const getFilteredMonthlyData = (timeframe: string) => {
+    const numMonthsMap: Record<string, number> = {
+      W: 1,
+      M: 1,
+      Q: 3,
+      '6M': 6,
+      Y: 12,
+      '2Y': 24,
+      '5Y': 60,
+    };
+    const numMonths = numMonthsMap[timeframe] || 12;
+    const recentData = fullMonthlyData.slice(-numMonths);
+    const sum = recentData.reduce((acc, item) => acc + item.expenses, 0);
+    const periodInMonths = getPeriodInMonths(timeframe);
+    const prorate = Math.min(periodInMonths / numMonths, 1);
+    return Math.round(sum * prorate);
+  };
 
   const dateFilteredData = useMemo(() => rawData, []);
 

@@ -2,15 +2,16 @@ import React, { useState } from 'react';
 
 import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 
-import { Box, Menu, MenuItem, OutlinedInput, Stack, Typography } from '@mui/material';
+import { Box, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import {
-  AreaChart,
-  Area,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Line,
 } from 'recharts';
 import { Link } from 'react-router';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -19,7 +20,6 @@ import InfoDialog from '~/components/info-dialog';
 import TrendingChip from '~/components/trending-chip';
 import Card from '~/components/card';
 import ButtonIcon from '~/components/button-icon';
-import Dropdown from '~/components/dropdown';
 
 const monthlyData = [
   { period: "Jan '20", assets: 8662826, liabilities: 5011333, netWorth: 3651493 },
@@ -106,6 +106,21 @@ const formatNumber = (num: number): string => {
   }
 };
 
+const monthMap: Record<string, number> = {
+  Jan: 1,
+  Feb: 2,
+  Mar: 3,
+  Apr: 4,
+  May: 5,
+  Jun: 6,
+  Jul: 7,
+  Aug: 8,
+  Sep: 9,
+  Oct: 10,
+  Nov: 11,
+  Dec: 12,
+};
+
 const NetWorthChart = ({ date }: { date: string }) => {
   const [isOpenInfoDialog, setIsOpenInfoDialog] = useState(false);
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
@@ -118,7 +133,7 @@ const NetWorthChart = ({ date }: { date: string }) => {
     setMenuAnchorEl(null);
   };
 
-  const getDisplayData = () => {
+  const getPeriodData = () => {
     const len = monthlyData.length;
     switch (date) {
       case '6M':
@@ -136,15 +151,31 @@ const NetWorthChart = ({ date }: { date: string }) => {
     }
   };
 
-  let displayData = getDisplayData();
-
-  const latest = displayData[displayData.length - 1];
-  const first = displayData[0];
+  const periodData = getPeriodData();
+  const first = periodData[0];
+  const latest = periodData[periodData.length - 1];
   const delta = latest.netWorth - first.netWorth;
   const growthRate =
-    displayData.length === 1 || first.netWorth === 0
+    periodData.length === 1 || first.netWorth === 0
       ? 0
       : ((latest.netWorth - first.netWorth) / Math.abs(first.netWorth)) * 100;
+
+  let displayData = periodData;
+  if (date === '5Y' || date === 'All') {
+    displayData = periodData
+      .filter((item) => {
+        const monthStr = item.period.split(' ')[0];
+        const month = monthMap[monthStr];
+        return month % 3 === 0;
+      })
+      .map((item) => {
+        const monthStr = item.period.split(' ')[0];
+        const year = item.period.split(' ')[1].slice(1);
+        const month = monthMap[monthStr];
+        const quarter = Math.ceil(month / 3);
+        return { ...item, period: `Q${quarter} '${year}` };
+      });
+  }
 
   return (
     <>
@@ -220,18 +251,7 @@ const NetWorthChart = ({ date }: { date: string }) => {
 
         <Box sx={{ width: '100%', height: { xs: 280, sm: 320, md: 360 }, position: 'relative' }}>
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={displayData} margin={{ top: 10, right: 5, left: -20, bottom: 0 }}>
-              <defs>
-                <linearGradient id="assetsFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--secondary--color-3)" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="var(--secondary--color-3)" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="liabilitiesFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--accent--primary-1)" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="var(--accent--primary-1)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-
+            <BarChart data={displayData} margin={{ top: 10, right: 5, left: -20, bottom: 0 }}>
               <CartesianGrid
                 strokeDasharray=""
                 vertical={false}
@@ -282,37 +302,19 @@ const NetWorthChart = ({ date }: { date: string }) => {
                 }}
               />
 
-              <Area
-                type="monotone"
-                dataKey="assets"
-                stroke="var(--secondary--color-3)"
-                strokeWidth={3}
-                fill="url(#assetsFill)"
-                fillOpacity={1}
-                dot={false}
-                activeDot={false}
-              />
-              <Area
-                type="monotone"
-                dataKey="liabilities"
-                stroke="var(--accent--primary-1)"
-                strokeWidth={3}
-                fill="url(#liabilitiesFill)"
-                fillOpacity={1}
-                dot={false}
-                activeDot={false}
-              />
-              <Area
+              <Bar dataKey="assets" fill="var(--secondary--color-3)" name="Assets" />
+              <Bar dataKey="liabilities" fill="var(--accent--primary-1)" name="Liabilities" />
+              <Line
                 type="monotone"
                 dataKey="netWorth"
                 stroke="var(--text-color-primary)"
                 strokeWidth={2}
-                fill="none"
+                name="Net Worth"
                 dot={false}
                 activeDot={{ r: 6 }}
                 strokeLinecap="round"
               />
-            </AreaChart>
+            </BarChart>
           </ResponsiveContainer>
         </Box>
 

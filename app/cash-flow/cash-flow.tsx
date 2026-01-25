@@ -25,7 +25,7 @@ const CashFlow = () => {
           borderColor: 'var(--border-color)',
           position: 'fixed',
           width: '100%',
-          zIndex: 1,
+          zIndex: 2,
           top: 0,
           backgroundColor: 'rgba(var(--bg-color-alpha), 0.7)',
           backdropFilter: 'blur(5px)',

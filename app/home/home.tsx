@@ -8,6 +8,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import React, { useState, type ReactNode, useMemo } from 'react';
 import ButtonIcon from '~/components/button-icon';
 import InfoDialog from '~/components/info-dialog';
+import { Link } from 'react-router';
 
 export type TCashFlow = {
   month: string;
@@ -114,6 +115,23 @@ const yearlyData = {
   2025: data2025,
 } as const;
 
+// Hardcoded passive income data (earnings represent passive income only; expenses are 0 as not relevant)
+const passiveData2020 = data2020.map((d) => ({ month: d.month, earnings: 5000, expenses: 0 }));
+const passiveData2021 = data2021.map((d) => ({ month: d.month, earnings: 6000, expenses: 0 }));
+const passiveData2022 = data2022.map((d) => ({ month: d.month, earnings: 8000, expenses: 0 }));
+const passiveData2023 = data2023.map((d) => ({ month: d.month, earnings: 15000, expenses: 0 }));
+const passiveData2024 = data2024.map((d) => ({ month: d.month, earnings: 18000, expenses: 0 }));
+const passiveData2025 = data2025.map((d) => ({ month: d.month, earnings: 20000, expenses: 0 }));
+
+const passiveYearlyData = {
+  2020: passiveData2020,
+  2021: passiveData2021,
+  2022: passiveData2022,
+  2023: passiveData2023,
+  2024: passiveData2024,
+  2025: passiveData2025,
+} as const;
+
 const home = () => {
   const [date, setDate] = useState('M');
   const [isOpenInfoDialog, setIsOpenInfoDialog] = useState(false);
@@ -182,32 +200,62 @@ const home = () => {
     [periodData, scaleFactor]
   );
 
+  // Dynamic passive period data (mirrors periodData logic but uses passiveYearlyData)
+  const passivePeriodData = useMemo((): TCashFlow[] => {
+    const monthsNeeded = getPeriodMonths(date);
+    let data: TCashFlow[] = [];
+    if (monthsNeeded <= 12) {
+      const currentData = passiveYearlyData[currentYear as keyof typeof passiveYearlyData] || [];
+      const numMonths = Math.min(fullMonthsCount, 12);
+      data = currentData.slice(-numMonths);
+    } else {
+      const numYears = monthsNeeded / 12;
+      const startYear = currentYear - numYears + 1;
+      for (let y = startYear; y <= currentYear; y++) {
+        if (passiveYearlyData[y as keyof typeof passiveYearlyData]) {
+          data = [...data, ...passiveYearlyData[y as keyof typeof passiveYearlyData]];
+        }
+      }
+    }
+    return data;
+  }, [date, currentYear, passiveYearlyData, fullMonthsCount]);
+
+  const totalPassive = useMemo(
+    () => passivePeriodData.reduce((acc, item) => acc + item.earnings, 0) * scaleFactor,
+    [passivePeriodData, scaleFactor]
+  );
+
   const cashFlow = totalEarnings - totalExpenses;
 
-  // UPDATED: Compute prior period for dynamic trends (exact match to charts; now with prior year for 'Y')
+  // Lifestyle Coverage calculations (dynamic based on period data)
+  const lifestyleCombined = useMemo(
+    () => (totalExpenses > 0 ? Math.round((totalEarnings / totalExpenses) * 100 * 10) / 10 : 0),
+    [totalEarnings, totalExpenses]
+  );
+
+  const lifestylePassive = useMemo(
+    () => (totalExpenses > 0 ? Math.round((totalPassive / totalExpenses) * 100 * 10) / 10 : 0),
+    [totalPassive, totalExpenses]
+  );
+
   const prevPeriodData = useMemo((): TCashFlow[] => {
     let prevData: TCashFlow[] = [];
     const currentData = yearlyData[currentYear as keyof typeof yearlyData] || [];
     if (date === 'W' || date === 'M') {
-      // Prior: Nov (index 10)
       if (currentData[10]) prevData = [currentData[10]];
     } else if (date === 'Q') {
-      // Prior: Jul-Sep (indices 6-8)
       prevData = currentData.slice(6, 9);
     } else if (date === '6M') {
-      // Prior: Jan-Jun (indices 0-5)
       prevData = currentData.slice(0, 6);
     } else if (date === 'Y') {
-      // UPDATED: Prior full year (2024 for 2025)
       const prevYear = currentYear - 1;
       if (yearlyData[prevYear as keyof typeof yearlyData]) {
         prevData = yearlyData[prevYear as keyof typeof yearlyData];
       }
     } else {
-      // Multi-year fallback: Prior full years (e.g., '2Y' prev=2023-2022 if current=2025-2024)
       const monthsNeeded = getPeriodMonths(date);
       const numYears = monthsNeeded / 12;
-      const prevStartYear = currentYear - numYears - 1; // Shift back
+      const prevStartYear = currentYear - numYears - 1;
       for (let y = prevStartYear; y < prevStartYear + numYears; y++) {
         if (yearlyData[y as keyof typeof yearlyData]) {
           prevData = [...prevData, ...yearlyData[y as keyof typeof yearlyData]];
@@ -229,7 +277,6 @@ const home = () => {
 
   const prevCashFlow = prevTotalEarnings - prevTotalExpenses;
 
-  // Dynamic % changes in total $ (matches charts; 0 if no prior)
   const cashFlowTrend =
     prevCashFlow !== 0 ? Math.round(((cashFlow - prevCashFlow) / prevCashFlow) * 100 * 10) / 10 : 0;
   const earningsTrend =
@@ -240,12 +287,6 @@ const home = () => {
     prevTotalExpenses !== 0
       ? Math.round(((totalExpenses - prevTotalExpenses) / prevTotalExpenses) * 100 * 10) / 10
       : 0;
-
-  // Dynamic DSCR and Resilience (derive from data; adjust monthlyDebtService as needed)
-  const monthlyDebtService = 20000; // Example fixed debt; prop-ify for real use
-  const avgMonthlyNet = fullMonthsCount > 0 ? cashFlow / fullMonthsCount : 0;
-  const dscr = avgMonthlyNet > 0 ? (avgMonthlyNet / monthlyDebtService).toFixed(2) : '0.00';
-  const resilience = parseFloat(dscr) > 0 ? Math.round((1 - 1 / parseFloat(dscr)) * 100) : 0;
 
   const handleOpenInfoDialog = ({
     title,
@@ -321,148 +362,151 @@ const home = () => {
           ))}
         </Select>
       </Box>
-
-      <Box
-        sx={{
-          position: 'relative',
-          backgroundColor: 'var(--bg-color-secondary)',
-          borderRadius: 2,
-          border: '1px solid var(--border-color)',
-          px: 2,
-          py: 2,
-          mb: 2,
-        }}
-      >
-        <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
-          Cash Flow
-        </Typography>
-        <Box display="flex" alignItems="center" gap={1}>
-          <Typography fontSize="2.8rem" fontWeight={700}>
-            ${cashFlow.toLocaleString()}
+      <Box component={Link} to="/cash-flow">
+        <Box
+          sx={{
+            position: 'relative',
+            backgroundColor: 'var(--bg-color-secondary)',
+            borderRadius: 2,
+            border: '1px solid var(--border-color)',
+            px: 2,
+            py: 2,
+            mb: 2,
+          }}
+        >
+          <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
+            Cash Flow (Combined)
           </Typography>
-          {/* UPDATED: Dynamic trend matching charts */}
-          <TrendingChip value={cashFlowTrend} />
-          <ButtonIcon
-            onClick={() =>
-              handleOpenInfoDialog({
-                title: 'Cash Flow Overview',
-                youtubeUrl: 'https://www.youtube.com/embed/5yVf4yPg0k4?si=9soD-yivIV42YjD9',
-                content: (
-                  <Stack px={2} gap={3} mb={2}>
-                    <Box>
-                      <Typography
-                        sx={{ fontWeight: '400' }}
-                        fontSize="1.4rem"
-                        color="var(--text-color-secondary)"
-                      >
-                        Sum all income types (active + passive + portfolio) for total inflows, then
-                        subtract categorized expenses (fixed + variable + occasional + unplanned) to
-                        derive net cash flow. This personal finance approach differs from business
-                        cash flow statements, which segment into operating, investing, and financing
-                        activities.
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography sx={{ fontWeight: '700' }}>Cash Flow Formula</Typography>
-                      <Typography
-                        sx={{ fontWeight: '400' }}
-                        fontSize="1.4rem"
-                        color="var(--text-color-secondary)"
-                      >
-                        Cash Flow = Total Income (Active + Passive + Portfolio) - Total Expenses
-                        (Fixed + Variable + Occasional + Unplanned)
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography sx={{ fontWeight: '700' }}>Income Types</Typography>
-                      <Typography
-                        sx={{ fontWeight: '400' }}
-                        fontSize="1.4rem"
-                        color="var(--text-color-secondary)"
-                      >
-                        Active income stems from direct labor or services, such as wages, salaries,
-                        or freelance earnings requiring ongoing effort. Passive income generates
-                        with little daily involvement, like rental payments or royalties from prior
-                        work. Portfolio income arises from investments, including dividends,
-                        interest, or capital gains from stocks and bonds.
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography sx={{ fontWeight: '700' }}>Expense Types</Typography>
-                      <Typography
-                        sx={{ fontWeight: '400' }}
-                        fontSize="1.4rem"
-                        color="var(--text-color-secondary)"
-                      >
-                        Fixed expenses stay constant regardless of activity, such as rent or
-                        insurance premiums. Variable expenses change with usage, like groceries or
-                        fuel costs. Occasional expenses arise periodically, such as annual
-                        subscriptions; unplanned ones are unforeseen, like emergency repairs.
-                      </Typography>
-                    </Box>
-                  </Stack>
-                ),
-              })
-            }
-            sx={{
-              position: 'absolute',
-              top: '-13px',
-              left: '-13px',
-              opacity: 0.7,
-            }}
-          >
-            <InfoOutlineIcon sx={{ fontSize: '2rem' }} />
-          </ButtonIcon>
+          <Box display="flex" alignItems="center" gap={1}>
+            <Typography fontSize="2.8rem" fontWeight={700}>
+              ${cashFlow.toLocaleString()}
+            </Typography>
+            <TrendingChip value={cashFlowTrend} />
+            <ButtonIcon
+              onClick={() =>
+                handleOpenInfoDialog({
+                  title: 'Cash Flow Overview',
+                  youtubeUrl: 'https://www.youtube.com/embed/5yVf4yPg0k4?si=9soD-yivIV42YjD9',
+                  content: (
+                    <Stack px={2} gap={3} mb={2}>
+                      <Box>
+                        <Typography
+                          sx={{ fontWeight: '400' }}
+                          fontSize="1.4rem"
+                          color="var(--text-color-secondary)"
+                        >
+                          Sum all income types (active + passive + portfolio) for total inflows,
+                          then subtract categorized expenses (fixed + variable + occasional +
+                          unplanned) to derive net cash flow. This personal finance approach differs
+                          from business cash flow statements, which segment into operating,
+                          investing, and financing activities.
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography sx={{ fontWeight: '700' }}>Cash Flow Formula</Typography>
+                        <Typography
+                          sx={{ fontWeight: '400' }}
+                          fontSize="1.4rem"
+                          color="var(--text-color-secondary)"
+                        >
+                          Cash Flow = Total Income (Active + Passive + Portfolio) - Total Expenses
+                          (Fixed + Variable + Occasional + Unplanned)
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography sx={{ fontWeight: '700' }}>Income Types</Typography>
+                        <Typography
+                          sx={{ fontWeight: '400' }}
+                          fontSize="1.4rem"
+                          color="var(--text-color-secondary)"
+                        >
+                          Active income stems from direct labor or services, such as wages,
+                          salaries, or freelance earnings requiring ongoing effort. Passive income
+                          generates with little daily involvement, like rental payments or royalties
+                          from prior work. Portfolio income arises from investments, including
+                          dividends, interest, or capital gains from stocks and bonds.
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography sx={{ fontWeight: '700' }}>Expense Types</Typography>
+                        <Typography
+                          sx={{ fontWeight: '400' }}
+                          fontSize="1.4rem"
+                          color="var(--text-color-secondary)"
+                        >
+                          Fixed expenses stay constant regardless of activity, such as rent or
+                          insurance premiums. Variable expenses change with usage, like groceries or
+                          fuel costs. Occasional expenses arise periodically, such as annual
+                          subscriptions; unplanned ones are unforeseen, like emergency repairs.
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  ),
+                })
+              }
+              sx={{
+                position: 'absolute',
+                top: '-13px',
+                left: '-13px',
+                opacity: 0.7,
+              }}
+            >
+              <InfoOutlineIcon sx={{ fontSize: '2rem' }} />
+            </ButtonIcon>
+          </Box>
         </Box>
       </Box>
       <Box display="flex" justifyContent="space-around" alignItems="center" gap={2}>
-        <Box
-          sx={{
-            position: 'relative',
-            backgroundColor: 'var(--bg-color-secondary)',
-            borderRadius: 2,
-            border: '1px solid var(--border-color)',
-            px: 2,
-            py: 2,
-            mb: 2,
-            flex: 1,
-          }}
-        >
-          <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
-            Income
-          </Typography>
-          <Box display="flex" alignItems="center" gap={1}>
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              <Typography fontSize="2.8rem" fontWeight={700}>
-                ${totalEarnings.toLocaleString()}
-              </Typography>
-              {/* UPDATED: Dynamic trend matching charts */}
-              <TrendingChip value={earningsTrend} />
+        <Box component={Link} to="/cash-flow#income-table" sx={{ flex: 1 }}>
+          <Box
+            sx={{
+              position: 'relative',
+              backgroundColor: 'var(--bg-color-secondary)',
+              borderRadius: 2,
+              border: '1px solid var(--border-color)',
+              px: 2,
+              py: 2,
+              mb: 2,
+            }}
+          >
+            <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
+              Income
+            </Typography>
+            <Box display="flex" alignItems="center" gap={1}>
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Typography fontSize="2.8rem" fontWeight={700}>
+                  ${totalEarnings.toLocaleString()}
+                </Typography>
+                {/* UPDATED: Dynamic trend matching charts */}
+                <TrendingChip value={earningsTrend} />
+              </Box>
             </Box>
           </Box>
         </Box>
-        <Box
-          sx={{
-            position: 'relative',
-            backgroundColor: 'var(--bg-color-secondary)',
-            borderRadius: 2,
-            border: '1px solid var(--border-color)',
-            px: 2,
-            py: 2,
-            mb: 2,
-            flex: 1,
-          }}
-        >
-          <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
-            Expenses
-          </Typography>
-          <Box display="flex" alignItems="center" gap={1}>
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              <Typography fontSize="2.8rem" fontWeight={700}>
-                ${totalExpenses.toLocaleString()}
-              </Typography>
-              {/* UPDATED: Dynamic trend matching charts */}
-              <TrendingChip value={expensesTrend} />
+        <Box component={Link} to="/cash-flow#expenses-table" sx={{ flex: 1 }}>
+          <Box
+            sx={{
+              position: 'relative',
+              backgroundColor: 'var(--bg-color-secondary)',
+              borderRadius: 2,
+              border: '1px solid var(--border-color)',
+              px: 2,
+              py: 2,
+              mb: 2,
+              flex: 1,
+            }}
+          >
+            <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
+              Expenses
+            </Typography>
+            <Box display="flex" alignItems="center" gap={1}>
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Typography fontSize="2.8rem" fontWeight={700}>
+                  ${totalExpenses.toLocaleString()}
+                </Typography>
+                {/* UPDATED: Dynamic trend matching charts */}
+                <TrendingChip value={expensesTrend} />
+              </Box>
             </Box>
           </Box>
         </Box>
@@ -478,39 +522,71 @@ const home = () => {
           mb: 2,
         }}
       >
-        <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
-          Debt Service Coverage Ratio (DSCR)
+        <Typography color="var(--text-color-primary)" fontSize="1.2rem">
+          Life Style Coverage Percentage (Combined)
+        </Typography>
+        <Typography color="var(--text-color-secondary)" fontSize="1rem">
+          (Total Income ÷ Total Expenses) x 100
         </Typography>
         <Box display="flex" alignItems="center" gap={1}>
-          {/* UPDATED: Dynamic value */}
           <Typography fontSize="2.8rem" fontWeight={700}>
-            {dscr}
+            {lifestyleCombined}%
           </Typography>
           <ButtonIcon
             onClick={() =>
               handleOpenInfoDialog({
-                title: 'Debt Service Coverage Ratio',
+                title: 'Life Style Coverage Percentage (Combined)',
                 content: (
                   <Stack px={2} gap={3} mb={2}>
-                    <Typography>
-                      Calculate and monitor DSCR MONTHLY; keep a rolling 12-month history so you can
-                      see seasonal dips, but the operational decision horizon is the next calendar
-                      month. We could have a COLLAPSABLE graph view of the last rolling 12 months so
-                      that we can see the DSCR trend is improving or getting worse.
-                    </Typography>
-                    <Typography>Formula:</Typography>
-                    <Typography>
-                      DSCR = Net recurring monthly income ÷ Total monthly contractual recurring
-                      expenses (target ≥ 1.25×;)
-                    </Typography>
-                    <Typography>Why is the DASR important to know?</Typography>
-                    <Typography>
-                      A ratio of 1.0 means cash inflow exactly matches scheduled recurring expenses;
-                      Good cash flow management set minimum DSCR floors (e.g., ≥1.20×); breaching
-                      them triggers a cash flow emergency, so the farther the actual DSCR sits above
-                      the set floor, the more resilient your cash flow is to temporary cash-flow
-                      recurring expense stress or shocks.{' '}
-                    </Typography>
+                    <Box>
+                      <Typography
+                        sx={{ fontWeight: '400' }}
+                        fontSize="1.4rem"
+                        color="var(--text-color-secondary)"
+                      >
+                        This metric shows the percentage of your total expenses covered by your
+                        combined income sources (active, passive, and portfolio). It helps assess
+                        your overall financial health and ability to sustain your lifestyle.
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
+                      <Typography
+                        sx={{ fontWeight: '400' }}
+                        fontSize="1.4rem"
+                        color="var(--text-color-secondary)"
+                      >
+                        (Total Income ÷ Total Expenses) × 100
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography sx={{ fontWeight: '700' }}>What It Means</Typography>
+                      <Typography
+                        sx={{ fontWeight: '400' }}
+                        fontSize="1.4rem"
+                        color="var(--text-color-secondary)"
+                      >
+                        - 100%: Your income exactly covers expenses (break-even).
+                        <br />
+                        - &gt; 100%: Surplus for savings, investments, or debt reduction.
+                        <br />
+                        - &lt; 100%: Deficit; review spending or boost income.
+                        <br />
+                        Track this over time to spot trends and plan for financial goals like
+                        retirement.
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography sx={{ fontWeight: '700' }}>Tip</Typography>
+                      <Typography
+                        sx={{ fontWeight: '400' }}
+                        fontSize="1.4rem"
+                        color="var(--text-color-secondary)"
+                      >
+                        Aim for 120-150%+ to build resilience against unexpected expenses or income
+                        dips.
+                      </Typography>
+                    </Box>
                   </Stack>
                 ),
                 youtubeUrl: '',
@@ -538,29 +614,72 @@ const home = () => {
           mb: 2,
         }}
       >
-        <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
-          Debt-Coverage Resilience
+        <Typography color="var(--text-color-primary)" fontSize="1.2rem">
+          Life Style Coverage Percentage (Passive)
+        </Typography>
+        <Typography color="var(--text-color-secondary)" fontSize="1rem">
+          (Passive Income ÷ Total Expenses) x 100
         </Typography>
         <Box display="flex" alignItems="center" gap={1}>
-          {/* UPDATED: Dynamic value */}
           <Typography fontSize="2.8rem" fontWeight={700}>
-            {resilience}%
+            {lifestylePassive}%
           </Typography>
           <ButtonIcon
             onClick={() =>
               handleOpenInfoDialog({
-                title: 'Debt-Coverage Resilience',
+                title: 'Life Style Coverage Percentage (Passive)',
                 content: (
                   <Stack px={2} gap={3} mb={2}>
-                    <Typography>Formula:</Typography>
-                    <Typography>
-                      Debt-Coverage Resilience (%) = 1 – 1 ÷ Debt Service Coverage Ratio (DSCR)
-                    </Typography>
-                    <Typography>Overview:</Typography>
-                    <Typography>
-                      The largest income drop (in %) you can absorb before your debt-service
-                      coverage ratio hits 1.0×.
-                    </Typography>
+                    <Box>
+                      <Typography
+                        sx={{ fontWeight: '400' }}
+                        fontSize="1.4rem"
+                        color="var(--text-color-secondary)"
+                      >
+                        This measures how much of your expenses are covered solely by passive income
+                        sources (e.g., rentals, dividends, royalties). It's a key indicator of
+                        progress toward financial independence, where passive income fully funds
+                        your lifestyle.
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
+                      <Typography
+                        sx={{ fontWeight: '400' }}
+                        fontSize="1.4rem"
+                        color="var(--text-color-secondary)"
+                      >
+                        (Passive Income ÷ Total Expenses) × 100
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography sx={{ fontWeight: '700' }}>What It Means</Typography>
+                      <Typography
+                        sx={{ fontWeight: '400' }}
+                        fontSize="1.4rem"
+                        color="var(--text-color-secondary)"
+                      >
+                        - 0-50%: Early stage; passive income supplements but doesn't cover much.
+                        <br />
+                        - 50-100%: Building momentum; halfway to passive-funded lifestyle.
+                        <br />
+                        - &gt; 100%: Financial independence milestone—your passive streams sustain
+                        or exceed expenses.
+                        <br />
+                        Monitor growth by diversifying passive sources and reinvesting surpluses.
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography sx={{ fontWeight: '700' }}>Tip</Typography>
+                      <Typography
+                        sx={{ fontWeight: '400' }}
+                        fontSize="1.4rem"
+                        color="var(--text-color-secondary)"
+                      >
+                        The "4% rule" suggests you can withdraw 4% of investments annually; aim for
+                        passive coverage to hit 100% over time.
+                      </Typography>
+                    </Box>
                   </Stack>
                 ),
                 youtubeUrl: '',
