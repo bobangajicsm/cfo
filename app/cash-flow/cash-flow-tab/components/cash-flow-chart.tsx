@@ -179,7 +179,7 @@ const CashFlowChart = ({
         <Box>
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
-              Cash Flow
+              Cash Flow (Combined)
             </Typography>
             <ButtonIcon onClick={handleOpenMenu}>
               <MoreHorizIcon sx={{ fontSize: '1.6rem' }} />

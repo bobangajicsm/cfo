@@ -28,36 +28,6 @@ import {
   data2025,
 } from '~/cash-flow/budget-tab/budget-tab';
 
-// const data2024 = [
-//   { month: 'Jan', earnings: 97600, expenses: 27600 },
-//   { month: 'Feb', earnings: 125100, expenses: 21000 },
-//   { month: 'Mar', earnings: 90600, expenses: 22000 },
-//   { month: 'Apr', earnings: 104800, expenses: 46100 },
-//   { month: 'May', earnings: 91600, expenses: 21800 },
-//   { month: 'Jun', earnings: 92100, expenses: 22300 },
-//   { month: 'Jul', earnings: 101100, expenses: 23000 },
-//   { month: 'Aug', earnings: 93100, expenses: 23200 },
-//   { month: 'Sep', earnings: 93600, expenses: 67100 },
-//   { month: 'Oct', earnings: 102100, expenses: 45300 },
-//   { month: 'Nov', earnings: 94600, expenses: 49800 },
-//   { month: 'Dec', earnings: 95600, expenses: 45850 },
-// ];
-
-// const data2025 = [
-//   { month: 'Jan', earnings: 110600, expenses: 29150 },
-//   { month: 'Feb', earnings: 137600, expenses: 22650 },
-//   { month: 'Mar', earnings: 103600, expenses: 23350 },
-//   { month: 'Apr', earnings: 113100, expenses: 23550 },
-//   { month: 'May', earnings: 105600, expenses: 23400 },
-//   { month: 'Jun', earnings: 106600, expenses: 23650 },
-//   { month: 'Jul', earnings: 117100, expenses: 75850 },
-//   { month: 'Aug', earnings: 108600, expenses: 24050 },
-//   { month: 'Sep', earnings: 109600, expenses: 24450 },
-//   { month: 'Oct', earnings: 119600, expenses: 24650 },
-//   { month: 'Nov', earnings: 111600, expenses: 52150 },
-//   { month: 'Dec', earnings: 113600, expenses: 48850 },
-// ];
-
 const expenseProps = [154800 / 357500, 130200 / 357500, 65000 / 357500, 7500 / 357500];
 
 const BudgetChart = ({ date }: { date: string }) => {
@@ -196,13 +166,13 @@ const BudgetChart = ({ date }: { date: string }) => {
   ];
 
   const colors = {
-    passive: '#10b981',
-    active: '#3b82f6',
-    portfolio: '#8b5cf6',
-    fixed: '#10b981',
-    variable: '#3b82f6',
-    occasional: '#ef4444',
-    planned: '#f59e0b',
+    passive: '#8712ed',
+    active: '#06ffb0',
+    portfolio: '#b9ec4b',
+    fixed: '#2c5392',
+    variable: '#2563eb',
+    occasional: '#dc2626',
+    planned: '#d97706',
   };
 
   const CustomTooltip = ({ active, payload }: any) => {
@@ -293,7 +263,7 @@ const BudgetChart = ({ date }: { date: string }) => {
         <Box>
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
-              Cash Flow
+              Cash Flow (Combined)
             </Typography>
             <ButtonIcon onClick={handleOpenMenu}>
               <MoreHorizIcon sx={{ fontSize: '1.6rem' }} />
