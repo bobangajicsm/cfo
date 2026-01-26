@@ -129,7 +129,7 @@ const passiveData2021 = data2021.map((d) => ({ month: d.month, earnings: 6000, e
 const passiveData2022 = data2022.map((d) => ({ month: d.month, earnings: 8000, expenses: 0 }));
 const passiveData2023 = data2023.map((d) => ({ month: d.month, earnings: 15000, expenses: 0 }));
 const passiveData2024 = data2024.map((d) => ({ month: d.month, earnings: 18000, expenses: 0 }));
-const passiveData2025 = data2025.map((d) => ({ month: d.month, earnings: 20000, expenses: 0 }));
+const passiveData2025 = data2025.map((d) => ({ month: d.month, earnings: 33000, expenses: 0 }));
 
 const passiveYearlyData = {
   2020: passiveData2020,

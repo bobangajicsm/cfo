@@ -257,6 +257,60 @@ const BudgetChart = ({ date }: { date: string }) => {
     return null;
   };
 
+  const CustomLabel = (props: any) => {
+    const { x, y, width, height, value, category } = props;
+
+    if (height < 25 || value == null || value < 5000) return null;
+
+    const formattedValue =
+      value >= 10000 ? `$${(value / 1000).toFixed(0)}k` : `$${Math.round(value).toLocaleString()}`;
+
+    const labelText = `${category} ${formattedValue}`;
+
+    const textX = x + width / 2;
+    const textY = y + height / 2;
+
+    let fill = '#ffffff';
+    // Optional: better readability on bright backgrounds
+    if (category === 'Active' || category === 'Portfolio') {
+      fill = '#000000';
+    }
+
+    return (
+      <text
+        x={textX}
+        y={textY}
+        fill={fill}
+        fontSize={11}
+        fontWeight={500}
+        textAnchor="middle"
+        dominantBaseline="middle"
+      >
+        {labelText}
+      </text>
+    );
+  };
+
+  const LabeledBar = ({
+    dataKey,
+    fill,
+    ...rest
+  }: {
+    dataKey: string;
+    fill: string;
+    [key: string]: any;
+  }) => {
+    return (
+      <Bar
+        dataKey={dataKey}
+        stackId="stack"
+        fill={fill}
+        label={<CustomLabel category={dataKey} />} // ← this injects the name!
+        {...rest}
+      />
+    );
+  };
+
   return (
     <>
       <Card sx={{ pb: 2, mb: 2, position: 'relative' }} className="budget-chart">
@@ -428,13 +482,14 @@ const BudgetChart = ({ date }: { date: string }) => {
                 tickFormatter={(value: number) => `$${Math.round(value).toLocaleString()}`}
               />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="Passive" stackId="stack" fill={colors.passive} />
-              <Bar dataKey="Active" stackId="stack" fill={colors.active} />
-              <Bar dataKey="Portfolio" stackId="stack" fill={colors.portfolio} />
-              <Bar dataKey="Fixed" stackId="stack" fill={colors.fixed} />
-              <Bar dataKey="Variable" stackId="stack" fill={colors.variable} />
-              <Bar dataKey="Occasional" stackId="stack" fill={colors.occasional} />
-              <Bar dataKey="Planned" stackId="stack" fill={colors.planned} />
+              <LabeledBar dataKey="Passive" fill={colors.passive} />
+              <LabeledBar dataKey="Active" fill={colors.active} />
+              <LabeledBar dataKey="Portfolio" fill={colors.portfolio} />
+
+              <LabeledBar dataKey="Fixed" fill={colors.fixed} />
+              <LabeledBar dataKey="Variable" fill={colors.variable} />
+              <LabeledBar dataKey="Occasional" fill={colors.occasional} />
+              <LabeledBar dataKey="Planned" fill={colors.planned} />
               <Line
                 type="monotone"
                 dataKey="passiveIncome"
