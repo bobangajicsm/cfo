@@ -349,7 +349,7 @@ const BudgetTab = () => {
           <ButtonIcon
             onClick={() =>
               handleOpenInfoDialog({
-                title: 'Life Style Coverage Percentage (Combined)',
+                title: 'Life Style Coverage Percentage (Combined) Overview',
                 content: (
                   <Stack px={2} gap={3} mb={2}>
                     <Box>
@@ -358,9 +358,17 @@ const BudgetTab = () => {
                         fontSize="1.4rem"
                         color="var(--text-color-secondary)"
                       >
-                        This metric shows the percentage of your total expenses covered by your
-                        combined income sources (active, passive, and portfolio). It helps assess
-                        your overall financial health and ability to sustain your lifestyle.
+                        This measures how much of your total expenses are covered by all of your
+                        combined income sources. Aim for 120–150% or higher to maintain a healthy
+                        financial buffer for unexpected costs for example.
+                        <Typography>100% — Income equals expenses (break-even).</Typography>
+                        <Typography>
+                          Above 100% — Surplus income available for savings, investments, or debt
+                          reduction.
+                        </Typography>
+                        <Typography>
+                          Below 100% — Deficit; consider reducing expenses or increasing income.
+                        </Typography>
                       </Typography>
                     </Box>
                     <Box>
@@ -371,34 +379,6 @@ const BudgetTab = () => {
                         color="var(--text-color-secondary)"
                       >
                         (Total Income ÷ Total Expenses) × 100
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography sx={{ fontWeight: '700' }}>What It Means</Typography>
-                      <Typography
-                        sx={{ fontWeight: '400' }}
-                        fontSize="1.4rem"
-                        color="var(--text-color-secondary)"
-                      >
-                        - 100%: Your income exactly covers expenses (break-even).
-                        <br />
-                        - &gt; 100%: Surplus for savings, investments, or debt reduction.
-                        <br />
-                        - &lt; 100%: Deficit; review spending or boost income.
-                        <br />
-                        Track this over time to spot trends and plan for financial goals like
-                        retirement.
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography sx={{ fontWeight: '700' }}>Tip</Typography>
-                      <Typography
-                        sx={{ fontWeight: '400' }}
-                        fontSize="1.4rem"
-                        color="var(--text-color-secondary)"
-                      >
-                        Aim for 120-150%+ to build resilience against unexpected expenses or income
-                        dips.
                       </Typography>
                     </Box>
                   </Stack>
@@ -451,9 +431,8 @@ const BudgetTab = () => {
                         color="var(--text-color-secondary)"
                       >
                         This measures how much of your expenses are covered solely by passive income
-                        sources (e.g., rentals, dividends, royalties). It's a key indicator of
-                        progress toward financial independence, where passive income fully funds
-                        your lifestyle.
+                        ONLY. It's a key indicator of progress toward financial independence, where
+                        passive income fully funds your lifestyle.
                       </Typography>
                     </Box>
                     <Box>
@@ -464,34 +443,6 @@ const BudgetTab = () => {
                         color="var(--text-color-secondary)"
                       >
                         (Passive Income ÷ Total Expenses) × 100
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography sx={{ fontWeight: '700' }}>What It Means</Typography>
-                      <Typography
-                        sx={{ fontWeight: '400' }}
-                        fontSize="1.4rem"
-                        color="var(--text-color-secondary)"
-                      >
-                        - 0-50%: Early stage; passive income supplements but doesn't cover much.
-                        <br />
-                        - 50-100%: Building momentum; halfway to passive-funded lifestyle.
-                        <br />
-                        - &gt; 100%: Financial independence milestone—your passive streams sustain
-                        or exceed expenses.
-                        <br />
-                        Monitor growth by diversifying passive sources and reinvesting surpluses.
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography sx={{ fontWeight: '700' }}>Tip</Typography>
-                      <Typography
-                        sx={{ fontWeight: '400' }}
-                        fontSize="1.4rem"
-                        color="var(--text-color-secondary)"
-                      >
-                        The "4% rule" suggests you can withdraw 4% of investments annually; aim for
-                        passive coverage to hit 100% over time.
                       </Typography>
                     </Box>
                   </Stack>

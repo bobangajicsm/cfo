@@ -115,7 +115,6 @@ const yearlyData = {
   2025: data2025,
 } as const;
 
-// Hardcoded passive income data (earnings represent passive income only; expenses are 0 as not relevant)
 const passiveData2020 = data2020.map((d) => ({ month: d.month, earnings: 5000, expenses: 0 }));
 const passiveData2021 = data2021.map((d) => ({ month: d.month, earnings: 6000, expenses: 0 }));
 const passiveData2022 = data2022.map((d) => ({ month: d.month, earnings: 8000, expenses: 0 }));
@@ -200,7 +199,6 @@ const home = () => {
     [periodData, scaleFactor]
   );
 
-  // Dynamic passive period data (mirrors periodData logic but uses passiveYearlyData)
   const passivePeriodData = useMemo((): TCashFlow[] => {
     const monthsNeeded = getPeriodMonths(date);
     let data: TCashFlow[] = [];
@@ -227,7 +225,6 @@ const home = () => {
 
   const cashFlow = totalEarnings - totalExpenses;
 
-  // Lifestyle Coverage calculations (dynamic based on period data)
   const lifestyleCombined = useMemo(
     () => (totalExpenses > 0 ? Math.round((totalEarnings / totalExpenses) * 100 * 10) / 10 : 0),
     [totalEarnings, totalExpenses]
@@ -295,11 +292,11 @@ const home = () => {
   }: {
     title: string;
     content: React.ReactNode;
-    youtubeUrl: string;
+    youtubeUrl?: string;
   }) => {
     setInfoTitle(title);
     setInfoContent(content);
-    setInfoYoutubeUrl(youtubeUrl);
+    setInfoYoutubeUrl(youtubeUrl || '');
     setIsOpenInfoDialog(true);
   };
 
@@ -362,18 +359,19 @@ const home = () => {
           ))}
         </Select>
       </Box>
-      <Box component={Link} to="/cash-flow">
-        <Box
-          sx={{
-            position: 'relative',
-            backgroundColor: 'var(--bg-color-secondary)',
-            borderRadius: 2,
-            border: '1px solid var(--border-color)',
-            px: 2,
-            py: 2,
-            mb: 2,
-          }}
-        >
+
+      <Box
+        sx={{
+          position: 'relative',
+          backgroundColor: 'var(--bg-color-secondary)',
+          borderRadius: 2,
+          border: '1px solid var(--border-color)',
+          px: 2,
+          py: 2,
+          mb: 2,
+        }}
+      >
+        <Box component={Link} to="/cash-flow">
           <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
             Cash Flow (Combined)
           </Typography>
@@ -382,79 +380,104 @@ const home = () => {
               ${cashFlow.toLocaleString()}
             </Typography>
             <TrendingChip value={cashFlowTrend} />
-            <ButtonIcon
-              onClick={() =>
-                handleOpenInfoDialog({
-                  title: 'Cash Flow Overview',
-                  youtubeUrl: 'https://www.youtube.com/embed/5yVf4yPg0k4?si=9soD-yivIV42YjD9',
-                  content: (
-                    <Stack px={2} gap={3} mb={2}>
-                      <Box>
-                        <Typography
-                          sx={{ fontWeight: '400' }}
-                          fontSize="1.4rem"
-                          color="var(--text-color-secondary)"
-                        >
-                          Sum all income types (active + passive + portfolio) for total inflows,
-                          then subtract categorized expenses (fixed + variable + occasional +
-                          unplanned) to derive net cash flow. This personal finance approach differs
-                          from business cash flow statements, which segment into operating,
-                          investing, and financing activities.
-                        </Typography>
-                      </Box>
-                      <Box>
-                        <Typography sx={{ fontWeight: '700' }}>Cash Flow Formula</Typography>
-                        <Typography
-                          sx={{ fontWeight: '400' }}
-                          fontSize="1.4rem"
-                          color="var(--text-color-secondary)"
-                        >
-                          Cash Flow = Total Income (Active + Passive + Portfolio) - Total Expenses
-                          (Fixed + Variable + Occasional + Unplanned)
-                        </Typography>
-                      </Box>
-                      <Box>
-                        <Typography sx={{ fontWeight: '700' }}>Income Types</Typography>
-                        <Typography
-                          sx={{ fontWeight: '400' }}
-                          fontSize="1.4rem"
-                          color="var(--text-color-secondary)"
-                        >
-                          Active income stems from direct labor or services, such as wages,
-                          salaries, or freelance earnings requiring ongoing effort. Passive income
-                          generates with little daily involvement, like rental payments or royalties
-                          from prior work. Portfolio income arises from investments, including
-                          dividends, interest, or capital gains from stocks and bonds.
-                        </Typography>
-                      </Box>
-                      <Box>
-                        <Typography sx={{ fontWeight: '700' }}>Expense Types</Typography>
-                        <Typography
-                          sx={{ fontWeight: '400' }}
-                          fontSize="1.4rem"
-                          color="var(--text-color-secondary)"
-                        >
-                          Fixed expenses stay constant regardless of activity, such as rent or
-                          insurance premiums. Variable expenses change with usage, like groceries or
-                          fuel costs. Occasional expenses arise periodically, such as annual
-                          subscriptions; unplanned ones are unforeseen, like emergency repairs.
-                        </Typography>
-                      </Box>
-                    </Stack>
-                  ),
-                })
-              }
-              sx={{
-                position: 'absolute',
-                top: '-13px',
-                left: '-13px',
-                opacity: 0.7,
-              }}
-            >
-              <InfoOutlineIcon sx={{ fontSize: '2rem' }} />
-            </ButtonIcon>
           </Box>
         </Box>
+        <ButtonIcon
+          onClick={() =>
+            handleOpenInfoDialog({
+              title: 'Cash Flow Overview',
+              content: (
+                <Stack px={2} gap={3} mb={2}>
+                  <Box p={2}>
+                    <iframe
+                      width="100%"
+                      height="315"
+                      src="https://www.youtube.com/embed/5yVf4yPg0k4?si=9soD-yivIV42YjD9"
+                      title="YouTube video player"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      allowFullScreen
+                    ></iframe>
+                  </Box>
+                  <Box>
+                    <Typography sx={{ fontWeight: '700' }}>Cash Flow Overview</Typography>
+                    <Typography
+                      sx={{ fontWeight: '400' }}
+                      fontSize="1.4rem"
+                      color="var(--text-color-secondary)"
+                    >
+                      Cash flow represents the movement of money in and out of your finances. To
+                      determine net cash flow, add all income sources and deduct total expenses.
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography sx={{ fontWeight: '700' }}>Cash Flow Formula</Typography>
+                    <Typography
+                      sx={{ fontWeight: '400' }}
+                      fontSize="1.4rem"
+                      color="var(--text-color-secondary)"
+                    >
+                      Cash Flow = Total Income – Total Expenses
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography sx={{ fontWeight: '700' }}>Income Types</Typography>
+                    <Typography
+                      sx={{ fontWeight: '400' }}
+                      fontSize="1.4rem"
+                      color="var(--text-color-secondary)"
+                    >
+                      <Typography>
+                        Active Income: Earnings generated through direct work{' '}
+                      </Typography>
+                      <Typography>
+                        Passive Income: Earnings that require minimal ongoing effort, such as rental
+                        income
+                      </Typography>
+                      <Typography>
+                        Portfolio Income: Returns derived from investments, including dividends,
+                        interest
+                      </Typography>
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography sx={{ fontWeight: '700' }}>Expense Types</Typography>
+                    <Typography
+                      sx={{ fontWeight: '400' }}
+                      fontSize="1.4rem"
+                      color="var(--text-color-secondary)"
+                    >
+                      <Typography>
+                        Fixed Expenses: Consistent costs that remain unchanged over time, such as
+                        rent
+                      </Typography>
+                      <Typography>
+                        Variable Expenses: Costs that fluctuate based on usage or activity, such as
+                        groceries{' '}
+                      </Typography>
+                      <Typography>
+                        Occasional Expenses: Periodic costs that occur irregularly, such as annual
+                        subscriptions.{' '}
+                      </Typography>
+                      <Typography>
+                        Unplanned Expenses: Unexpected costs, such as emergency repair
+                      </Typography>
+                    </Typography>
+                  </Box>
+                </Stack>
+              ),
+            })
+          }
+          sx={{
+            position: 'absolute',
+            top: '-13px',
+            left: '-13px',
+            opacity: 0.7,
+          }}
+        >
+          <InfoOutlineIcon sx={{ fontSize: '2rem' }} />
+        </ButtonIcon>
       </Box>
       <Box display="flex" justifyContent="space-around" alignItems="center" gap={2}>
         <Box component={Link} to="/cash-flow#income-table" sx={{ flex: 1 }}>
@@ -535,7 +558,7 @@ const home = () => {
           <ButtonIcon
             onClick={() =>
               handleOpenInfoDialog({
-                title: 'Life Style Coverage Percentage (Combined)',
+                title: 'Life Style Coverage Percentage (Combined) Overview',
                 content: (
                   <Stack px={2} gap={3} mb={2}>
                     <Box>
@@ -544,9 +567,17 @@ const home = () => {
                         fontSize="1.4rem"
                         color="var(--text-color-secondary)"
                       >
-                        This metric shows the percentage of your total expenses covered by your
-                        combined income sources (active, passive, and portfolio). It helps assess
-                        your overall financial health and ability to sustain your lifestyle.
+                        This measures how much of your total expenses are covered by all of your
+                        combined income sources. Aim for 120–150% or higher to maintain a healthy
+                        financial buffer for unexpected costs for example.
+                        <Typography>100% — Income equals expenses (break-even).</Typography>
+                        <Typography>
+                          Above 100% — Surplus income available for savings, investments, or debt
+                          reduction.
+                        </Typography>
+                        <Typography>
+                          Below 100% — Deficit; consider reducing expenses or increasing income.
+                        </Typography>
                       </Typography>
                     </Box>
                     <Box>
@@ -557,34 +588,6 @@ const home = () => {
                         color="var(--text-color-secondary)"
                       >
                         (Total Income ÷ Total Expenses) × 100
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography sx={{ fontWeight: '700' }}>What It Means</Typography>
-                      <Typography
-                        sx={{ fontWeight: '400' }}
-                        fontSize="1.4rem"
-                        color="var(--text-color-secondary)"
-                      >
-                        - 100%: Your income exactly covers expenses (break-even).
-                        <br />
-                        - &gt; 100%: Surplus for savings, investments, or debt reduction.
-                        <br />
-                        - &lt; 100%: Deficit; review spending or boost income.
-                        <br />
-                        Track this over time to spot trends and plan for financial goals like
-                        retirement.
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography sx={{ fontWeight: '700' }}>Tip</Typography>
-                      <Typography
-                        sx={{ fontWeight: '400' }}
-                        fontSize="1.4rem"
-                        color="var(--text-color-secondary)"
-                      >
-                        Aim for 120-150%+ to build resilience against unexpected expenses or income
-                        dips.
                       </Typography>
                     </Box>
                   </Stack>
@@ -637,9 +640,8 @@ const home = () => {
                         color="var(--text-color-secondary)"
                       >
                         This measures how much of your expenses are covered solely by passive income
-                        sources (e.g., rentals, dividends, royalties). It's a key indicator of
-                        progress toward financial independence, where passive income fully funds
-                        your lifestyle.
+                        ONLY. It's a key indicator of progress toward financial independence, where
+                        passive income fully funds your lifestyle.
                       </Typography>
                     </Box>
                     <Box>
@@ -650,34 +652,6 @@ const home = () => {
                         color="var(--text-color-secondary)"
                       >
                         (Passive Income ÷ Total Expenses) × 100
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography sx={{ fontWeight: '700' }}>What It Means</Typography>
-                      <Typography
-                        sx={{ fontWeight: '400' }}
-                        fontSize="1.4rem"
-                        color="var(--text-color-secondary)"
-                      >
-                        - 0-50%: Early stage; passive income supplements but doesn't cover much.
-                        <br />
-                        - 50-100%: Building momentum; halfway to passive-funded lifestyle.
-                        <br />
-                        - &gt; 100%: Financial independence milestone—your passive streams sustain
-                        or exceed expenses.
-                        <br />
-                        Monitor growth by diversifying passive sources and reinvesting surpluses.
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography sx={{ fontWeight: '700' }}>Tip</Typography>
-                      <Typography
-                        sx={{ fontWeight: '400' }}
-                        fontSize="1.4rem"
-                        color="var(--text-color-secondary)"
-                      >
-                        The "4% rule" suggests you can withdraw 4% of investments annually; aim for
-                        passive coverage to hit 100% over time.
                       </Typography>
                     </Box>
                   </Stack>

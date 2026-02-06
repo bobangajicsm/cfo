@@ -352,10 +352,8 @@ const DaysToGoalChart = ({
       )}
       <InfoDialog
         title="Cash Flow Goal"
-        shortDescription="This chart shows your progress towards your monthly cash flow goal, scaled to the selected timeframe. The pie chart illustrates the achieved cash flow compared to the remaining amount needed to reach your target. The 'Progress %' indicates current cash flow as a percentage of the goal (capped at 100%). 'Days to target' shows the number of days until your set target date."
+        shortDescription="This chart shows your progress towards your monthly cash flow goal, limited to the selected timeframe. The 'Progress %' indicates current cash flow as a percentage of the goal (capped at 100%). 'Days to target' is the number of days until your set target date."
         formula="Progress % = min(100, (Current Period Cash Flow / (Monthly Target × Period Months)) × 100)"
-        longDescription="Cash flow is the movement of money into or out of a business, project, or financial product. It is a key indicator of financial health. Positive cash flow means more money is coming in than going out, while negative cash flow indicates the opposite. Setting a target cash flow goal helps in planning growth and making informed decisions about investments, expenses, and strategies."
-        youtubeUrl="https://www.youtube.com/embed/HRwK3cbkywk?si=XflznV34c5F-q1EF"
         open={isOpenInfoDialog}
         onClose={handleCloseInfoDialog}
       />

@@ -357,16 +357,27 @@ const CashFlowChart = ({
         title="Cash Flow Overview"
         content={
           <Stack px={2} gap={3} mb={2}>
+            <Box p={2}>
+              <iframe
+                width="100%"
+                height="315"
+                src="https://www.youtube.com/embed/5yVf4yPg0k4?si=9soD-yivIV42YjD9"
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              ></iframe>
+            </Box>
             <Box>
+              <Typography sx={{ fontWeight: '700' }}>Cash Flow Overview</Typography>
               <Typography
                 sx={{ fontWeight: '400' }}
                 fontSize="1.4rem"
                 color="var(--text-color-secondary)"
               >
-                Sum all income types (active + passive + portfolio) for total inflows, then subtract
-                categorized expenses (fixed + variable + occasional + unplanned) to derive net cash
-                flow. This personal finance approach differs from business cash flow statements,
-                which segment into operating, investing, and financing activities.
+                Cash flow represents the movement of money in and out of your finances. To determine
+                net cash flow, add all income sources and deduct total expenses.
               </Typography>
             </Box>
             <Box>
@@ -376,8 +387,7 @@ const CashFlowChart = ({
                 fontSize="1.4rem"
                 color="var(--text-color-secondary)"
               >
-                Cash Flow = Total Income (Active + Passive + Portfolio) - Total Expenses (Fixed +
-                Variable + Occasional + Unplanned)
+                Cash Flow = Total Income – Total Expenses
               </Typography>
             </Box>
             <Box>
@@ -387,11 +397,14 @@ const CashFlowChart = ({
                 fontSize="1.4rem"
                 color="var(--text-color-secondary)"
               >
-                Active income stems from direct labor or services, such as wages, salaries, or
-                freelance earnings requiring ongoing effort. Passive income generates with little
-                daily involvement, like rental payments or royalties from prior work. Portfolio
-                income arises from investments, including dividends, interest, or capital gains from
-                stocks and bonds.
+                <Typography>Active Income: Earnings generated through direct work </Typography>
+                <Typography>
+                  Passive Income: Earnings that require minimal ongoing effort, such as rental
+                  income
+                </Typography>
+                <Typography>
+                  Portfolio Income: Returns derived from investments, including dividends, interest
+                </Typography>
               </Typography>
             </Box>
             <Box>
@@ -401,15 +414,24 @@ const CashFlowChart = ({
                 fontSize="1.4rem"
                 color="var(--text-color-secondary)"
               >
-                Fixed expenses stay constant regardless of activity, such as rent or insurance
-                premiums. Variable expenses change with usage, like groceries or fuel costs.
-                Occasional expenses arise periodically, such as annual subscriptions; unplanned ones
-                are unforeseen, like emergency repairs.
+                <Typography>
+                  Fixed Expenses: Consistent costs that remain unchanged over time, such as rent
+                </Typography>
+                <Typography>
+                  Variable Expenses: Costs that fluctuate based on usage or activity, such as
+                  groceries{' '}
+                </Typography>
+                <Typography>
+                  Occasional Expenses: Periodic costs that occur irregularly, such as annual
+                  subscriptions.{' '}
+                </Typography>
+                <Typography>
+                  Unplanned Expenses: Unexpected costs, such as emergency repair
+                </Typography>
               </Typography>
             </Box>
           </Stack>
         }
-        youtubeUrl="https://www.youtube.com/embed/5yVf4yPg0k4?si=9soD-yivIV42YjD9"
       />
     </>
   );
