@@ -535,36 +535,6 @@ const BudgetChart = ({ date }: { date: string }) => {
               </Typography>
             </Box>
             <Box>
-              <Typography sx={{ fontWeight: '700' }}>Budget and Income</Typography>
-              <Typography
-                sx={{ fontWeight: '400' }}
-                fontSize="1.4rem"
-                color="var(--text-color-secondary)"
-              >
-                An income budget is the amount of income you plan or expect to receive in the
-                period, such as your salary, side-hustle pay, or benefits. Actual income is what you
-                really receive, which may be higher or lower than the income budget once the month
-                is over. The remaining income amount (surplus or deficit) is the difference between
-                income budget and actual income; a surplus means you earned more than expected,
-                while a deficit means you earned less than expected.
-              </Typography>
-            </Box>
-            <Box>
-              <Typography sx={{ fontWeight: '700' }}>Budget and Expenses</Typography>
-              <Typography
-                sx={{ fontWeight: '400' }}
-                fontSize="1.4rem"
-                color="var(--text-color-secondary)"
-              >
-                An expense budget is what you plan or allow yourself to spend across categories such
-                as rent, food, transport, and entertainment. Actual expense is what you really spend
-                in each category and in total during the period. The remaining expense amount
-                (surplus or deficit) is the difference between the expense budget and actual
-                expense; a surplus means you spent less than planned, while a deficit means you
-                overspent.
-              </Typography>
-            </Box>
-            <Box>
               <Typography sx={{ fontWeight: '700' }}>Why Creating a Budget Is Powerful?</Typography>
               <Typography
                 sx={{ fontWeight: '400' }}

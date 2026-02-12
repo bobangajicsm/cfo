@@ -14,6 +14,7 @@ import {
   Checkbox,
   TextField,
   type SelectChangeEvent,
+  Stack,
 } from '@mui/material';
 import React, { useState } from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -22,7 +23,10 @@ import Card from '~/components/card';
 import Dropdown from '~/components/dropdown';
 import dayjs from 'dayjs';
 
-import { type TCashFlow } from '~/cash-flow/cash-flow-tab/cash-flow-tab'; // Import type for consistency
+import { type TCashFlow } from '~/cash-flow/cash-flow-tab/cash-flow-tab';
+import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
+import ButtonIcon from '~/components/button-icon';
+import InfoDialog from '~/components/info-dialog';
 
 const data = [
   { source: 'Primary-home mortgage (P&I)', amount: '$576,000', change: 0.0, date: '2026-01-15' },
@@ -140,6 +144,7 @@ const ExpensesTable = ({
   periodData?: TCashFlow[]; // Optional fallback to empty
   scaleFactor?: number;
 }) => {
+  const [isOpenInfoDialog, setIsOpenInfoDialog] = useState(false);
   const [openCategories, setOpenCategories] = useState<{
     [key: string]: boolean;
   }>({});
@@ -293,237 +298,290 @@ const ExpensesTable = ({
     }
   };
 
-  return (
-    <Card
-      id="expenses-table"
-      sx={{
-        mb: 2,
-      }}
-    >
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        flexWrap="wrap"
-        gap={1}
-      >
-        <Typography fontSize="1.4rem">Expenses</Typography>
+  const handleOpenInfoDialog = () => {
+    setIsOpenInfoDialog(true);
+  };
 
-        <Box display="flex" width={1} gap={1} justifyContent="space-between" alignItems="center">
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Search sources..."
-            value={searchTerm}
-            fullWidth
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <Box display="flex" gap={1} alignItems="center">
-            <Dropdown
-              multiple
-              size="small"
-              value={selectedColumns as unknown as string}
-              onChange={handleChange}
-              input={<OutlinedInput />}
-              IconComponent={KeyboardArrowDownIcon}
-              renderValue={(selected) => {
-                const selectedArray = Array.isArray(selected)
-                  ? selected
-                  : String(selected).split(',');
-                return (
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      gap: 0.5,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Chip
-                      sx={{
-                        height: '1.6rem',
-                        backgroundColor: 'rgba(var(--accent--primary-1-alpha), 0.3)',
-                      }}
-                      key={selectedArray[0]}
-                      label={labels[selectedArray[0] as keyof typeof labels]}
-                      size="small"
-                    />
-                    {selectedArray.length > 1 && `+${selectedArray.length - 1}`}
-                  </Box>
-                );
-              }}
-            >
-              {[
-                { value: 'source', label: 'Source' },
-                { value: 'date', label: 'Date' },
-                { value: 'change', label: 'Change' },
-                { value: 'amount', label: 'Amount' },
-              ].map((item) => (
-                <MenuItem key={item.value} value={item.value}>
-                  <Checkbox
-                    checked={selectedColumns.includes(item.value)}
-                    size="small"
-                    sx={{ verticalAlign: 'middle' }}
-                  />
-                  {item.label}
-                </MenuItem>
-              ))}
-            </Dropdown>
-          </Box>
-        </Box>
-      </Box>
-      <TableContainer
+  const handleCloseInfoDialog = () => {
+    setIsOpenInfoDialog(false);
+  };
+
+  return (
+    <>
+      <Card
+        id="expenses-table"
         sx={{
-          mt: 1,
-          backgroundColor: 'var(--bg-color-secondary)',
-          '& .MuiTableCell-root': {
-            fontSize: '1.2rem',
-            borderColor: 'var(--neutral--600)',
-            whiteSpace: 'nowrap',
-            color: 'var(--text-color-primary)',
-          },
-          '& .MuiTableCell-root:first-of-type': {
-            minWidth: '100px',
-          },
+          mb: 2,
         }}
       >
-        <Table>
-          <TableHead>
-            <TableRow>
-              {visibleColKeys.map((key) => (
-                <TableCell key={key} sx={{ p: 1 }} align={key === 'amount' ? 'right' : undefined}>
-                  {labels[key]}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {groups.map((group) => {
-              const groupTotal = getGroupTotal(group.items); // Approximate group sum
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          flexWrap="wrap"
+          gap={1}
+        >
+          <Typography fontSize="1.4rem">Expenses</Typography>
 
-              const avgChange =
-                group.items.length > 0
-                  ? group.items.reduce((acc, item) => acc + item.change, 0) / group.items.length
-                  : 0;
-
-              const isOpen = openCategories[group.category];
-
-              return (
-                <React.Fragment key={group.category}>
-                  <TableRow sx={{ 'td, th': { border: 0 } }}>
-                    <TableCell
-                      scope="row"
-                      onClick={() =>
-                        setOpenCategories((prev) => ({
-                          ...prev,
-                          [group.category]: !prev[group.category],
-                        }))
-                      }
+          <Box display="flex" width={1} gap={1} justifyContent="space-between" alignItems="center">
+            <TextField
+              variant="outlined"
+              size="small"
+              placeholder="Search sources..."
+              value={searchTerm}
+              fullWidth
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <Box display="flex" gap={1} alignItems="center">
+              <Dropdown
+                multiple
+                size="small"
+                value={selectedColumns as unknown as string}
+                onChange={handleChange}
+                input={<OutlinedInput />}
+                IconComponent={KeyboardArrowDownIcon}
+                renderValue={(selected) => {
+                  const selectedArray = Array.isArray(selected)
+                    ? selected
+                    : String(selected).split(',');
+                  return (
+                    <Box
                       sx={{
-                        cursor: 'pointer',
                         display: 'flex',
+                        gap: 0.5,
+                        justifyContent: 'center',
                         alignItems: 'center',
-                        fontWeight: 'bold',
-                        p: 1,
                       }}
                     >
-                      <KeyboardArrowDownIcon
+                      <Chip
                         sx={{
-                          mr: 1,
-                          transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                          transition: 'transform 0.3s',
+                          height: '1.6rem',
+                          backgroundColor: 'rgba(var(--accent--primary-1-alpha), 0.3)',
                         }}
+                        key={selectedArray[0]}
+                        label={labels[selectedArray[0] as keyof typeof labels]}
+                        size="small"
                       />
-                      {group.category}
-                      {group.items.length === 0 && (
-                        <Typography variant="body2" color="textSecondary" sx={{ ml: 1 }}>
-                          (No matches)
-                        </Typography>
-                      )}
-                    </TableCell>
-                    {visibleColKeys.slice(1).map((key) => (
+                      {selectedArray.length > 1 && `+${selectedArray.length - 1}`}
+                    </Box>
+                  );
+                }}
+              >
+                {[
+                  { value: 'source', label: 'Source' },
+                  { value: 'date', label: 'Date' },
+                  { value: 'change', label: 'Change' },
+                  { value: 'amount', label: 'Amount' },
+                ].map((item) => (
+                  <MenuItem key={item.value} value={item.value}>
+                    <Checkbox
+                      checked={selectedColumns.includes(item.value)}
+                      size="small"
+                      sx={{ verticalAlign: 'middle' }}
+                    />
+                    {item.label}
+                  </MenuItem>
+                ))}
+              </Dropdown>
+            </Box>
+          </Box>
+        </Box>
+        <TableContainer
+          sx={{
+            mt: 1,
+            backgroundColor: 'var(--bg-color-secondary)',
+            '& .MuiTableCell-root': {
+              fontSize: '1.2rem',
+              borderColor: 'var(--neutral--600)',
+              whiteSpace: 'nowrap',
+              color: 'var(--text-color-primary)',
+            },
+            '& .MuiTableCell-root:first-of-type': {
+              minWidth: '100px',
+            },
+          }}
+        >
+          <Table>
+            <TableHead>
+              <TableRow>
+                {visibleColKeys.map((key) => (
+                  <TableCell key={key} sx={{ p: 1 }} align={key === 'amount' ? 'right' : undefined}>
+                    {labels[key]}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {groups.map((group) => {
+                const groupTotal = getGroupTotal(group.items); // Approximate group sum
+
+                const avgChange =
+                  group.items.length > 0
+                    ? group.items.reduce((acc, item) => acc + item.change, 0) / group.items.length
+                    : 0;
+
+                const isOpen = openCategories[group.category];
+
+                return (
+                  <React.Fragment key={group.category}>
+                    <TableRow sx={{ 'td, th': { border: 0 } }}>
                       <TableCell
-                        key={key}
-                        align={key === 'amount' ? 'right' : undefined}
-                        sx={key === 'amount' ? { fontWeight: 'bold', p: 1 } : { p: 1 }}
+                        scope="row"
+                        onClick={() =>
+                          setOpenCategories((prev) => ({
+                            ...prev,
+                            [group.category]: !prev[group.category],
+                          }))
+                        }
+                        sx={{
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          fontWeight: 'bold',
+                          p: 1,
+                        }}
                       >
-                        {key === 'change' ? (
-                          <TrendingChip value={avgChange} />
-                        ) : key === 'amount' ? (
-                          `$${groupTotal.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
-                        ) : (
-                          ''
+                        <KeyboardArrowDownIcon
+                          sx={{
+                            mr: 1,
+                            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                            transition: 'transform 0.3s',
+                          }}
+                        />
+                        {group.category}
+                        {group.items.length === 0 && (
+                          <Typography variant="body2" color="textSecondary" sx={{ ml: 1 }}>
+                            (No matches)
+                          </Typography>
                         )}
                       </TableCell>
-                    ))}
-                  </TableRow>
-                  <TableRow>
-                    <TableCell
-                      sx={{
-                        p: 0,
-                      }}
-                      colSpan={visibleColKeys.length}
-                    >
-                      <Collapse in={isOpen} timeout="auto" unmountOnExit>
-                        <Box sx={{ margin: 0 }}>
-                          <Table size="small" aria-label="child table">
-                            <TableBody>
-                              {group.items.map((row) => (
-                                <TableRow key={row.source}>
-                                  {visibleColKeys.map((key) => (
-                                    <TableCell
-                                      key={key}
-                                      scope={key === 'source' ? 'row' : undefined}
-                                      align={key === 'amount' ? 'right' : undefined}
-                                      sx={{
-                                        borderTop: '1px solid var(--neutral--600)',
-                                        p: 1,
-                                      }}
-                                    >
-                                      {getChildCellContent(key, row)}
-                                    </TableCell>
-                                  ))}
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </Box>
-                      </Collapse>
-                    </TableCell>
-                  </TableRow>
-                </React.Fragment>
-              );
-            })}
-            <TableRow
-              sx={{
-                backgroundColor: 'rgba(var(--system--red-300-alpha), 0.05)',
-              }}
-            >
-              <TableCell
-                component="th"
-                scope="row"
-                sx={{ fontWeight: 'bold', fontSize: '1.3rem', p: 1 }}
+                      {visibleColKeys.slice(1).map((key) => (
+                        <TableCell
+                          key={key}
+                          align={key === 'amount' ? 'right' : undefined}
+                          sx={key === 'amount' ? { fontWeight: 'bold', p: 1 } : { p: 1 }}
+                        >
+                          {key === 'change' ? (
+                            <TrendingChip value={avgChange} />
+                          ) : key === 'amount' ? (
+                            `$${groupTotal.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+                          ) : (
+                            ''
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                    <TableRow>
+                      <TableCell
+                        sx={{
+                          p: 0,
+                        }}
+                        colSpan={visibleColKeys.length}
+                      >
+                        <Collapse in={isOpen} timeout="auto" unmountOnExit>
+                          <Box sx={{ margin: 0 }}>
+                            <Table size="small" aria-label="child table">
+                              <TableBody>
+                                {group.items.map((row) => (
+                                  <TableRow key={row.source}>
+                                    {visibleColKeys.map((key) => (
+                                      <TableCell
+                                        key={key}
+                                        scope={key === 'source' ? 'row' : undefined}
+                                        align={key === 'amount' ? 'right' : undefined}
+                                        sx={{
+                                          borderTop: '1px solid var(--neutral--600)',
+                                          p: 1,
+                                        }}
+                                      >
+                                        {getChildCellContent(key, row)}
+                                      </TableCell>
+                                    ))}
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </Box>
+                        </Collapse>
+                      </TableCell>
+                    </TableRow>
+                  </React.Fragment>
+                );
+              })}
+              <TableRow
+                sx={{
+                  backgroundColor: 'rgba(var(--system--red-300-alpha), 0.05)',
+                }}
               >
-                Total
-              </TableCell>
-              {visibleColKeys.slice(1).map((key) => (
                 <TableCell
-                  key={key}
-                  align={key === 'amount' ? 'right' : undefined}
-                  sx={
-                    key === 'amount' ? { fontWeight: 'bold', fontSize: '1.3rem', p: 1 } : { p: 1 }
-                  }
+                  component="th"
+                  scope="row"
+                  sx={{ fontWeight: 'bold', fontSize: '1.3rem', p: 1 }}
                 >
-                  {key === 'amount'
-                    ? `$${totalExpenses.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
-                    : ''}
+                  Total
                 </TableCell>
-              ))}
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Card>
+                {visibleColKeys.slice(1).map((key) => (
+                  <TableCell
+                    key={key}
+                    align={key === 'amount' ? 'right' : undefined}
+                    sx={
+                      key === 'amount' ? { fontWeight: 'bold', fontSize: '1.3rem', p: 1 } : { p: 1 }
+                    }
+                  >
+                    {key === 'amount'
+                      ? `$${totalExpenses.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+                      : ''}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <ButtonIcon
+          sx={{
+            position: 'absolute',
+            top: '-13px',
+            left: '-13px',
+            opacity: 0.7,
+          }}
+          onClick={handleOpenInfoDialog}
+        >
+          <InfoOutlineIcon sx={{ fontSize: '2rem' }} />
+        </ButtonIcon>
+      </Card>
+      <InfoDialog
+        open={isOpenInfoDialog}
+        onClose={handleCloseInfoDialog}
+        title="Expenses Overview"
+        content={
+          <Stack px={2} gap={3} mb={2}>
+            <Box>
+              <Typography sx={{ fontWeight: '700' }}>Expense Types</Typography>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+              >
+                <Typography mb={1}>
+                  - Fixed Expenses: Consistent costs that remain unchanged over time, such as rent
+                </Typography>
+                <Typography mb={1}>
+                  - Variable Expenses: Costs that fluctuate based on usage or activity, such as
+                  groceries{' '}
+                </Typography>
+                <Typography mb={1}>
+                  - Occasional Expenses: Periodic costs that occur irregularly, such as annual
+                  subscriptions.{' '}
+                </Typography>
+                <Typography>
+                  - Unplanned Expenses: Unexpected costs, such as emergency repair
+                </Typography>
+              </Typography>
+            </Box>
+          </Stack>
+        }
+      />
+    </>
   );
 };
 

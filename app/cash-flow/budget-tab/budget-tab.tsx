@@ -1,9 +1,8 @@
-import React, { useState, type ReactNode, useMemo } from 'react';
+import React, { useState } from 'react';
 import IncomeBudgetTable from './components/income-budget-table';
 import ExpensesBudgetTable from './components/expenses-budget-table';
-import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 
-import { MenuItem, Select, Stack } from '@mui/material';
+import { MenuItem, Select } from '@mui/material';
 
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ButtonPrimary from '~/components/button-primary';
@@ -11,12 +10,9 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 
 import { Box, Typography } from '@mui/material';
-import BudgetChart from './components/budget-chart';
 
 import * as XLSX from 'xlsx';
 import pkg from 'file-saver';
-import ButtonIcon from '~/components/button-icon';
-import InfoDialog from '~/components/info-dialog';
 const { saveAs } = pkg;
 
 export type TCashFlow = {
@@ -124,129 +120,12 @@ export const yearlyData = {
   2025: data2025,
 } as const;
 
-const passiveData2020 = data2020.map((d) => ({ month: d.month, earnings: 5000, expenses: 0 }));
-const passiveData2021 = data2021.map((d) => ({ month: d.month, earnings: 6000, expenses: 0 }));
-const passiveData2022 = data2022.map((d) => ({ month: d.month, earnings: 8000, expenses: 0 }));
-const passiveData2023 = data2023.map((d) => ({ month: d.month, earnings: 15000, expenses: 0 }));
-const passiveData2024 = data2024.map((d) => ({ month: d.month, earnings: 18000, expenses: 0 }));
-const passiveData2025 = data2025.map((d) => ({ month: d.month, earnings: 33000, expenses: 0 }));
-
-const passiveYearlyData = {
-  2020: passiveData2020,
-  2021: passiveData2021,
-  2022: passiveData2022,
-  2023: passiveData2023,
-  2024: passiveData2024,
-  2025: passiveData2025,
-} as const;
-
 const BudgetTab = () => {
   const [date, setDate] = useState('Y');
-  const [isOpenInfoDialog, setIsOpenInfoDialog] = useState(false);
-  const [infoTitle, setInfoTitle] = useState('');
-  const [infoContent, setInfoContent] = useState<ReactNode | null>(null);
-  const [infoYoutubeUrl, setInfoYoutubeUrl] = useState('');
 
   const fileType =
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
   const fileExtension = '.xlsx';
-
-  const years = Object.keys(yearlyData).map(Number);
-  const currentYear = Math.max(...years);
-
-  const getPeriodMonths = (timeframe: string): number => {
-    switch (timeframe) {
-      case 'W':
-        return 0.25;
-      case 'M':
-        return 1;
-      case 'Q':
-        return 3;
-      case '6M':
-        return 6;
-      case 'Y':
-        return 12;
-      case '2Y':
-        return 24;
-      case '5Y':
-        return 60;
-      default:
-        return 12;
-    }
-  };
-
-  const [fullMonthsCount, scaleFactor] = useMemo(() => {
-    const months = getPeriodMonths(date);
-    if (months < 1) {
-      return [1, months];
-    }
-    return [Math.min(Math.floor(months), 12), 1];
-  }, [date]);
-
-  const periodData = useMemo((): TCashFlow[] => {
-    const monthsNeeded = getPeriodMonths(date);
-    let data: TCashFlow[] = [];
-    if (monthsNeeded <= 12) {
-      const currentData = yearlyData[currentYear as keyof typeof yearlyData] || [];
-      const numMonths = Math.min(fullMonthsCount, 12);
-      data = currentData.slice(-numMonths);
-    } else {
-      const numYears = monthsNeeded / 12;
-      const startYear = currentYear - numYears + 1;
-      for (let y = startYear; y <= currentYear; y++) {
-        if (yearlyData[y as keyof typeof yearlyData]) {
-          data = [...data, ...yearlyData[y as keyof typeof yearlyData]];
-        }
-      }
-    }
-    return data;
-  }, [date, currentYear, yearlyData, fullMonthsCount]);
-
-  const totalEarnings = useMemo(
-    () => periodData.reduce((acc, item) => acc + item.earnings, 0) * scaleFactor,
-    [periodData, scaleFactor]
-  );
-
-  const totalExpenses = useMemo(
-    () => periodData.reduce((acc, item) => acc + item.expenses, 0) * scaleFactor,
-    [periodData, scaleFactor]
-  );
-
-  // Dynamic passive period data (mirrors periodData logic but uses passiveYearlyData)
-  const passivePeriodData = useMemo((): TCashFlow[] => {
-    const monthsNeeded = getPeriodMonths(date);
-    let data: TCashFlow[] = [];
-    if (monthsNeeded <= 12) {
-      const currentData = passiveYearlyData[currentYear as keyof typeof passiveYearlyData] || [];
-      const numMonths = Math.min(fullMonthsCount, 12);
-      data = currentData.slice(-numMonths);
-    } else {
-      const numYears = monthsNeeded / 12;
-      const startYear = currentYear - numYears + 1;
-      for (let y = startYear; y <= currentYear; y++) {
-        if (passiveYearlyData[y as keyof typeof passiveYearlyData]) {
-          data = [...data, ...passiveYearlyData[y as keyof typeof passiveYearlyData]];
-        }
-      }
-    }
-    return data;
-  }, [date, currentYear, passiveYearlyData, fullMonthsCount]);
-
-  const totalPassive = useMemo(
-    () => passivePeriodData.reduce((acc, item) => acc + item.earnings, 0) * scaleFactor,
-    [passivePeriodData, scaleFactor]
-  );
-
-  // Lifestyle Coverage calculations (dynamic based on period data)
-  const lifestyleCombined = useMemo(
-    () => (totalExpenses > 0 ? Math.round((totalEarnings / totalExpenses) * 100 * 10) / 10 : 0),
-    [totalEarnings, totalExpenses]
-  );
-
-  const lifestylePassive = useMemo(
-    () => (totalExpenses > 0 ? Math.round((totalPassive / totalExpenses) * 100 * 10) / 10 : 0),
-    [totalPassive, totalExpenses]
-  );
 
   const handleDownload = () => {
     const wb = XLSX.utils.book_new();
@@ -259,25 +138,6 @@ const BudgetTab = () => {
 
     const blob = new Blob([excelBuffer], { type: fileType });
     saveAs(blob, 'budget_flow' + fileExtension);
-  };
-
-  const handleOpenInfoDialog = ({
-    title,
-    content,
-    youtubeUrl,
-  }: {
-    title: string;
-    content: React.ReactNode;
-    youtubeUrl: string;
-  }) => {
-    setInfoTitle(title);
-    setInfoContent(content);
-    setInfoYoutubeUrl(youtubeUrl);
-    setIsOpenInfoDialog(true);
-  };
-
-  const handleCloseInfoDialog = () => {
-    setIsOpenInfoDialog(false);
   };
 
   return (
@@ -324,155 +184,11 @@ const BudgetTab = () => {
           <ArrowDownwardIcon sx={{ fontSize: '1.2rem', ml: 0.5 }} />
         </ButtonPrimary>
       </Box>
-      <BudgetChart date={date} />
-      <Box
-        sx={{
-          position: 'relative',
-          backgroundColor: 'var(--bg-color-secondary)',
-          borderRadius: 2,
-          border: '1px solid var(--border-color)',
-          px: 2,
-          py: 2,
-          mb: 2,
-        }}
-      >
-        <Typography color="var(--text-color-primary)" fontSize="1.2rem">
-          Life Style Coverage Percentage (Combined)
-        </Typography>
-        <Typography color="var(--text-color-secondary)" fontSize="1rem">
-          (Total Income ÷ Total Expenses) x 100
-        </Typography>
-        <Box display="flex" alignItems="center" gap={1}>
-          <Typography fontSize="2.8rem" fontWeight={700}>
-            {lifestyleCombined}%
-          </Typography>
-          <ButtonIcon
-            onClick={() =>
-              handleOpenInfoDialog({
-                title: 'Life Style Coverage Percentage (Combined) Overview',
-                content: (
-                  <Stack px={2} gap={3} mb={2}>
-                    <Box>
-                      <Typography
-                        sx={{ fontWeight: '400' }}
-                        fontSize="1.4rem"
-                        color="var(--text-color-secondary)"
-                      >
-                        This measures how much of your total expenses are covered by all of your
-                        combined income sources. Aim for 120–150% or higher to maintain a healthy
-                        financial buffer for unexpected costs for example.
-                        <Typography>100% — Income equals expenses (break-even).</Typography>
-                        <Typography>
-                          Above 100% — Surplus income available for savings, investments, or debt
-                          reduction.
-                        </Typography>
-                        <Typography>
-                          Below 100% — Deficit; consider reducing expenses or increasing income.
-                        </Typography>
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
-                      <Typography
-                        sx={{ fontWeight: '400' }}
-                        fontSize="1.4rem"
-                        color="var(--text-color-secondary)"
-                      >
-                        (Total Income ÷ Total Expenses) × 100
-                      </Typography>
-                    </Box>
-                  </Stack>
-                ),
-                youtubeUrl: '',
-              })
-            }
-            sx={{
-              position: 'absolute',
-              top: '-13px',
-              left: '-13px',
-              opacity: 0.7,
-            }}
-          >
-            <InfoOutlineIcon sx={{ fontSize: '2rem' }} />
-          </ButtonIcon>
-        </Box>
-      </Box>
-      <Box
-        sx={{
-          position: 'relative',
-          backgroundColor: 'var(--bg-color-secondary)',
-          borderRadius: 2,
-          border: '1px solid var(--border-color)',
-          px: 2,
-          py: 2,
-          mb: 2,
-        }}
-      >
-        <Typography color="var(--text-color-primary)" fontSize="1.2rem">
-          Life Style Coverage Percentage (Passive)
-        </Typography>
-        <Typography color="var(--text-color-secondary)" fontSize="1rem">
-          (Passive Income ÷ Total Expenses) x 100
-        </Typography>
-        <Box display="flex" alignItems="center" gap={1}>
-          <Typography fontSize="2.8rem" fontWeight={700}>
-            {lifestylePassive}%
-          </Typography>
-          <ButtonIcon
-            onClick={() =>
-              handleOpenInfoDialog({
-                title: 'Life Style Coverage Percentage (Passive)',
-                content: (
-                  <Stack px={2} gap={3} mb={2}>
-                    <Box>
-                      <Typography
-                        sx={{ fontWeight: '400' }}
-                        fontSize="1.4rem"
-                        color="var(--text-color-secondary)"
-                      >
-                        This measures how much of your expenses are covered solely by passive income
-                        ONLY. It's a key indicator of progress toward financial independence, where
-                        passive income fully funds your lifestyle.
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
-                      <Typography
-                        sx={{ fontWeight: '400' }}
-                        fontSize="1.4rem"
-                        color="var(--text-color-secondary)"
-                      >
-                        (Passive Income ÷ Total Expenses) × 100
-                      </Typography>
-                    </Box>
-                  </Stack>
-                ),
-                youtubeUrl: '',
-              })
-            }
-            sx={{
-              position: 'absolute',
-              top: '-13px',
-              left: '-13px',
-              opacity: 0.7,
-            }}
-          >
-            <InfoOutlineIcon sx={{ fontSize: '2rem' }} />
-          </ButtonIcon>
-        </Box>
-      </Box>
       <Typography variant="h2" fontSize="2rem" fontWeight={600} mt={3} mb={4}>
         Transactions
       </Typography>
       <IncomeBudgetTable timeframe={date} />
       <ExpensesBudgetTable timeframe={date} />
-      <InfoDialog
-        title={infoTitle}
-        content={infoContent}
-        youtubeUrl={infoYoutubeUrl}
-        open={isOpenInfoDialog}
-        onClose={handleCloseInfoDialog}
-      />
     </Box>
   );
 };

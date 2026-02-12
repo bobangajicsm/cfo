@@ -71,6 +71,21 @@ const InfoDialog = ({
             </Typography>
           </DialogTitle>
 
+          {youtubeUrl && (
+            <Box p={2}>
+              <iframe
+                width="100%"
+                height="315"
+                src={youtubeUrl}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              ></iframe>
+            </Box>
+          )}
+
           {content && content}
 
           {shortDescription && (
@@ -103,21 +118,6 @@ const InfoDialog = ({
               <Typography fontSize="1.1rem" color="var(--text-color-secondary)" lineHeight={1.6}>
                 {longDescription}
               </Typography>
-            </Box>
-          )}
-
-          {youtubeUrl && (
-            <Box p={2}>
-              <iframe
-                width="100%"
-                height="315"
-                src={youtubeUrl}
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-              ></iframe>
             </Box>
           )}
 

@@ -22,6 +22,7 @@ import * as XLSX from 'xlsx';
 import pkg from 'file-saver';
 import { useState, useMemo } from 'react';
 import IncomeExpenseChart from '~/cash-flow/cash-flow-tab/components/income-expense-chart';
+import BudgetChart from '../budget-tab/components/budget-chart';
 const { saveAs } = pkg;
 
 export type TCashFlow = {
@@ -248,6 +249,7 @@ const CashFlowTab = () => {
           <ArrowDownwardIcon sx={{ fontSize: '1.2rem', ml: 0.5 }} />
         </ButtonPrimary>
       </Box>
+      <BudgetChart date={date} />
       <CashFlowChart
         date={date}
         periodData={periodData}

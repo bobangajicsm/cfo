@@ -390,46 +390,6 @@ const CashFlowChart = ({
                 Cash Flow = Total Income – Total Expenses
               </Typography>
             </Box>
-            <Box>
-              <Typography sx={{ fontWeight: '700' }}>Income Types</Typography>
-              <Typography
-                sx={{ fontWeight: '400' }}
-                fontSize="1.4rem"
-                color="var(--text-color-secondary)"
-              >
-                <Typography>Active Income: Earnings generated through direct work </Typography>
-                <Typography>
-                  Passive Income: Earnings that require minimal ongoing effort, such as rental
-                  income
-                </Typography>
-                <Typography>
-                  Portfolio Income: Returns derived from investments, including dividends, interest
-                </Typography>
-              </Typography>
-            </Box>
-            <Box>
-              <Typography sx={{ fontWeight: '700' }}>Expense Types</Typography>
-              <Typography
-                sx={{ fontWeight: '400' }}
-                fontSize="1.4rem"
-                color="var(--text-color-secondary)"
-              >
-                <Typography>
-                  Fixed Expenses: Consistent costs that remain unchanged over time, such as rent
-                </Typography>
-                <Typography>
-                  Variable Expenses: Costs that fluctuate based on usage or activity, such as
-                  groceries{' '}
-                </Typography>
-                <Typography>
-                  Occasional Expenses: Periodic costs that occur irregularly, such as annual
-                  subscriptions.{' '}
-                </Typography>
-                <Typography>
-                  Unplanned Expenses: Unexpected costs, such as emergency repair
-                </Typography>
-              </Typography>
-            </Box>
           </Stack>
         }
       />

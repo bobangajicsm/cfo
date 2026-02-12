@@ -52,7 +52,7 @@ const rawData: ExpenseItem[] = [
   { category: 'Auto Repairs', budget: 3000, actual: 2500, date: '2026-01-01' },
 ];
 
-const columnOptions = ['Budget', 'Actual', 'Remaining'] as const;
+const columnOptions = ['Budget', 'Actual', 'Difference'] as const;
 type ColumnKey = (typeof columnOptions)[number];
 
 const fixedCategories = [
@@ -285,9 +285,9 @@ const ExpensesBudgetTable = ({ timeframe = 'Y' }: Props) => {
                   Actual
                 </TableCell>
               )}
-              {visibleColumns.includes('Remaining') && (
+              {visibleColumns.includes('Difference') && (
                 <TableCell align="right" sx={{ borderTop: '1px solid var(--neutral--600)' }}>
-                  Remaining
+                  Difference
                 </TableCell>
               )}
             </TableRow>
@@ -339,7 +339,7 @@ const ExpensesBudgetTable = ({ timeframe = 'Y' }: Props) => {
                         {format(groupActual)}
                       </TableCell>
                     )}
-                    {visibleColumns.includes('Remaining') && (
+                    {visibleColumns.includes('Difference') && (
                       <TableCell
                         align="right"
                         sx={{
@@ -400,7 +400,7 @@ const ExpensesBudgetTable = ({ timeframe = 'Y' }: Props) => {
                                         {format(rowActual)}
                                       </TableCell>
                                     )}
-                                    {visibleColumns.includes('Remaining') && (
+                                    {visibleColumns.includes('Difference') && (
                                       <TableCell
                                         align="right"
                                         sx={{
@@ -464,7 +464,7 @@ const ExpensesBudgetTable = ({ timeframe = 'Y' }: Props) => {
                   {format(effectiveTotalActual)}
                 </TableCell>
               )}
-              {visibleColumns.includes('Remaining') && (
+              {visibleColumns.includes('Difference') && (
                 <TableCell
                   align="right"
                   sx={{

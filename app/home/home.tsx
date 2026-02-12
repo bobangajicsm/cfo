@@ -421,50 +421,6 @@ const home = () => {
                       Cash Flow = Total Income – Total Expenses
                     </Typography>
                   </Box>
-                  <Box>
-                    <Typography sx={{ fontWeight: '700' }}>Income Types</Typography>
-                    <Typography
-                      sx={{ fontWeight: '400' }}
-                      fontSize="1.4rem"
-                      color="var(--text-color-secondary)"
-                    >
-                      <Typography>
-                        Active Income: Earnings generated through direct work{' '}
-                      </Typography>
-                      <Typography>
-                        Passive Income: Earnings that require minimal ongoing effort, such as rental
-                        income
-                      </Typography>
-                      <Typography>
-                        Portfolio Income: Returns derived from investments, including dividends,
-                        interest
-                      </Typography>
-                    </Typography>
-                  </Box>
-                  <Box>
-                    <Typography sx={{ fontWeight: '700' }}>Expense Types</Typography>
-                    <Typography
-                      sx={{ fontWeight: '400' }}
-                      fontSize="1.4rem"
-                      color="var(--text-color-secondary)"
-                    >
-                      <Typography>
-                        Fixed Expenses: Consistent costs that remain unchanged over time, such as
-                        rent
-                      </Typography>
-                      <Typography>
-                        Variable Expenses: Costs that fluctuate based on usage or activity, such as
-                        groceries{' '}
-                      </Typography>
-                      <Typography>
-                        Occasional Expenses: Periodic costs that occur irregularly, such as annual
-                        subscriptions.{' '}
-                      </Typography>
-                      <Typography>
-                        Unplanned Expenses: Unexpected costs, such as emergency repair
-                      </Typography>
-                    </Typography>
-                  </Box>
                 </Stack>
               ),
             })
@@ -500,7 +456,6 @@ const home = () => {
                 <Typography fontSize="2.8rem" fontWeight={700}>
                   ${totalEarnings.toLocaleString()}
                 </Typography>
-                {/* UPDATED: Dynamic trend matching charts */}
                 <TrendingChip value={earningsTrend} />
               </Box>
             </Box>
@@ -527,7 +482,7 @@ const home = () => {
                 <Typography fontSize="2.8rem" fontWeight={700}>
                   ${totalExpenses.toLocaleString()}
                 </Typography>
-                {/* UPDATED: Dynamic trend matching charts */}
+
                 <TrendingChip value={expensesTrend} />
               </Box>
             </Box>
@@ -546,7 +501,7 @@ const home = () => {
         }}
       >
         <Typography color="var(--text-color-primary)" fontSize="1.2rem">
-          Life Style Coverage Percentage (Combined)
+          Lifestyle Coverage Percentage (Combined)
         </Typography>
         <Typography color="var(--text-color-secondary)" fontSize="1rem">
           (Total Income ÷ Total Expenses) x 100
@@ -558,28 +513,26 @@ const home = () => {
           <ButtonIcon
             onClick={() =>
               handleOpenInfoDialog({
-                title: 'Life Style Coverage Percentage (Combined) Overview',
+                title: 'Lifestyle Coverage Percentage (Combined) Overview',
                 content: (
                   <Stack px={2} gap={3} mb={2}>
-                    <Box>
-                      <Typography
-                        sx={{ fontWeight: '400' }}
-                        fontSize="1.4rem"
-                        color="var(--text-color-secondary)"
-                      >
-                        This measures how much of your total expenses are covered by all of your
-                        combined income sources. Aim for 120–150% or higher to maintain a healthy
-                        financial buffer for unexpected costs for example.
-                        <Typography>100% — Income equals expenses (break-even).</Typography>
-                        <Typography>
-                          Above 100% — Surplus income available for savings, investments, or debt
-                          reduction.
-                        </Typography>
-                        <Typography>
-                          Below 100% — Deficit; consider reducing expenses or increasing income.
-                        </Typography>
-                      </Typography>
+                    <Typography>
+                      Why is understanding your Lifestyle Coverage Percentage (Combined) so
+                      important?
+                    </Typography>
+                    <Box p={2}>
+                      <iframe
+                        width="100%"
+                        height="315"
+                        src="https://www.youtube.com/embed/R-fd2GqcLmI?si=rEv2hkznrLhecLho"
+                        title="YouTube video player"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen
+                      ></iframe>
                     </Box>
+
                     <Box>
                       <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
                       <Typography
@@ -587,7 +540,19 @@ const home = () => {
                         fontSize="1.4rem"
                         color="var(--text-color-secondary)"
                       >
-                        (Total Income ÷ Total Expenses) × 100
+                        (Passive Income ÷ Total Expenses) × 100
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography sx={{ fontWeight: '700' }}>Overview</Typography>
+                      <Typography
+                        sx={{ fontWeight: '400' }}
+                        fontSize="1.4rem"
+                        color="var(--text-color-secondary)"
+                      >
+                        This measures how much of your expenses are covered solely by passive income
+                        ONLY. It's a key indicator of progress toward financial independence, where
+                        passive income fully funds your lifestyle.
                       </Typography>
                     </Box>
                   </Stack>
@@ -618,7 +583,7 @@ const home = () => {
         }}
       >
         <Typography color="var(--text-color-primary)" fontSize="1.2rem">
-          Life Style Coverage Percentage (Passive)
+          Lifestyle Coverage Percentage (Passive)
         </Typography>
         <Typography color="var(--text-color-secondary)" fontSize="1rem">
           (Passive Income ÷ Total Expenses) x 100
@@ -630,20 +595,26 @@ const home = () => {
           <ButtonIcon
             onClick={() =>
               handleOpenInfoDialog({
-                title: 'Life Style Coverage Percentage (Passive)',
+                title: 'Lifestyle Coverage Percentage (Passive)',
                 content: (
                   <Stack px={2} gap={3} mb={2}>
-                    <Box>
-                      <Typography
-                        sx={{ fontWeight: '400' }}
-                        fontSize="1.4rem"
-                        color="var(--text-color-secondary)"
-                      >
-                        This measures how much of your expenses are covered solely by passive income
-                        ONLY. It's a key indicator of progress toward financial independence, where
-                        passive income fully funds your lifestyle.
-                      </Typography>
+                    <Typography>
+                      Why is understanding your Lifestyle Coverage Percentage (Passive) so
+                      important?
+                    </Typography>
+                    <Box p={2}>
+                      <iframe
+                        width="100%"
+                        height="315"
+                        src="https://www.youtube.com/embed/1DnlrBRjMoY?si=ZtzNVRtr4_-J3NKl"
+                        title="YouTube video player"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen
+                      ></iframe>
                     </Box>
+
                     <Box>
                       <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
                       <Typography
@@ -652,6 +623,18 @@ const home = () => {
                         color="var(--text-color-secondary)"
                       >
                         (Passive Income ÷ Total Expenses) × 100
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography sx={{ fontWeight: '700' }}>Overview</Typography>
+                      <Typography
+                        sx={{ fontWeight: '400' }}
+                        fontSize="1.4rem"
+                        color="var(--text-color-secondary)"
+                      >
+                        This measures how much of your expenses are covered solely by passive income
+                        ONLY. It's a key indicator of progress toward financial independence, where
+                        passive income fully funds your lifestyle.
                       </Typography>
                     </Box>
                   </Stack>
