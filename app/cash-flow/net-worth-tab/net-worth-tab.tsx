@@ -1,5 +1,5 @@
 import { Box, MenuItem, Select, Stack, Typography } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import ButtonPrimary from '~/components/button-primary';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import NetWorthChart from './components/net-worth-chart';
@@ -13,6 +13,15 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import * as XLSX from 'xlsx';
 import pkg from 'file-saver';
 const { saveAs } = pkg;
+
+import {
+  data2020,
+  data2021,
+  data2022,
+  data2023,
+  data2024,
+  data2025,
+} from '~/cash-flow/budget-tab/budget-tab';
 
 const data = [
   { period: "Jan '20", assets: 8662826, liabilities: 5011333, netWorth: 3651493 },
@@ -92,6 +101,32 @@ const data = [
 const NetWorthTab = () => {
   const [date, setDate] = useState('Y');
   const [isOpenInfoDialog, setIsOpenInfoDialog] = useState(false);
+  const [capRate, setCapRate] = useState(8);
+
+  const fullMonthlyData = useMemo(
+    () => [...data2020, ...data2021, ...data2022, ...data2023, ...data2024, ...data2025],
+    []
+  );
+
+  const getFilteredMonthlyData = (timeframe: string) => {
+    const numMonthsMap: Record<string, number> = {
+      '6M': 6,
+      Y: 12,
+      '2Y': 24,
+      '5Y': 60,
+      All: fullMonthlyData.length,
+    };
+    const numMonths = numMonthsMap[timeframe] || 12;
+    const recentData = fullMonthlyData.slice(-numMonths);
+    const sum = recentData.reduce((acc, item) => acc + item.earnings, 0);
+    const periodInMonths = numMonthsMap[timeframe] || 12;
+    const prorate = Math.min(periodInMonths / numMonths, 1);
+    return Math.round(sum * prorate);
+  };
+
+  const passiveIncome = getFilteredMonthlyData(date);
+
+  const computedValue = Math.round(passiveIncome / (capRate / 100));
 
   const handleOpenInfoDialog = () => {
     setIsOpenInfoDialog(true);
@@ -121,49 +156,84 @@ const NetWorthTab = () => {
           p: 2,
         }}
       >
-        <Box my={1} display="flex" justifyContent="flex-end" mb={3} gap={2}>
-          <Select
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            size="small"
-            IconComponent={KeyboardArrowDownIcon}
-            startAdornment={<CalendarTodayIcon sx={{ fontSize: 18 }} />}
-            sx={{
-              '& .MuiOutlinedInput-notchedOutline': {
-                border: 'none',
-              },
-              '&:hover .MuiOutlinedInput-notchedOutline': {
-                border: 'none',
-              },
-              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                border: 'none',
-              },
-              '& .MuiSelect-select': {
-                paddingLeft: 0.5,
-                minHeight: 'auto !important',
-              },
-              '&.MuiOutlinedInput-root': {
-                borderRadius: '4px',
-              },
-            }}
-          >
-            {['6M', 'Y', '2Y', '5Y', 'All'].map((tf) => (
-              <MenuItem key={tf} value={tf}>
-                {tf}
-              </MenuItem>
-            ))}
-          </Select>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} gap={2}>
+          <Box display="flex" gap={2} alignItems="center">
+            <Typography fontSize="1.4rem">Cap Rate</Typography>
+            <Select
+              value={capRate}
+              onChange={(e) => setCapRate(Number(e.target.value))}
+              size="small"
+              IconComponent={KeyboardArrowDownIcon}
+              sx={{
+                '& .MuiOutlinedInput-notchedOutline': {
+                  border: 'none',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  border: 'none',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  border: 'none',
+                },
+                '& .MuiSelect-select': {
+                  paddingLeft: 0.5,
+                  minHeight: 'auto !important',
+                },
+                '&.MuiOutlinedInput-root': {
+                  borderRadius: '4px',
+                },
+              }}
+            >
+              {[2, 4, 6, 8, 10, 12].map((r) => (
+                <MenuItem key={r} value={r}>
+                  {r}%
+                </MenuItem>
+              ))}
+            </Select>
+          </Box>
+          <Box my={1} display="flex" gap={2}>
+            <Select
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              size="small"
+              IconComponent={KeyboardArrowDownIcon}
+              startAdornment={<CalendarTodayIcon sx={{ fontSize: 18 }} />}
+              sx={{
+                '& .MuiOutlinedInput-notchedOutline': {
+                  border: 'none',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  border: 'none',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  border: 'none',
+                },
+                '& .MuiSelect-select': {
+                  paddingLeft: 0.5,
+                  minHeight: 'auto !important',
+                },
+                '&.MuiOutlinedInput-root': {
+                  borderRadius: '4px',
+                },
+              }}
+            >
+              {['6M', 'Y', '2Y', '5Y', 'All'].map((tf) => (
+                <MenuItem key={tf} value={tf}>
+                  {tf}
+                </MenuItem>
+              ))}
+            </Select>
 
-          <ButtonPrimary onClick={handleDownload}>
-            Export data
-            <ArrowDownwardIcon sx={{ fontSize: '1.2rem', ml: 0.5 }} />
-          </ButtonPrimary>
+            <ButtonPrimary onClick={handleDownload}>
+              Export data
+              <ArrowDownwardIcon sx={{ fontSize: '1.2rem', ml: 0.5 }} />
+            </ButtonPrimary>
+          </Box>
         </Box>
         <AnalyticsCard
           item={{
-            title: 'Cash Flow Net Worth',
-            description: 'Income ÷ Capitalization Rate',
-            value: '$13,664',
+            title: 'Passive Income Net Worth',
+            description: 'Passive Income ÷ Capitalization Rate',
+            value: `$${computedValue.toLocaleString('en-US')}`,
             trend: 'up',
           }}
           onClick={handleOpenInfoDialog}

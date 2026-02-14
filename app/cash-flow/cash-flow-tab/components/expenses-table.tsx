@@ -267,11 +267,11 @@ const ExpensesTable = ({
       items: filteredData.filter((item) => variableSources.includes(item.source)),
     },
     {
-      category: 'Occasional',
+      category: 'Descretionary',
       items: filteredData.filter((item) => occasionalSources.includes(item.source)),
     },
     {
-      category: 'Unplanned',
+      category: 'Unexpected',
       items: filteredData.filter((item) => unplannedSources.includes(item.source)),
     },
   ].filter((group) => group.items.length > 0); // Hide empty groups
@@ -553,6 +553,7 @@ const ExpensesTable = ({
         open={isOpenInfoDialog}
         onClose={handleCloseInfoDialog}
         title="Expenses Overview"
+        youtubeUrl="https://www.youtube.com/embed/dbK2Owp4hVc?si=JjpXWscCUypu_ajN"
         content={
           <Stack px={2} gap={3} mb={2}>
             <Box>
@@ -570,11 +571,11 @@ const ExpensesTable = ({
                   groceries{' '}
                 </Typography>
                 <Typography mb={1}>
-                  - Occasional Expenses: Periodic costs that occur irregularly, such as annual
+                  - Descretionary Expenses: Periodic costs that occur irregularly, such as annual
                   subscriptions.{' '}
                 </Typography>
                 <Typography>
-                  - Unplanned Expenses: Unexpected costs, such as emergency repair
+                  - Unexpected Expenses: Unexpected costs, such as emergency repair
                 </Typography>
               </Typography>
             </Box>

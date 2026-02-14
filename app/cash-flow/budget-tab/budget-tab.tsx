@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import IncomeBudgetTable from './components/income-budget-table';
 import ExpensesBudgetTable from './components/expenses-budget-table';
 
@@ -9,7 +9,7 @@ import ButtonPrimary from '~/components/button-primary';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, TextField } from '@mui/material';
 
 import * as XLSX from 'xlsx';
 import pkg from 'file-saver';
@@ -122,6 +122,34 @@ export const yearlyData = {
 
 const BudgetTab = () => {
   const [date, setDate] = useState('Y');
+  const [yearlyBudget, setYearlyBudget] = useState<number | null>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [budgetInput, setBudgetInput] = useState('');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('yearlyBudget');
+    if (saved) {
+      setYearlyBudget(parseFloat(saved));
+    } else {
+      setEditMode(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (editMode && yearlyBudget !== null) {
+      setBudgetInput(yearlyBudget.toString());
+    }
+  }, [editMode, yearlyBudget]);
+
+  const handleSave = () => {
+    if (budgetInput) {
+      const value = parseFloat(budgetInput);
+      localStorage.setItem('yearlyBudget', value.toString());
+      setYearlyBudget(value);
+      setEditMode(false);
+      setBudgetInput('');
+    }
+  };
 
   const fileType =
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
@@ -140,55 +168,89 @@ const BudgetTab = () => {
     saveAs(blob, 'budget_flow' + fileExtension);
   };
 
+  if (editMode) {
+    return (
+      <Box sx={{ p: 2 }}>
+        <Typography variant="h6" mb={2}>
+          Please enter your yearly budget:
+        </Typography>
+        <TextField
+          label="Budget"
+          type="number"
+          value={budgetInput}
+          onChange={(e) => setBudgetInput(e.target.value)}
+          placeholder="Enter budget"
+          sx={{ mr: 2, mb: 2 }}
+        />
+        <ButtonPrimary onClick={handleSave}>Save</ButtonPrimary>
+      </Box>
+    );
+  }
+
+  const periodBudget = date === 'Y' ? yearlyBudget : (yearlyBudget ?? 0) / 12;
+
   return (
     <Box
       sx={{
         p: 2,
       }}
     >
-      <Box my={1} display="flex" justifyContent="flex-end" mb={3} gap={2}>
-        <Select
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          size="small"
-          IconComponent={KeyboardArrowDownIcon}
-          startAdornment={<CalendarTodayIcon sx={{ fontSize: 18 }} />}
-          sx={{
-            '& .MuiOutlinedInput-notchedOutline': {
-              border: 'none',
-            },
-            '&:hover .MuiOutlinedInput-notchedOutline': {
-              border: 'none',
-            },
-            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              border: 'none',
-            },
-            '& .MuiSelect-select': {
-              paddingLeft: 0.5,
-              minHeight: 'auto !important',
-            },
-            '&.MuiOutlinedInput-root': {
-              borderRadius: '4px',
-            },
-          }}
-        >
-          {['W', 'M', 'Q', '6M', 'Y', '2Y', '5Y'].map((tf) => (
-            <MenuItem key={tf} value={tf}>
-              {tf}
-            </MenuItem>
-          ))}
-        </Select>
+      <Box
+        my={1}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="flex-end"
+        mb={3}
+        gap={2}
+      >
+        <Box display="flex" flexDirection="column" gap={1}>
+          <Typography>Budget: ${yearlyBudget?.toLocaleString()}</Typography>
+          <ButtonPrimary onClick={() => setEditMode(true)}>Edit Budget</ButtonPrimary>
+        </Box>
+        <Box display="flex" justifyContent="space-between" alignItems="center" gap={2}>
+          <Select
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            size="small"
+            IconComponent={KeyboardArrowDownIcon}
+            startAdornment={<CalendarTodayIcon sx={{ fontSize: 18 }} />}
+            sx={{
+              '& .MuiOutlinedInput-notchedOutline': {
+                border: 'none',
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                border: 'none',
+              },
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                border: 'none',
+              },
+              '& .MuiSelect-select': {
+                paddingLeft: 0.5,
+                minHeight: 'auto !important',
+              },
+              '&.MuiOutlinedInput-root': {
+                borderRadius: '4px',
+              },
+            }}
+          >
+            {['M', 'Y'].map((tf) => (
+              <MenuItem key={tf} value={tf}>
+                {tf}
+              </MenuItem>
+            ))}
+          </Select>
 
-        <ButtonPrimary onClick={handleDownload}>
-          Export data
-          <ArrowDownwardIcon sx={{ fontSize: '1.2rem', ml: 0.5 }} />
-        </ButtonPrimary>
+          <ButtonPrimary onClick={handleDownload}>
+            Export data
+            <ArrowDownwardIcon sx={{ fontSize: '1.2rem', ml: 0.5 }} />
+          </ButtonPrimary>
+        </Box>
       </Box>
       <Typography variant="h2" fontSize="2rem" fontWeight={600} mt={3} mb={4}>
         Transactions
       </Typography>
-      <IncomeBudgetTable timeframe={date} />
-      <ExpensesBudgetTable timeframe={date} />
+      <IncomeBudgetTable timeframe={date} userBudget={periodBudget ?? undefined} />
+      <ExpensesBudgetTable timeframe={date} userBudget={periodBudget ?? undefined} />
     </Box>
   );
 };

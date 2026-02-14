@@ -9,6 +9,7 @@ import React, { useState, type ReactNode, useMemo } from 'react';
 import ButtonIcon from '~/components/button-icon';
 import InfoDialog from '~/components/info-dialog';
 import { Link } from 'react-router';
+import CombinedDynamicChip from '~/components/combined-dynamic-chip';
 
 export type TCashFlow = {
   month: string;
@@ -313,10 +314,10 @@ const home = () => {
       <Box my={1} display="flex" justifyContent="space-between" alignItems="flex-start">
         <Stack sx={{ maxWidth: '60%' }}>
           <Typography variant="h1" fontSize="2.2rem" fontWeight={600}>
-            Welcome back, Kevin
+            Welcome, Russell
           </Typography>
           <Typography color="var(--text-color-secondary)" mb={3} fontSize="1.2rem">
-            Track spending and build savings.
+            Build cash flow and create freedom
           </Typography>
         </Stack>
         <Select
@@ -373,7 +374,7 @@ const home = () => {
       >
         <Box component={Link} to="/cash-flow">
           <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
-            Cash Flow (Combined)
+            Cash Flow (Total)
           </Typography>
           <Box display="flex" alignItems="center" gap={1}>
             <Typography fontSize="2.8rem" fontWeight={700}>
@@ -449,7 +450,7 @@ const home = () => {
             }}
           >
             <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
-              Income
+              Income (Total)
             </Typography>
             <Box display="flex" alignItems="center" gap={1}>
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -475,7 +476,7 @@ const home = () => {
             }}
           >
             <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
-              Expenses
+              Expenses (Total)
             </Typography>
             <Box display="flex" alignItems="center" gap={1}>
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -504,12 +505,15 @@ const home = () => {
           Lifestyle Coverage Percentage (Combined)
         </Typography>
         <Typography color="var(--text-color-secondary)" fontSize="1rem">
-          (Total Income ÷ Total Expenses) x 100
+          Total Income ÷ Total Expenses
         </Typography>
         <Box display="flex" alignItems="center" gap={1}>
-          <Typography fontSize="2.8rem" fontWeight={700}>
-            {lifestyleCombined}%
-          </Typography>
+          <Box display="flex" alignItems="center" gap={2}>
+            <Typography fontSize="2.8rem" fontWeight={700}>
+              {lifestyleCombined}%
+            </Typography>
+            <CombinedDynamicChip value={lifestyleCombined} />
+          </Box>
           <ButtonIcon
             onClick={() =>
               handleOpenInfoDialog({
@@ -586,12 +590,15 @@ const home = () => {
           Lifestyle Coverage Percentage (Passive)
         </Typography>
         <Typography color="var(--text-color-secondary)" fontSize="1rem">
-          (Passive Income ÷ Total Expenses) x 100
+          Passive Income ÷ Total Expenses
         </Typography>
         <Box display="flex" alignItems="center" gap={1}>
-          <Typography fontSize="2.8rem" fontWeight={700}>
-            {lifestylePassive}%
-          </Typography>
+          <Box display="flex" alignItems="center" gap={2}>
+            <Typography fontSize="2.8rem" fontWeight={700}>
+              {lifestylePassive}%
+            </Typography>
+            <CombinedDynamicChip value={lifestylePassive} />
+          </Box>
           <ButtonIcon
             onClick={() =>
               handleOpenInfoDialog({

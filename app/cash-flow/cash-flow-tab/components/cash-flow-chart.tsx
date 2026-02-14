@@ -173,13 +173,13 @@ const CashFlowChart = ({
         sx={{
           pb: 1,
           mb: 2,
-          position: 'relative', // For absolute info button
+          position: 'relative',
         }}
       >
         <Box>
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
-              Cash Flow (Combined)
+              Cash Flow (Total)
             </Typography>
             <ButtonIcon onClick={handleOpenMenu}>
               <MoreHorizIcon sx={{ fontSize: '1.6rem' }} />

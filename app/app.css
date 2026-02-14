@@ -56,6 +56,7 @@
   --secondary--color-4-alpha: 52, 59, 79;
   --neutral--700-alpha: 33, 44, 77;
   --neutral--100-alpha: 255, 255, 255;
+  --system--orange-300-alpha: 255, 158, 44;
 }
 
 :root {

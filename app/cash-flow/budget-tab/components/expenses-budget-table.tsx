@@ -73,6 +73,7 @@ const unplannedCategories = ['Emergency Repairs', 'Unexpected Medical', 'Auto Re
 
 interface Props {
   timeframe?: string;
+  userBudget?: number;
 }
 
 const getPeriodInMonths = (timeframe: string) => {
@@ -88,7 +89,7 @@ const getPeriodInMonths = (timeframe: string) => {
   return periodMap[timeframe] || 12;
 };
 
-const ExpensesBudgetTable = ({ timeframe = 'Y' }: Props) => {
+const ExpensesBudgetTable = ({ timeframe = 'Y', userBudget }: Props) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [visibleColumns, setVisibleColumns] = useState<ColumnKey[]>([...columnOptions]);
   const [openCategories, setOpenCategories] = useState<{
@@ -142,11 +143,11 @@ const ExpensesBudgetTable = ({ timeframe = 'Y' }: Props) => {
     [dateFilteredData]
   );
 
-  const budgetScale = actualScale;
+  const budgetScale = userBudget ? userBudget / hardcodedBudgetSum : actualScale;
 
-  const totalBudget = Math.round(hardcodedBudgetSum * budgetScale);
+  const totalBudget = userBudget ?? Math.round(hardcodedBudgetSum * actualScale);
 
-  const totalRemaining = Math.max(0, totalBudget - effectiveTotalActual);
+  const totalRemaining = totalBudget - effectiveTotalActual;
 
   const groups = useMemo(
     () => [
@@ -195,7 +196,7 @@ const ExpensesBudgetTable = ({ timeframe = 'Y' }: Props) => {
   };
 
   const getRemainingColor = (remaining: number) => {
-    return remaining < 0 ? 'var(--system--red-700)' : 'var(--text-color-primary)';
+    return remaining >= 0 ? 'var(--system--green-300)' : 'var(--system--300)';
   };
 
   return (
@@ -299,7 +300,7 @@ const ExpensesBudgetTable = ({ timeframe = 'Y' }: Props) => {
               const groupBudget = Math.round(groupBudgetRaw * budgetScale);
               const groupActualRaw = group.items.reduce((acc, item) => acc + item.actual, 0);
               const groupActual = Math.round(groupActualRaw * actualScale);
-              const groupRemaining = Math.max(0, groupBudget - groupActual);
+              const groupRemaining = groupBudget - groupActual;
               const isOpen = openCategories[group.category];
 
               return (
@@ -366,7 +367,7 @@ const ExpensesBudgetTable = ({ timeframe = 'Y' }: Props) => {
                               {group.items.map((row) => {
                                 const rowBudget = Math.round(row.budget * budgetScale);
                                 const rowActual = Math.round(row.actual * actualScale);
-                                const remaining = Math.max(0, rowBudget - rowActual);
+                                const remaining = rowBudget - rowActual;
 
                                 return (
                                   <TableRow key={row.category}>
@@ -428,14 +429,16 @@ const ExpensesBudgetTable = ({ timeframe = 'Y' }: Props) => {
             <TableRow
               sx={{
                 backgroundColor:
-                  totalRemaining < 0 ? 'rgba(var(--system--red-300-alpha), 0.1)' : 'transparent',
+                  totalRemaining >= 0
+                    ? 'rgba(var(--system--green-300-alpha), 0.1)'
+                    : 'rgba(var(--system--300-alpha), 0.1)',
               }}
             >
               <TableCell
                 sx={{
                   fontWeight: 'bold',
                   fontSize: '1.3rem',
-                  color: 'var(--system--red-700)',
+                  color: 'var(--system--300)',
                 }}
               >
                 Total
@@ -446,7 +449,7 @@ const ExpensesBudgetTable = ({ timeframe = 'Y' }: Props) => {
                   sx={{
                     fontWeight: 700,
                     fontSize: '1.3rem',
-                    color: 'var(--system--red-700)',
+                    color: 'var(--system--300)',
                   }}
                 >
                   {format(totalBudget)}
@@ -458,7 +461,7 @@ const ExpensesBudgetTable = ({ timeframe = 'Y' }: Props) => {
                   sx={{
                     fontWeight: 700,
                     fontSize: '1.3rem',
-                    color: 'var(--system--red-700)',
+                    color: 'var(--system--300)',
                   }}
                 >
                   {format(effectiveTotalActual)}
