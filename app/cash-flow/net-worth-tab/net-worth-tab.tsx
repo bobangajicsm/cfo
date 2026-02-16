@@ -3,12 +3,13 @@ import React, { useState, useMemo } from 'react';
 import ButtonPrimary from '~/components/button-primary';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import NetWorthChart from './components/net-worth-chart';
-import AnalyticsCard from '~/components/analytics-card';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import InfoDialog from '~/components/info-dialog';
 import LiabilitiesTable from './components/liabilities-table';
 import AssetsTable from './components/assets-table';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 
 import * as XLSX from 'xlsx';
 import pkg from 'file-saver';
@@ -22,6 +23,8 @@ import {
   data2024,
   data2025,
 } from '~/cash-flow/budget-tab/budget-tab';
+import ButtonIcon from '~/components/button-icon';
+import Card from '~/components/card';
 
 const data = [
   { period: "Jan '20", assets: 8662826, liabilities: 5011333, netWorth: 3651493 },
@@ -156,40 +159,7 @@ const NetWorthTab = () => {
           p: 2,
         }}
       >
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} gap={2}>
-          <Box display="flex" gap={2} alignItems="center">
-            <Typography fontSize="1.4rem">Cap Rate</Typography>
-            <Select
-              value={capRate}
-              onChange={(e) => setCapRate(Number(e.target.value))}
-              size="small"
-              IconComponent={KeyboardArrowDownIcon}
-              sx={{
-                '& .MuiOutlinedInput-notchedOutline': {
-                  border: 'none',
-                },
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  border: 'none',
-                },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  border: 'none',
-                },
-                '& .MuiSelect-select': {
-                  paddingLeft: 0.5,
-                  minHeight: 'auto !important',
-                },
-                '&.MuiOutlinedInput-root': {
-                  borderRadius: '4px',
-                },
-              }}
-            >
-              {[2, 4, 6, 8, 10, 12].map((r) => (
-                <MenuItem key={r} value={r}>
-                  {r}%
-                </MenuItem>
-              ))}
-            </Select>
-          </Box>
+        <Box display="flex" justifyContent="flex-end" mb={3}>
           <Box my={1} display="flex" gap={2}>
             <Select
               value={date}
@@ -229,15 +199,98 @@ const NetWorthTab = () => {
             </ButtonPrimary>
           </Box>
         </Box>
-        <AnalyticsCard
-          item={{
-            title: 'Passive Income Net Worth',
-            description: 'Passive Income ÷ Capitalization Rate',
-            value: `$${computedValue.toLocaleString('en-US')}`,
-            trend: 'up',
-          }}
-          onClick={handleOpenInfoDialog}
-        />
+
+        <Card>
+          <Box position="relative">
+            <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+              <Box>
+                <Typography fontSize="1.4rem" mb={0.5}>
+                  Passive Income Net Worth
+                </Typography>
+                <Typography color="var(--text-color-secondary)" fontSize="1rem">
+                  Passive Income (Total) ÷ Capitalization Rate = Passive Income Net Worth
+                </Typography>
+              </Box>
+            </Box>
+            <Box
+              mt={2}
+              display="flex"
+              justifyContent="flex-start"
+              alignItems="center"
+              gap={1}
+              flexWrap="wrap"
+            >
+              <Typography fontSize="1.2rem">
+                ${passiveIncome.toLocaleString('en-US')}&#160;
+              </Typography>
+              <Typography fontSize="1.2rem">÷&#160;</Typography>
+              <Select
+                value={capRate}
+                onChange={(e) => setCapRate(Number(e.target.value))}
+                size="small"
+                IconComponent={KeyboardArrowDownIcon}
+                sx={{
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    border: 'none',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    border: 'none',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    border: 'none',
+                  },
+                  '& .MuiSelect-select': {
+                    paddingLeft: 0.5,
+                    minHeight: 'auto !important',
+                  },
+                  '&.MuiOutlinedInput-root': {
+                    borderRadius: '4px',
+                  },
+                }}
+              >
+                {[2, 4, 6, 8, 10, 12].map((r) => (
+                  <MenuItem key={r} value={r}>
+                    {r}%
+                  </MenuItem>
+                ))}
+              </Select>
+              <Typography fontSize="2rem">&#160;=&#160;</Typography>
+              <Typography fontSize="2rem" fontWeight={700}>
+                ${computedValue.toLocaleString('en-US')}
+              </Typography>
+              <Box
+                display="flex"
+                alignItems="center"
+                gap={0.5}
+                sx={{
+                  color: 'var(--system--green-300)',
+                  backgroundColor: 'rgba(var(--system--green-300-alpha), 0.2)',
+                  border: '1px solid rgba(var(--system--green-300-alpha), 0.2)',
+                  borderRadius: 0.5,
+                  py: 0.2,
+                  px: 0.5,
+                }}
+              >
+                <TrendingUpIcon
+                  sx={{
+                    fontSize: '1.2rem',
+                  }}
+                />
+              </Box>
+            </Box>
+          </Box>
+          <ButtonIcon
+            onClick={handleOpenInfoDialog}
+            sx={{
+              position: 'absolute',
+              top: '-13px',
+              left: '-13px',
+              opacity: 0.7,
+            }}
+          >
+            <InfoOutlineIcon sx={{ fontSize: '2rem' }} />
+          </ButtonIcon>
+        </Card>
         <NetWorthChart date={date} />
         <Typography variant="h2" fontSize="2rem" fontWeight={600} mt={3} mb={4}>
           Balance Sheet

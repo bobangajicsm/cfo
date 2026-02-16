@@ -354,7 +354,7 @@ const CashFlowChart = ({
       <InfoDialog
         open={isOpenInfoDialog}
         onClose={handleCloseInfoDialog}
-        title="Cash Flow Overview"
+        title="Cash Flow"
         content={
           <Stack px={2} gap={3} mb={2}>
             <Box p={2}>
@@ -370,7 +370,7 @@ const CashFlowChart = ({
               ></iframe>
             </Box>
             <Box>
-              <Typography sx={{ fontWeight: '700' }}>Cash Flow Overview</Typography>
+              <Typography sx={{ fontWeight: '700' }}>Overview</Typography>
               <Typography
                 sx={{ fontWeight: '400' }}
                 fontSize="1.4rem"
@@ -381,7 +381,7 @@ const CashFlowChart = ({
               </Typography>
             </Box>
             <Box>
-              <Typography sx={{ fontWeight: '700' }}>Cash Flow Formula</Typography>
+              <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
               <Typography
                 sx={{ fontWeight: '400' }}
                 fontSize="1.4rem"

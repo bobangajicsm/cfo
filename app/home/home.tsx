@@ -386,7 +386,7 @@ const home = () => {
         <ButtonIcon
           onClick={() =>
             handleOpenInfoDialog({
-              title: 'Cash Flow Overview',
+              title: 'Cash Flow',
               content: (
                 <Stack px={2} gap={3} mb={2}>
                   <Box p={2}>
@@ -402,7 +402,7 @@ const home = () => {
                     ></iframe>
                   </Box>
                   <Box>
-                    <Typography sx={{ fontWeight: '700' }}>Cash Flow Overview</Typography>
+                    <Typography sx={{ fontWeight: '700' }}>Overview</Typography>
                     <Typography
                       sx={{ fontWeight: '400' }}
                       fontSize="1.4rem"
@@ -413,7 +413,7 @@ const home = () => {
                     </Typography>
                   </Box>
                   <Box>
-                    <Typography sx={{ fontWeight: '700' }}>Cash Flow Formula</Typography>
+                    <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
                     <Typography
                       sx={{ fontWeight: '400' }}
                       fontSize="1.4rem"
@@ -460,6 +460,47 @@ const home = () => {
                 <TrendingChip value={earningsTrend} />
               </Box>
             </Box>
+            <ButtonIcon
+              onClick={(e) => {
+                e.preventDefault();
+                handleOpenInfoDialog({
+                  title: 'Income (Total) Overview',
+                  content: (
+                    <Stack px={2} gap={3} mb={2}>
+                      <Box>
+                        <Typography sx={{ fontWeight: '700' }}>Income Types</Typography>
+                        <Typography
+                          sx={{ fontWeight: '400' }}
+                          fontSize="1.4rem"
+                          color="var(--text-color-secondary)"
+                        >
+                          <Typography mb={1}>
+                            - Active Income: Earnings generated through direct work{' '}
+                          </Typography>
+                          <Typography mb={1}>
+                            - Passive Income: Earnings that require minimal ongoing effort, such as
+                            rental income
+                          </Typography>
+                          <Typography>
+                            - Portfolio Income: Returns derived from investments, including
+                            dividends, interest
+                          </Typography>
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  ),
+                  youtubeUrl: 'https://www.youtube.com/embed/uripKTS9uxE?si=OIbjzqn4dQs-DBQr',
+                });
+              }}
+              sx={{
+                position: 'absolute',
+                top: '-13px',
+                left: '-13px',
+                opacity: 0.7,
+              }}
+            >
+              <InfoOutlineIcon sx={{ fontSize: '2rem' }} />
+            </ButtonIcon>
           </Box>
         </Box>
         <Box component={Link} to="/cash-flow#expenses-table" sx={{ flex: 1 }}>
@@ -487,6 +528,51 @@ const home = () => {
                 <TrendingChip value={expensesTrend} />
               </Box>
             </Box>
+            <ButtonIcon
+              onClick={(e) => {
+                e.preventDefault();
+                handleOpenInfoDialog({
+                  title: 'Expenses (Total) Overview',
+                  content: (
+                    <Stack px={2} gap={3} mb={2}>
+                      <Box>
+                        <Typography sx={{ fontWeight: '700' }}>Expense Types</Typography>
+                        <Typography
+                          sx={{ fontWeight: '400' }}
+                          fontSize="1.4rem"
+                          color="var(--text-color-secondary)"
+                        >
+                          <Typography mb={1}>
+                            - Fixed Expenses: Consistent costs that remain unchanged over time, such
+                            as rent
+                          </Typography>
+                          <Typography mb={1}>
+                            - Variable Expenses: Costs that fluctuate based on usage or activity,
+                            such as groceries{' '}
+                          </Typography>
+                          <Typography mb={1}>
+                            - Descretionary Expenses: Periodic costs that occur irregularly, such as
+                            annual subscriptions.{' '}
+                          </Typography>
+                          <Typography>
+                            - Unexpected Expenses: Unexpected costs, such as emergency repair
+                          </Typography>
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  ),
+                  youtubeUrl: 'https://www.youtube.com/embed/dbK2Owp4hVc?si=JjpXWscCUypu_ajN',
+                });
+              }}
+              sx={{
+                position: 'absolute',
+                top: '-13px',
+                left: '-13px',
+                opacity: 0.7,
+              }}
+            >
+              <InfoOutlineIcon sx={{ fontSize: '2rem' }} />
+            </ButtonIcon>
           </Box>
         </Box>
       </Box>
@@ -520,10 +606,6 @@ const home = () => {
                 title: 'Lifestyle Coverage Percentage (Combined) Overview',
                 content: (
                   <Stack px={2} gap={3} mb={2}>
-                    <Typography>
-                      Why is understanding your Lifestyle Coverage Percentage (Combined) so
-                      important?
-                    </Typography>
                     <Box p={2}>
                       <iframe
                         width="100%"
@@ -544,7 +626,7 @@ const home = () => {
                         fontSize="1.4rem"
                         color="var(--text-color-secondary)"
                       >
-                        (Passive Income ÷ Total Expenses) × 100
+                        Passive Income ÷ Total Expenses
                       </Typography>
                     </Box>
                     <Box>
@@ -605,10 +687,6 @@ const home = () => {
                 title: 'Lifestyle Coverage Percentage (Passive)',
                 content: (
                   <Stack px={2} gap={3} mb={2}>
-                    <Typography>
-                      Why is understanding your Lifestyle Coverage Percentage (Passive) so
-                      important?
-                    </Typography>
                     <Box p={2}>
                       <iframe
                         width="100%"
@@ -629,7 +707,7 @@ const home = () => {
                         fontSize="1.4rem"
                         color="var(--text-color-secondary)"
                       >
-                        (Passive Income ÷ Total Expenses) × 100
+                        Passive Income ÷ Total Expenses
                       </Typography>
                     </Box>
                     <Box>

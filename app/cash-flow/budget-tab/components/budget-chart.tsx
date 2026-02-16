@@ -518,38 +518,44 @@ const BudgetChart = ({ date }: { date: string }) => {
       <InfoDialog
         open={isOpenInfoDialog}
         onClose={handleCloseInfoDialog}
-        title="Budget Overview"
+        title="Cash Flow"
         content={
           <Stack px={2} gap={3} mb={2}>
+            <Box p={2}>
+              <iframe
+                width="100%"
+                height="315"
+                src="https://www.youtube.com/embed/5yVf4yPg0k4?si=9soD-yivIV42YjD9"
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              ></iframe>
+            </Box>
             <Box>
+              <Typography sx={{ fontWeight: '700' }}>Overview</Typography>
               <Typography
                 sx={{ fontWeight: '400' }}
                 fontSize="1.4rem"
                 color="var(--text-color-secondary)"
               >
-                A budget is a simple plan that compares the money you expect to receive (income)
-                with the money you expect to spend (expenses) over a period, usually a month. It is
-                powerful because it shows clearly whether you will have a surplus (extra currency)
-                or a deficit (shortage of currency), so you can adjust your behavior before problems
-                arise.
+                Cash flow represents the movement of money in and out of your finances. To determine
+                net cash flow, add all income sources and deduct total expenses.
               </Typography>
             </Box>
             <Box>
-              <Typography sx={{ fontWeight: '700' }}>Why Creating a Budget Is Powerful?</Typography>
+              <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
               <Typography
                 sx={{ fontWeight: '400' }}
                 fontSize="1.4rem"
                 color="var(--text-color-secondary)"
               >
-                Putting income and expense budgets next to actual income and expenses shows, in
-                advance and in hindsight, whether your choices keep you within your means. This
-                turns vague intentions (“spend less, save more”) into concrete numbers, making it
-                easier to cut overspending, increase saving, and avoid or reduce debt.
+                Cash Flow = Total Income – Total Expenses
               </Typography>
             </Box>
           </Stack>
         }
-        youtubeUrl="https://www.youtube.com/embed/tWK7IZqQlwo?si=ZCHgP4I7UIYX122r"
       />
     </>
   );
