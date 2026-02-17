@@ -497,6 +497,27 @@ const IncomeBudgetTable = ({ timeframe = 'Y', userBudget }: Props) => {
         onClose={handleCloseInfoDialog}
         youtubeUrl="https://www.youtube.com/embed/3NSJd7jyoGs?si=mjM2DE5pnynP9jiJ"
         title="Income Budget"
+        content={
+          <Stack px={2} gap={3} mb={2}>
+            <Box>
+              <Typography sx={{ fontWeight: '700' }}>Overview</Typography>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+                mb={2}
+              >
+                Comparing budgeted versus actual income reveals variances early, helping you adjust
+                spending, avoid shortfalls, and refine future forecasts. It highlights unreliable
+                income streams, prompting proactive planning for irregular earnings. <br />
+                This practice builds financial resilience by ensuring expenses align with real not
+                hoped for resources. Ultimately, it turns guesswork into data-driven decisions,
+                empowering you to stay on track with savings, debt repayment, and goals despite
+                income fluctuations.
+              </Typography>
+            </Box>
+          </Stack>
+        }
       />
     </>
   );

@@ -402,6 +402,16 @@ const home = () => {
                     ></iframe>
                   </Box>
                   <Box>
+                    <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
+                    <Typography
+                      sx={{ fontWeight: '400' }}
+                      fontSize="1.4rem"
+                      color="var(--text-color-secondary)"
+                    >
+                      Cash Flow = Total Income – Total Expenses
+                    </Typography>
+                  </Box>
+                  <Box>
                     <Typography sx={{ fontWeight: '700' }}>Overview</Typography>
                     <Typography
                       sx={{ fontWeight: '400' }}
@@ -410,16 +420,6 @@ const home = () => {
                     >
                       Cash flow represents the movement of money in and out of your finances. To
                       determine net cash flow, add all income sources and deduct total expenses.
-                    </Typography>
-                  </Box>
-                  <Box>
-                    <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
-                    <Typography
-                      sx={{ fontWeight: '400' }}
-                      fontSize="1.4rem"
-                      color="var(--text-color-secondary)"
-                    >
-                      Cash Flow = Total Income – Total Expenses
                     </Typography>
                   </Box>
                 </Stack>
@@ -634,11 +634,24 @@ const home = () => {
                       <Typography
                         sx={{ fontWeight: '400' }}
                         fontSize="1.4rem"
+                        mb={1}
                         color="var(--text-color-secondary)"
                       >
                         This measures how much of your expenses are covered solely by passive income
                         ONLY. It's a key indicator of progress toward financial independence, where
                         passive income fully funds your lifestyle.
+                      </Typography>
+                      <Typography
+                        sx={{ fontWeight: '400' }}
+                        fontSize="1.4rem"
+                        color="var(--text-color-secondary)"
+                      >
+                        - 100%: Income equals expenses (break-even). <br />
+                        - Above 100%: Surplus income available for savings, investments, or debt
+                        reduction.
+                        <br />
+                        - Below 100%: Deficit; consider reducing expenses or increasing income.{' '}
+                        <br />
                       </Typography>
                     </Box>
                   </Stack>
@@ -716,10 +729,23 @@ const home = () => {
                         sx={{ fontWeight: '400' }}
                         fontSize="1.4rem"
                         color="var(--text-color-secondary)"
+                        mb={1}
                       >
                         This measures how much of your expenses are covered solely by passive income
                         ONLY. It's a key indicator of progress toward financial independence, where
                         passive income fully funds your lifestyle.
+                      </Typography>
+                      <Typography
+                        sx={{ fontWeight: '400' }}
+                        fontSize="1.4rem"
+                        color="var(--text-color-secondary)"
+                      >
+                        - 100%: Income equals expenses (break-even). <br />
+                        - Above 100%: Surplus income available for savings, investments, or debt
+                        reduction.
+                        <br />
+                        - Below 100%: Deficit; consider reducing expenses or increasing income.{' '}
+                        <br />
                       </Typography>
                     </Box>
                   </Stack>

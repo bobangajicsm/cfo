@@ -96,23 +96,22 @@ const BudgetChart = ({ date }: { date: string }) => {
       }
       break;
     case 'Q':
-      prevPeriodData = data2025.slice(6, 9); // Prior: Jul-Sep
+      prevPeriodData = data2025.slice(6, 9);
       break;
     case '6M':
-      prevPeriodData = data2025.slice(0, 6); // Prior: Jan-Jun
+      prevPeriodData = data2025.slice(0, 6);
       break;
     case 'Y':
-      // Prior full year (2024 for 2025)
       prevPeriodData = data2024;
       break;
     case '2Y':
       prevPeriodData = [...data2022, ...data2023];
       break;
     case '5Y':
-      prevPeriodData = []; // No full prior 5Y data available
+      prevPeriodData = [];
       break;
     default:
-      prevPeriodData = []; // No prior for full year
+      prevPeriodData = [];
       break;
   }
 
@@ -123,14 +122,13 @@ const BudgetChart = ({ date }: { date: string }) => {
     prevTotalNet = prevTotalEarnings - prevTotalExpenses;
   }
 
-  // Dynamic trendValue as % change in TOTAL CASH FLOW $ (vs. prior); 0 if no prior
   const trendValue =
     prevTotalNet !== 0 ? Math.round(((totalNet - prevTotalNet) / prevTotalNet) * 100 * 10) / 10 : 0;
 
-  const expenseCategories = ['Fixed', 'Variable', 'Occasional', 'Planned'];
+  const expenseCategories = ['Fixed', 'Variable', 'Discretionary', 'Unexpected'];
 
   const incomeCategories = ['Passive', 'Active', 'Portfolio'];
-  const incomeProps = [0.3, 0.6, 0.1]; // Placeholder proportions; adjust as needed
+  const incomeProps = [0.3, 0.6, 0.1];
   const incomeAmounts = incomeCategories.map((_, i) => totalEarnings * incomeProps[i]);
   const passiveIncome = incomeAmounts[0];
 
@@ -148,8 +146,8 @@ const BudgetChart = ({ date }: { date: string }) => {
       Portfolio: incomeAmounts[2],
       Fixed: 0,
       Variable: 0,
-      Occasional: 0,
-      Planned: 0,
+      Discretionary: 0,
+      Unexpected: 0,
       passiveIncome,
     },
     {
@@ -159,8 +157,8 @@ const BudgetChart = ({ date }: { date: string }) => {
       Portfolio: 0,
       Fixed: categoryAmounts[0],
       Variable: categoryAmounts[1],
-      Occasional: categoryAmounts[2],
-      Planned: categoryAmounts[3],
+      Discretionary: categoryAmounts[2],
+      Unexpected: categoryAmounts[3],
       passiveIncome,
     },
   ];
@@ -171,8 +169,8 @@ const BudgetChart = ({ date }: { date: string }) => {
     portfolio: '#b9ec4b',
     fixed: '#2c5392',
     variable: '#2563eb',
-    occasional: '#dc2626',
-    planned: '#d97706',
+    Discretionary: '#dc2626',
+    Unexpected: '#d97706',
   };
 
   const CustomTooltip = ({ active, payload }: any) => {
@@ -238,11 +236,11 @@ const BudgetChart = ({ date }: { date: string }) => {
             <p style={{ padding: '4px 0', color: colors.variable }}>
               Variable: ${Math.round(dataPoint.Variable).toLocaleString()}
             </p>
-            <p style={{ padding: '4px 0', color: colors.occasional }}>
-              Occasional: ${Math.round(dataPoint.Occasional).toLocaleString()}
+            <p style={{ padding: '4px 0', color: colors.Discretionary }}>
+              Discretionary: ${Math.round(dataPoint.Discretionary).toLocaleString()}
             </p>
-            <p style={{ padding: '4px 0', color: colors.planned }}>
-              Planned: ${Math.round(dataPoint.Planned).toLocaleString()}
+            <p style={{ padding: '4px 0', color: colors.Unexpected }}>
+              Unexpected: ${Math.round(dataPoint.Unexpected).toLocaleString()}
             </p>
             <p style={{ padding: '4px 0', color: 'var(--text-color)', fontWeight: 500 }}>
               Total: ${totalExpenses.toLocaleString()}
@@ -271,7 +269,6 @@ const BudgetChart = ({ date }: { date: string }) => {
     const textY = y + height / 2;
 
     let fill = '#ffffff';
-    // Optional: better readability on bright backgrounds
     if (category === 'Active' || category === 'Portfolio') {
       fill = '#000000';
     }
@@ -305,7 +302,7 @@ const BudgetChart = ({ date }: { date: string }) => {
         dataKey={dataKey}
         stackId="stack"
         fill={fill}
-        label={<CustomLabel category={dataKey} />} // ← this injects the name!
+        label={<CustomLabel category={dataKey} />}
         {...rest}
       />
     );
@@ -427,12 +424,12 @@ const BudgetChart = ({ date }: { date: string }) => {
                   sx={{
                     width: 10,
                     height: 10,
-                    bgcolor: colors.occasional,
+                    bgcolor: colors.Discretionary,
                     borderRadius: '50%',
                   }}
                 />
                 <Typography fontSize="1rem" color="var(--text-color-secondary)">
-                  Occasional
+                  Discretionary
                 </Typography>
               </Box>
               <Box display="flex" alignItems="center" gap={1}>
@@ -440,12 +437,12 @@ const BudgetChart = ({ date }: { date: string }) => {
                   sx={{
                     width: 10,
                     height: 10,
-                    bgcolor: colors.planned,
+                    bgcolor: colors.Unexpected,
                     borderRadius: '50%',
                   }}
                 />
                 <Typography fontSize="1rem" color="var(--text-color-secondary)">
-                  Planned
+                  Unexpected
                 </Typography>
               </Box>
             </Box>
@@ -488,8 +485,8 @@ const BudgetChart = ({ date }: { date: string }) => {
 
               <LabeledBar dataKey="Fixed" fill={colors.fixed} />
               <LabeledBar dataKey="Variable" fill={colors.variable} />
-              <LabeledBar dataKey="Occasional" fill={colors.occasional} />
-              <LabeledBar dataKey="Planned" fill={colors.planned} />
+              <LabeledBar dataKey="Discretionary" fill={colors.Discretionary} />
+              <LabeledBar dataKey="Unexpected" fill={colors.Unexpected} />
               <Line
                 type="monotone"
                 dataKey="passiveIncome"
@@ -534,6 +531,16 @@ const BudgetChart = ({ date }: { date: string }) => {
               ></iframe>
             </Box>
             <Box>
+              <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+              >
+                Cash Flow = Total Income – Total Expenses
+              </Typography>
+            </Box>
+            <Box>
               <Typography sx={{ fontWeight: '700' }}>Overview</Typography>
               <Typography
                 sx={{ fontWeight: '400' }}
@@ -542,16 +549,6 @@ const BudgetChart = ({ date }: { date: string }) => {
               >
                 Cash flow represents the movement of money in and out of your finances. To determine
                 net cash flow, add all income sources and deduct total expenses.
-              </Typography>
-            </Box>
-            <Box>
-              <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
-              <Typography
-                sx={{ fontWeight: '400' }}
-                fontSize="1.4rem"
-                color="var(--text-color-secondary)"
-              >
-                Cash Flow = Total Income – Total Expenses
               </Typography>
             </Box>
           </Stack>

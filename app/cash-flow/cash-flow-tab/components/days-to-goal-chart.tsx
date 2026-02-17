@@ -352,9 +352,35 @@ const DaysToGoalChart = ({
       )}
       <InfoDialog
         title="Cash Flow Goal"
-        shortDescription="This chart shows your progress towards your monthly cash flow goal, limited to the selected timeframe. The 'Progress %' indicates current cash flow as a percentage of the goal (capped at 100%). 'Days to target' is the number of days until your set target date."
-        formula="Progress % = min(100, (Current Period Cash Flow / (Monthly Target × Period Months)) × 100)"
         open={isOpenInfoDialog}
+        content={
+          <Stack px={2} gap={3} mb={2}>
+            <Box>
+              <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+              >
+                Progress % = min(100, (Current Period Cash Flow / (Monthly Target × Period Months))
+                × 100)
+              </Typography>
+            </Box>
+            <Box>
+              <Typography sx={{ fontWeight: '700' }}>Overview</Typography>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+              >
+                This chart shows your progress towards your monthly cash flow goal, limited to the
+                selected timeframe. The 'Progress %' indicates current cash flow as a percentage of
+                the goal (capped at 100%). 'Days to target' is the number of days until your set
+                target date.
+              </Typography>
+            </Box>
+          </Stack>
+        }
         onClose={handleCloseInfoDialog}
       />
     </>

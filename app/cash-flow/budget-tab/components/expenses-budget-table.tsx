@@ -15,6 +15,7 @@ import {
   Chip,
   type SelectChangeEvent,
   Collapse,
+  Stack,
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Card from '~/components/card';
@@ -70,9 +71,9 @@ const variableCategories = [
   'Other Variable',
 ] as const;
 
-const occasionalCategories = ['Travel', 'Entertainment', 'Gifts'] as const;
+const DiscretionaryCategories = ['Travel', 'Entertainment', 'Gifts'] as const;
 
-const unplannedCategories = ['Emergency Repairs', 'Unexpected Medical', 'Auto Repairs'] as const;
+const UnexpectedCategories = ['Emergency Repairs', 'Unexpected Medical', 'Auto Repairs'] as const;
 
 interface Props {
   timeframe?: string;
@@ -168,15 +169,17 @@ const ExpensesBudgetTable = ({ timeframe = 'Y', userBudget }: Props) => {
         ),
       },
       {
-        category: 'Occasional',
+        category: 'Discretionary',
         items: searchFilteredData.filter((item) =>
-          occasionalCategories.includes(item.category as (typeof occasionalCategories)[number])
+          DiscretionaryCategories.includes(
+            item.category as (typeof DiscretionaryCategories)[number]
+          )
         ),
       },
       {
-        category: 'Unplanned',
+        category: 'Unexpected',
         items: searchFilteredData.filter((item) =>
-          unplannedCategories.includes(item.category as (typeof unplannedCategories)[number])
+          UnexpectedCategories.includes(item.category as (typeof UnexpectedCategories)[number])
         ),
       },
     ],
@@ -520,6 +523,27 @@ const ExpensesBudgetTable = ({ timeframe = 'Y', userBudget }: Props) => {
         onClose={handleCloseInfoDialog}
         youtubeUrl="https://www.youtube.com/embed/nI_IFhQCBdc?si=Se7lEmY86pzmIBDc"
         title="Expense Budget"
+        content={
+          <Stack px={2} gap={3} mb={2}>
+            <Box>
+              <Typography sx={{ fontWeight: '700' }}>Overview</Typography>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+                mb={2}
+              >
+                Comparing budgeted versus actual expenses exposes spending leaks, curbs impulse
+                buys, and reinforces accountability. It reveals patterns like recurring overspending
+                in dining or subscriptions enabling timely adjustments.
+                <br /> This practice keeps you aligned with financial goals, prevents debt creep,
+                and builds realistic future budgets. By confronting real habits versus plans, you
+                gain control, reduce stress, and make intentional choices that support long-term
+                financial health.
+              </Typography>
+            </Box>
+          </Stack>
+        }
       />
     </>
   );

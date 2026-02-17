@@ -309,7 +309,7 @@ const NetWorthTab = () => {
                 Formula:
               </Typography>
               <Typography fontSize="1.4rem" mt={1}>
-                Cash Flow Net Worth = Income ÷ Capitalization Rate
+                Passive Income = Income ÷ Capitalization Rate
               </Typography>
             </Box>
 
@@ -320,65 +320,15 @@ const NetWorthTab = () => {
 
               <Box mt={1} mb={2}>
                 <Typography fontSize="1.4rem" color="var(--text-color-primary)">
-                  If Income = $7,142,200 and using the mid-range cap rate of 8 % as an illustration:
+                  This formula calculates the investment capital needed to generate a target passive
+                  income: divide desired annual income by your expected rate of return (cap rate).
                   <br />
-                  Net-Worth Estimate = Income ÷ Capitalization Rate
-                  <br />
-                  = $7,142,200 ÷ 0.08
-                  <br />= <strong>$89,277,500</strong>
+                  For example, $40,000 ÷ 4% = $1M required. <br />
+                  It's useful because it transforms abstract financial independence goals into
+                  concrete savings targets, helps evaluate if return assumptions are realistic, and
+                  guides investment strategy, empowering you to plan retirement or lifestyle changes
+                  based on measurable, income-producing net worth.
                 </Typography>
-              </Box>
-
-              <Box
-                sx={{
-                  border: '1px solid var(--border-color-secondary)',
-                  borderRadius: 2,
-                  overflow: 'hidden',
-                }}
-              >
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  px={2}
-                  py={1.2}
-                  sx={{
-                    backgroundColor: 'var(--bg-color-secondary)',
-                    borderBottom: '1px solid var(--border-color-secondary)',
-                  }}
-                >
-                  <Typography fontSize="1.3rem" fontWeight={600}>
-                    Cap Rate (assumed)
-                  </Typography>
-                  <Typography fontSize="1.3rem" fontWeight={600}>
-                    Implied Net Worth
-                  </Typography>
-                </Box>
-
-                {[
-                  ['4 %', '$178 555 000'],
-                  ['6 %', '$119 036 667'],
-                  ['8 %', '$89 277 500'],
-                  ['10 %', '$71 422 000'],
-                  ['12 %', '$59 518 333'],
-                ].map(([rate, value], i) => (
-                  <Box
-                    key={rate}
-                    display="flex"
-                    justifyContent="space-between"
-                    px={2}
-                    py={1.2}
-                    sx={{
-                      borderTop: '1px solid var(--border-color-secondary)',
-                    }}
-                  >
-                    <Typography fontSize="1.3rem" color="var(--text-color-secondary)">
-                      {rate}
-                    </Typography>
-                    <Typography fontSize="1.3rem" fontWeight={600}>
-                      {value}
-                    </Typography>
-                  </Box>
-                ))}
               </Box>
 
               <Box mt={2}>
@@ -390,7 +340,7 @@ const NetWorthTab = () => {
             </Box>
           </Stack>
         }
-        youtubeUrl="https://www.youtube.com/embed/0DzfvNCXNoA?si=ztLdgqrndYIohB9e"
+        youtubeUrl="https://www.youtube.com/embed/IvIfHE54viE?si=p4dYfDITKjRkiAVh"
       />
     </>
   );

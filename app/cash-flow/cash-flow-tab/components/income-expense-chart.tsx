@@ -32,12 +32,12 @@ const subExpenses = {
     { name: 'Fun money (couple)', prop: 38000 / 130200 },
     { name: 'Other Variable', prop: 58200 / 130200 },
   ],
-  Occasional: [
+  Discretionary: [
     { name: 'Travel', prop: 24000 / 65000 },
     { name: 'Entertainment', prop: 21000 / 65000 },
     { name: 'Gifts', prop: 20000 / 65000 },
   ],
-  Unplanned: [
+  Unexpected: [
     { name: 'Emergency Repairs', prop: 3000 / 7500 },
     { name: 'Unexpected Medical', prop: 2000 / 7500 },
     { name: 'Auto Repairs', prop: 2500 / 7500 },
@@ -156,7 +156,7 @@ const IncomeExpenseChart = ({ date }: { date: string }) => {
   const trendValue =
     prevTotalNet !== 0 ? Math.round(((totalNet - prevTotalNet) / prevTotalNet) * 100 * 10) / 10 : 0;
 
-  const expenseCategories = ['Fixed', 'Variable', 'Occasional', 'Unplanned'];
+  const expenseCategories = ['Fixed', 'Variable', 'Discretionary', 'Unexpected'];
 
   const incomeNode = `Income\n$${totalEarnings.toLocaleString()}\n(100%)`;
   const savingsNode = `Cash Flow\n$${totalNet.toLocaleString()}\n(${savingsRate}%)`;
@@ -339,7 +339,7 @@ const IncomeExpenseChart = ({ date }: { date: string }) => {
                 }}
               />
               <Typography fontSize="1rem" color="var(--text-color-secondary)">
-                Occasional
+                Discretionary
               </Typography>
             </Box>
             <Box display="flex" alignItems="center" gap={1}>
@@ -352,7 +352,7 @@ const IncomeExpenseChart = ({ date }: { date: string }) => {
                 }}
               />
               <Typography fontSize="1rem" color="var(--text-color-secondary)">
-                Unplanned
+                Unexpected
               </Typography>
             </Box>
           </Box>
@@ -384,68 +384,41 @@ const IncomeExpenseChart = ({ date }: { date: string }) => {
       <InfoDialog
         open={isOpenInfoDialog}
         onClose={handleCloseInfoDialog}
-        title="Budget Overview"
+        title="Income and Expense Graph"
         content={
           <Stack px={2} gap={3} mb={2}>
             <Box>
+              <Typography sx={{ fontWeight: '700' }}>Overview</Typography>
               <Typography
                 sx={{ fontWeight: '400' }}
                 fontSize="1.4rem"
                 color="var(--text-color-secondary)"
+                mb={2}
               >
-                A budget is a simple plan that compares the money you expect to receive (income)
-                with the money you expect to spend (expenses) over a period, usually a month. It is
-                powerful because it shows clearly whether you will have a surplus (extra currency)
-                or a deficit (shortage of currency), so you can adjust your behavior before problems
-                arise.
+                A Income and Expenses sankey graph visually maps the flow of money from income
+                sources (on the left) to expense categories and specific items (on the right), with
+                the width of each flow proportional to the amount of money. It makes it easier to
+                align spending with values, spot opportunities to save, and build a more intentional
+                financial plan.
               </Typography>
-            </Box>
-            <Box>
-              <Typography sx={{ fontWeight: '700' }}>Budget and Income</Typography>
               <Typography
                 sx={{ fontWeight: '400' }}
                 fontSize="1.4rem"
                 color="var(--text-color-secondary)"
               >
-                An income budget is the amount of income you plan or expect to receive in the
-                period, such as your salary, side-hustle pay, or benefits. Actual income is what you
-                really receive, which may be higher or lower than the income budget once the month
-                is over. The remaining income amount (surplus or deficit) is the difference between
-                income budget and actual income; a surplus means you earned more than expected,
-                while a deficit means you earned less than expected.
-              </Typography>
-            </Box>
-            <Box>
-              <Typography sx={{ fontWeight: '700' }}>Budget and Expenses</Typography>
-              <Typography
-                sx={{ fontWeight: '400' }}
-                fontSize="1.4rem"
-                color="var(--text-color-secondary)"
-              >
-                An expense budget is what you plan or allow yourself to spend across categories such
-                as rent, food, transport, and entertainment. Actual expense is what you really spend
-                in each category and in total during the period. The remaining expense amount
-                (surplus or deficit) is the difference between the expense budget and actual
-                expense; a surplus means you spent less than planned, while a deficit means you
-                overspent.
-              </Typography>
-            </Box>
-            <Box>
-              <Typography sx={{ fontWeight: '700' }}>Why Creating a Budget Is Powerful?</Typography>
-              <Typography
-                sx={{ fontWeight: '400' }}
-                fontSize="1.4rem"
-                color="var(--text-color-secondary)"
-              >
-                Putting income and expense budgets next to actual income and expenses shows, in
-                advance and in hindsight, whether your choices keep you within your means. This
-                turns vague intentions (“spend less, save more”) into concrete numbers, making it
-                easier to cut overspending, increase saving, and avoid or reduce debt.
+                The Income and Expenses graph provides:
+                <br />
+                - Instant clarity on priorities
+                <br />
+                - Reveals hidden patterns
+                <br />
+                - Supports goal-oriented decisions
+                <br />
+                - Simplifies communication <br />
               </Typography>
             </Box>
           </Stack>
         }
-        youtubeUrl="https://www.youtube.com/embed/tWK7IZqQlwo?si=ZCHgP4I7UIYX122r"
       />
     </>
   );
