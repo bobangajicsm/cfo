@@ -361,10 +361,10 @@ const NetWorthChart = ({ date }: { date: string }) => {
                 Key Differences:
               </Typography>
               <Typography fontSize="1.4rem" mt={1}>
-                Conventional net worth focuses on current ownership minus debt, while cash flow net
-                worth emphasizes sustainable income streams for a forward-looking wealth measure.
-                Both track progress but suit different goals: balance sheet health versus investment
-                viability.
+                Conventional net worth focuses on current ownership minus debt, while passive income
+                net worth emphasizes sustainable income streams for a forward-looking wealth
+                measure. Both track progress but suit different goals: balance sheet health versus
+                investment viability.
               </Typography>
             </Box>
           </Stack>

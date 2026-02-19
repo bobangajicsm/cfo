@@ -330,13 +330,6 @@ const NetWorthTab = () => {
                   based on measurable, income-producing net worth.
                 </Typography>
               </Box>
-
-              <Box mt={2}>
-                <Typography fontSize="1.4rem" color="var(--text-color-secondary)">
-                  Pick the cap rate that best matches the risk profile of the income stream (stable
-                  & bond-like → use 4-5 %; volatile or high-turnover → use 9-12 %).
-                </Typography>
-              </Box>
             </Box>
           </Stack>
         }
