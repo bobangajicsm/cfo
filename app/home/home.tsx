@@ -384,7 +384,7 @@ const home = () => {
           </Box>
         </Box>
         <Typography color="var(--text-color-secondary)" fontSize="1rem">
-          Total Income – Total Expenses = Cash Flow (Total)
+          Total Income – Total Expenses
         </Typography>
         <ButtonIcon
           onClick={() =>
