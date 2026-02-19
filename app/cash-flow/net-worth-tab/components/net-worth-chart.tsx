@@ -197,7 +197,7 @@ const NetWorthChart = ({ date }: { date: string }) => {
             <TrendingChip value={parseFloat(growthRate.toFixed(1))} />
           </Box>
           <Typography color="var(--text-color-secondary)" fontSize="1rem">
-            Total Assets – Total Liabilities = Conventional Net Worth
+            Total Assets – Total Liabilities
           </Typography>
         </Box>
         <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenu}>
