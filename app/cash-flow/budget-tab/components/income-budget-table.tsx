@@ -20,7 +20,6 @@ import {
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Card from '~/components/card';
 import Dropdown from '~/components/dropdown';
-import dayjs from 'dayjs';
 import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 
 import {
@@ -56,12 +55,14 @@ type ColumnKey = (typeof columnOptions)[number];
 const activeCategories = ['Salaries (Parents)', 'Online Store Profit', 'Bonuses'] as const;
 type ActiveCategory = (typeof activeCategories)[number];
 
-const portfolioCategories: (typeof rawData)[0]['category'][] = [];
+const portfolioCategories = ['Rental Income', 'Dividends'] as const;
 type PortfolioCategory = (typeof portfolioCategories)[number];
 
 interface Props {
   timeframe?: string;
-  userBudget?: number;
+  passiveBudget?: number;
+  activeBudget?: number;
+  portfolioBudget?: number;
 }
 
 const getPeriodInMonths = (timeframe: string) => {
@@ -77,7 +78,12 @@ const getPeriodInMonths = (timeframe: string) => {
   return periodMap[timeframe] || 12;
 };
 
-const IncomeBudgetTable = ({ timeframe = 'Y', userBudget }: Props) => {
+const IncomeBudgetTable = ({
+  timeframe = 'Y',
+  passiveBudget = 0,
+  activeBudget = 0,
+  portfolioBudget = 0,
+}: Props) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpenInfoDialog, setIsOpenInfoDialog] = useState(false);
   const [visibleColumns, setVisibleColumns] = useState<ColumnKey[]>([...columnOptions]);
@@ -132,14 +138,32 @@ const IncomeBudgetTable = ({ timeframe = 'Y', userBudget }: Props) => {
     [dateFilteredData]
   );
 
-  const budgetScale = userBudget ? userBudget / hardcodedBudgetSum : actualScale;
+  const categoryBudgetMap = useMemo(
+    () => ({
+      Passive: passiveBudget,
+      Active: activeBudget,
+      Portfolio: portfolioBudget,
+    }),
+    [passiveBudget, activeBudget, portfolioBudget]
+  );
 
-  const totalBudget = userBudget ?? Math.round(hardcodedBudgetSum * actualScale);
+  const totalBudget = useMemo(
+    () => passiveBudget + activeBudget + portfolioBudget,
+    [passiveBudget, activeBudget, portfolioBudget]
+  );
 
   const totalRemaining = totalBudget - effectiveTotalActual;
 
   const groups = useMemo(
     () => [
+      {
+        category: 'Passive',
+        items: searchFilteredData.filter(
+          (item) =>
+            !activeCategories.includes(item.category as ActiveCategory) &&
+            !portfolioCategories.includes(item.category as PortfolioCategory)
+        ),
+      },
       {
         category: 'Active',
         items: searchFilteredData.filter((item) =>
@@ -147,11 +171,9 @@ const IncomeBudgetTable = ({ timeframe = 'Y', userBudget }: Props) => {
         ),
       },
       {
-        category: 'Passive',
-        items: searchFilteredData.filter(
-          (item) =>
-            !activeCategories.includes(item.category as ActiveCategory) &&
-            !portfolioCategories.includes(item.category as PortfolioCategory)
+        category: 'Portfolio',
+        items: searchFilteredData.filter((item) =>
+          portfolioCategories.includes(item.category as PortfolioCategory)
         ),
       },
     ],
@@ -291,8 +313,11 @@ const IncomeBudgetTable = ({ timeframe = 'Y', userBudget }: Props) => {
 
             <TableBody>
               {groups.map((group) => {
+                const groupBudget =
+                  categoryBudgetMap[group.category as keyof typeof categoryBudgetMap] || 0;
                 const groupBudgetRaw = group.items.reduce((acc, item) => acc + item.budget, 0);
-                const groupBudget = Math.round(groupBudgetRaw * budgetScale);
+                const groupBudgetScale = groupBudgetRaw > 0 ? groupBudget / groupBudgetRaw : 0;
+
                 const groupActualRaw = group.items.reduce((acc, item) => acc + item.actual, 0);
                 const groupActual = Math.round(groupActualRaw * actualScale);
                 const groupRemaining = groupBudget - groupActual;
@@ -361,7 +386,7 @@ const IncomeBudgetTable = ({ timeframe = 'Y', userBudget }: Props) => {
                             <Table size="small" aria-label="child table">
                               <TableBody>
                                 {group.items.map((row) => {
-                                  const rowBudget = Math.round(row.budget * budgetScale);
+                                  const rowBudget = Math.round(row.budget * groupBudgetScale);
                                   const rowActual = Math.round(row.actual * actualScale);
                                   const remaining = rowBudget - rowActual;
 

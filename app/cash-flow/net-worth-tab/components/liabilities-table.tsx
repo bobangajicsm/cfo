@@ -20,6 +20,9 @@ import Card from '~/components/card';
 import Dropdown from '~/components/dropdown';
 import dayjs from 'dayjs';
 import TrendingChip from '~/components/trending-chip';
+import ButtonIcon from '~/components/button-icon';
+import InfoDialog from '~/components/info-dialog';
+import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 
 const data = [
   {
@@ -97,6 +100,8 @@ const data = [
 ];
 
 const LiabilitiesTable = ({ timeframe }: { timeframe: string }) => {
+  const [isOpenInfoDialog, setIsOpenInfoDialog] = useState(false);
+
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
     'source',
     'interestRate',
@@ -181,134 +186,166 @@ const LiabilitiesTable = ({ timeframe }: { timeframe: string }) => {
     }
   };
 
-  return (
-    <Card sx={{ mb: 2 }}>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        flexWrap="wrap"
-        gap={1}
-      >
-        <Typography fontSize="1.4rem">Total Liabilities ({periodLabel})</Typography>
+  const handleOpenInfoDialog = () => {
+    setIsOpenInfoDialog(true);
+  };
 
-        <Box display="flex" width={1} gap={1} justifyContent="space-between" alignItems="center">
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Search liabilities..."
-            value={searchTerm}
-            fullWidth
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <Box display="flex" gap={1} alignItems="center">
-            <Dropdown
-              multiple
+  const handleCloseInfoDialog = () => {
+    setIsOpenInfoDialog(false);
+  };
+
+  return (
+    <>
+      <Card sx={{ mb: 2 }}>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          flexWrap="wrap"
+          gap={1}
+        >
+          <Typography fontSize="1.4rem">Total Liabilities ({periodLabel})</Typography>
+
+          <Box display="flex" width={1} gap={1} justifyContent="space-between" alignItems="center">
+            <TextField
+              variant="outlined"
               size="small"
-              value={selectedColumns as unknown as string}
-              onChange={handleChange}
-              input={<OutlinedInput />}
-              IconComponent={KeyboardArrowDownIcon}
-              renderValue={(selected) => {
-                const selectedArray = Array.isArray(selected)
-                  ? selected
-                  : String(selected).split(',');
-                return (
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      gap: 0.5,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Chip
+              placeholder="Search liabilities..."
+              value={searchTerm}
+              fullWidth
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <Box display="flex" gap={1} alignItems="center">
+              <Dropdown
+                multiple
+                size="small"
+                value={selectedColumns as unknown as string}
+                onChange={handleChange}
+                input={<OutlinedInput />}
+                IconComponent={KeyboardArrowDownIcon}
+                renderValue={(selected) => {
+                  const selectedArray = Array.isArray(selected)
+                    ? selected
+                    : String(selected).split(',');
+                  return (
+                    <Box
                       sx={{
-                        height: '1.6rem',
-                        backgroundColor: 'rgba(var(--accent--primary-1-alpha), 0.3)',
+                        display: 'flex',
+                        gap: 0.5,
+                        justifyContent: 'center',
+                        alignItems: 'center',
                       }}
-                      key={selectedArray[0]}
-                      label={labels[selectedArray[0] as keyof typeof labels]}
-                      size="small"
-                    />
-                    {selectedArray.length > 1 && `+${selectedArray.length - 1}`}
-                  </Box>
-                );
-              }}
-            >
-              {columnOrder.map((key) => (
-                <MenuItem key={key} value={key}>
-                  <Checkbox checked={selectedColumns.includes(key)} size="small" />
-                  {labels[key]}
-                </MenuItem>
-              ))}
-            </Dropdown>
+                    >
+                      <Chip
+                        sx={{
+                          height: '1.6rem',
+                          backgroundColor: 'rgba(var(--accent--primary-1-alpha), 0.3)',
+                        }}
+                        key={selectedArray[0]}
+                        label={labels[selectedArray[0] as keyof typeof labels]}
+                        size="small"
+                      />
+                      {selectedArray.length > 1 && `+${selectedArray.length - 1}`}
+                    </Box>
+                  );
+                }}
+              >
+                {columnOrder.map((key) => (
+                  <MenuItem key={key} value={key}>
+                    <Checkbox checked={selectedColumns.includes(key)} size="small" />
+                    {labels[key]}
+                  </MenuItem>
+                ))}
+              </Dropdown>
+            </Box>
           </Box>
         </Box>
-      </Box>
 
-      <TableContainer
-        sx={{
-          backgroundColor: 'var(--bg-color-secondary)',
-          mt: 1,
-          '& .MuiTableCell-root': {
-            fontSize: '1.2rem',
-            borderColor: 'var(--neutral--600)',
-            whiteSpace: 'nowrap',
-            color: 'var(--text-color-primary)',
-            p: 1,
-          },
-          '& .MuiTableCell-root:first-of-type': {
-            minWidth: '100px',
-          },
-        }}
-      >
-        <Table aria-label="liabilities table">
-          <TableHead>
-            <TableRow>
-              {visibleColKeys.map((key) => (
-                <TableCell key={key} align={key === 'balance' ? 'right' : undefined}>
-                  {labels[key]}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredData.map((row) => (
-              <TableRow key={row.source}>
+        <TableContainer
+          sx={{
+            backgroundColor: 'var(--bg-color-secondary)',
+            mt: 1,
+            '& .MuiTableCell-root': {
+              fontSize: '1.2rem',
+              borderColor: 'var(--neutral--600)',
+              whiteSpace: 'nowrap',
+              color: 'var(--text-color-primary)',
+              p: 1,
+            },
+            '& .MuiTableCell-root:first-of-type': {
+              minWidth: '100px',
+            },
+          }}
+        >
+          <Table aria-label="liabilities table">
+            <TableHead>
+              <TableRow>
                 {visibleColKeys.map((key) => (
                   <TableCell key={key} align={key === 'balance' ? 'right' : undefined}>
-                    {getCellContent(key, row)}
+                    {labels[key]}
                   </TableCell>
                 ))}
               </TableRow>
-            ))}
-
-            <TableRow
-              sx={{
-                backgroundColor: 'rgba(var(--system--300-alpha), 0.1)',
-              }}
-            >
-              <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1.3rem' }}>
-                Total Liabilities
-              </TableCell>
-              {visibleColKeys.slice(1).map((key) => (
-                <TableCell
-                  key={key}
-                  align={key === 'balance' ? 'right' : undefined}
-                  sx={{
-                    fontWeight: 'bold',
-                    fontSize: '1.3rem',
-                  }}
-                >
-                  {key === 'balance' ? `$${totalLiabilities.toLocaleString('en-US')}` : ''}
-                </TableCell>
+            </TableHead>
+            <TableBody>
+              {filteredData.map((row) => (
+                <TableRow key={row.source}>
+                  {visibleColKeys.map((key) => (
+                    <TableCell key={key} align={key === 'balance' ? 'right' : undefined}>
+                      {getCellContent(key, row)}
+                    </TableCell>
+                  ))}
+                </TableRow>
               ))}
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Card>
+
+              <TableRow
+                sx={{
+                  backgroundColor: 'rgba(var(--system--300-alpha), 0.1)',
+                }}
+              >
+                <TableCell
+                  component="th"
+                  scope="row"
+                  sx={{ fontWeight: 'bold', fontSize: '1.3rem' }}
+                >
+                  Total Liabilities
+                </TableCell>
+                {visibleColKeys.slice(1).map((key) => (
+                  <TableCell
+                    key={key}
+                    align={key === 'balance' ? 'right' : undefined}
+                    sx={{
+                      fontWeight: 'bold',
+                      fontSize: '1.3rem',
+                    }}
+                  >
+                    {key === 'balance' ? `$${totalLiabilities.toLocaleString('en-US')}` : ''}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <ButtonIcon
+          sx={{
+            position: 'absolute',
+            top: '-13px',
+            left: '-13px',
+            opacity: 0.7,
+          }}
+          onClick={handleOpenInfoDialog}
+        >
+          <InfoOutlineIcon sx={{ fontSize: '2rem' }} />
+        </ButtonIcon>
+      </Card>
+
+      <InfoDialog
+        open={isOpenInfoDialog}
+        onClose={handleCloseInfoDialog}
+        youtubeUrl="https://www.youtube.com/embed/QaDKDznksOg?si=s-vZoIBPb9xOSlFS"
+        title="Total Liabilities"
+      />
+    </>
   );
 };
 

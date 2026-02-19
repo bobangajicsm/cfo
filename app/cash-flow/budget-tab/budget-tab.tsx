@@ -9,7 +9,17 @@ import ButtonPrimary from '~/components/button-primary';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 
-import { Box, Typography, TextField } from '@mui/material';
+import {
+  Box,
+  Typography,
+  TextField,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
 
 import * as XLSX from 'xlsx';
 import pkg from 'file-saver';
@@ -120,43 +130,61 @@ export const yearlyData = {
   2025: data2025,
 } as const;
 
+const incomeCategories = ['Passive', 'Active', 'Portfolio'] as const;
+const expenseCategories = ['Fixed', 'Variable', 'Discretionary', 'Unexpected'] as const;
+const allCategories = [...incomeCategories, ...expenseCategories];
+
 const BudgetTab = () => {
   const [date, setDate] = useState('Y');
-  const [yearlyIncomeBudget, setYearlyIncomeBudget] = useState<number | null>(null);
-  const [yearlyExpensesBudget, setYearlyExpensesBudget] = useState<number | null>(null);
+  const [categoryBudgets, setCategoryBudgets] = useState<{ [key: string]: number }>({});
+  const [budgetInputs, setBudgetInputs] = useState<{ [key: string]: string }>({});
   const [editMode, setEditMode] = useState(false);
-  const [incomeBudgetInput, setIncomeBudgetInput] = useState('');
-  const [expensesBudgetInput, setExpensesBudgetInput] = useState('');
 
   useEffect(() => {
-    const savedIncome = localStorage.getItem('yearlyIncomeBudget');
-    const savedExpenses = localStorage.getItem('yearlyExpensesBudget');
-    if (savedIncome && savedExpenses) {
-      setYearlyIncomeBudget(parseFloat(savedIncome));
-      setYearlyExpensesBudget(parseFloat(savedExpenses));
-    } else {
-      setEditMode(true);
-    }
+    const loadedBudgets: { [key: string]: number } = {};
+    let allLoaded = true;
+
+    allCategories.forEach((cat) => {
+      const saved = localStorage.getItem(`${cat.toLowerCase()}Budget`);
+      if (saved) {
+        loadedBudgets[cat] = parseFloat(saved);
+      } else {
+        allLoaded = false;
+      }
+    });
+
+    setCategoryBudgets(loadedBudgets);
+    setEditMode(!allLoaded);
   }, []);
 
   useEffect(() => {
-    if (editMode && yearlyIncomeBudget !== null && yearlyExpensesBudget !== null) {
-      setIncomeBudgetInput(yearlyIncomeBudget.toString());
-      setExpensesBudgetInput(yearlyExpensesBudget.toString());
+    if (editMode) {
+      const inputs: { [key: string]: string } = {};
+      allCategories.forEach((cat) => {
+        inputs[cat] = categoryBudgets[cat]?.toString() ?? '';
+      });
+      setBudgetInputs(inputs);
     }
-  }, [editMode, yearlyIncomeBudget, yearlyExpensesBudget]);
+  }, [editMode, categoryBudgets]);
 
   const handleSave = () => {
-    if (incomeBudgetInput && expensesBudgetInput) {
-      const incomeValue = parseFloat(incomeBudgetInput);
-      const expensesValue = parseFloat(expensesBudgetInput);
-      localStorage.setItem('yearlyIncomeBudget', incomeValue.toString());
-      localStorage.setItem('yearlyExpensesBudget', expensesValue.toString());
-      setYearlyIncomeBudget(incomeValue);
-      setYearlyExpensesBudget(expensesValue);
+    const newBudgets: { [key: string]: number } = {};
+    let valid = true;
+
+    allCategories.forEach((cat) => {
+      const value = parseFloat(budgetInputs[cat]);
+      if (!isNaN(value)) {
+        newBudgets[cat] = value;
+        localStorage.setItem(`${cat.toLowerCase()}Budget`, value.toString());
+      } else {
+        valid = false;
+      }
+    });
+
+    if (valid) {
+      setCategoryBudgets(newBudgets);
       setEditMode(false);
-      setIncomeBudgetInput('');
-      setExpensesBudgetInput('');
+      setBudgetInputs({});
     }
   };
 
@@ -177,34 +205,92 @@ const BudgetTab = () => {
     saveAs(blob, 'budget_flow' + fileExtension);
   };
 
+  const previousBudgets = {
+    Passive: 90000,
+    Active: 180000,
+    Portfolio: 40000,
+    Fixed: 140000,
+    Variable: 90000,
+    Discretionary: 45000,
+    Unexpected: 15000,
+  };
+
   if (editMode) {
     return (
       <Box sx={{ p: 2 }}>
         <Typography variant="h6" mb={2}>
-          Please enter your yearly budgets:
+          Set Yearly Budgets
         </Typography>
-        <TextField
-          type="number"
-          value={incomeBudgetInput}
-          onChange={(e) => setIncomeBudgetInput(e.target.value)}
-          placeholder="Enter income budget"
-          sx={{ mr: 2, mb: 2 }}
-        />
-        <TextField
-          type="number"
-          value={expensesBudgetInput}
-          onChange={(e) => setExpensesBudgetInput(e.target.value)}
-          placeholder="Enter expenses budget"
-          sx={{ mr: 2, mb: 2 }}
-        />
-        <ButtonPrimary onClick={handleSave}>Save</ButtonPrimary>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Category</TableCell>
+                <TableCell align="right">2025 Budget</TableCell>
+                <TableCell align="right">2026 Budget</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan={3}>
+                  <Typography variant="subtitle1">Income Categories</Typography>
+                </TableCell>
+              </TableRow>
+              {incomeCategories.map((cat) => (
+                <TableRow key={cat}>
+                  <TableCell>{cat}</TableCell>
+                  <TableCell align="right">${previousBudgets[cat].toLocaleString()}</TableCell>
+                  <TableCell align="right">
+                    <TextField
+                      type="number"
+                      value={budgetInputs[cat]}
+                      onChange={(e) => setBudgetInputs({ ...budgetInputs, [cat]: e.target.value })}
+                      size="small"
+                      sx={{ width: '150px' }}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+              <TableRow>
+                <TableCell colSpan={3}>
+                  <Typography variant="subtitle1">Expense Categories</Typography>
+                </TableCell>
+              </TableRow>
+              {expenseCategories.map((cat) => (
+                <TableRow key={cat}>
+                  <TableCell>{cat}</TableCell>
+                  <TableCell align="right">${previousBudgets[cat].toLocaleString()}</TableCell>
+                  <TableCell align="right">
+                    <TextField
+                      type="number"
+                      value={budgetInputs[cat]}
+                      onChange={(e) => setBudgetInputs({ ...budgetInputs, [cat]: e.target.value })}
+                      size="small"
+                      sx={{ width: '150px' }}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <ButtonPrimary onClick={handleSave} sx={{ mt: 2 }}>
+          Save
+        </ButtonPrimary>
       </Box>
     );
   }
 
-  const periodIncomeBudget = date === 'Y' ? yearlyIncomeBudget : (yearlyIncomeBudget ?? 0) / 12;
-  const periodExpensesBudget =
-    date === 'Y' ? yearlyExpensesBudget : (yearlyExpensesBudget ?? 0) / 12;
+  const yearlyIncomeBudget = incomeCategories.reduce(
+    (sum, cat) => sum + (categoryBudgets[cat] ?? 0),
+    0
+  );
+  const yearlyExpensesBudget = expenseCategories.reduce(
+    (sum, cat) => sum + (categoryBudgets[cat] ?? 0),
+    0
+  );
+
+  const getPeriodBudget = (budget: number) => (date === 'Y' ? budget : budget / 12);
 
   return (
     <Box
@@ -213,8 +299,8 @@ const BudgetTab = () => {
       }}
     >
       <Box mb={3} mt={1} display="flex" flexDirection="column" gap={1}>
-        <Typography mb={0}>Income Budget: ${yearlyIncomeBudget?.toLocaleString()}</Typography>
-        <Typography>Expenses Budget: ${yearlyExpensesBudget?.toLocaleString()}</Typography>
+        <Typography mb={0}>Income Budget: ${yearlyIncomeBudget.toLocaleString()}</Typography>
+        <Typography>Expenses Budget: ${yearlyExpensesBudget.toLocaleString()}</Typography>
         <Box
           display="flex"
           justifyContent="space-between"
@@ -268,8 +354,19 @@ const BudgetTab = () => {
       <Typography variant="h2" fontSize="2rem" fontWeight={600} mt={3} mb={4}>
         Transactions
       </Typography>
-      <IncomeBudgetTable timeframe={date} userBudget={periodIncomeBudget ?? undefined} />
-      <ExpensesBudgetTable timeframe={date} userBudget={periodExpensesBudget ?? undefined} />
+      <IncomeBudgetTable
+        timeframe={date}
+        passiveBudget={getPeriodBudget(categoryBudgets['Passive'] ?? 0)}
+        activeBudget={getPeriodBudget(categoryBudgets['Active'] ?? 0)}
+        portfolioBudget={getPeriodBudget(categoryBudgets['Portfolio'] ?? 0)}
+      />
+      <ExpensesBudgetTable
+        timeframe={date}
+        fixedBudget={getPeriodBudget(categoryBudgets['Fixed'] ?? 0)}
+        variableBudget={getPeriodBudget(categoryBudgets['Variable'] ?? 0)}
+        discretionaryBudget={getPeriodBudget(categoryBudgets['Discretionary'] ?? 0)}
+        unexpectedBudget={getPeriodBudget(categoryBudgets['Unexpected'] ?? 0)}
+      />
     </Box>
   );
 };

@@ -13,13 +13,17 @@ import {
   Checkbox,
   TextField,
   type SelectChangeEvent,
+  Stack,
 } from '@mui/material';
+import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 import React, { useState } from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Card from '~/components/card';
 import Dropdown from '~/components/dropdown';
 import dayjs from 'dayjs';
 import TrendingChip from '~/components/trending-chip';
+import ButtonIcon from '~/components/button-icon';
+import InfoDialog from '~/components/info-dialog';
 
 const data = [
   {
@@ -211,6 +215,8 @@ const data = [
 ];
 
 const AssetsTable = ({ timeframe }: { timeframe: string }) => {
+  const [isOpenInfoDialog, setIsOpenInfoDialog] = useState(false);
+
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
     'source',
     'returnRate',
@@ -270,6 +276,14 @@ const AssetsTable = ({ timeframe }: { timeframe: string }) => {
 
   const visibleColKeys = columnOrder.filter((key) => selectedColumns.includes(key));
 
+  const handleOpenInfoDialog = () => {
+    setIsOpenInfoDialog(true);
+  };
+
+  const handleCloseInfoDialog = () => {
+    setIsOpenInfoDialog(false);
+  };
+
   const handleChange = (event: SelectChangeEvent<string | string[]>) => {
     const value = event.target.value;
     setSelectedColumns(typeof value === 'string' ? value.split(',') : value);
@@ -296,142 +310,163 @@ const AssetsTable = ({ timeframe }: { timeframe: string }) => {
   };
 
   return (
-    <Card sx={{ mb: 2 }}>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        flexWrap="wrap"
-        gap={1}
-      >
-        <Typography fontSize="1.4rem">Total Assets ({periodLabel})</Typography>
+    <>
+      <Card sx={{ mb: 2 }}>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          flexWrap="wrap"
+          gap={1}
+        >
+          <Typography fontSize="1.4rem">Total Assets ({periodLabel})</Typography>
 
-        <Box display="flex" width={1} gap={1} justifyContent="space-between" alignItems="center">
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Search assets..."
-            value={searchTerm}
-            fullWidth
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <Box display="flex" gap={1} alignItems="center">
-            <Dropdown
-              multiple
+          <Box display="flex" width={1} gap={1} justifyContent="space-between" alignItems="center">
+            <TextField
+              variant="outlined"
               size="small"
-              value={selectedColumns as unknown as string}
-              onChange={handleChange}
-              input={<OutlinedInput />}
-              IconComponent={KeyboardArrowDownIcon}
-              renderValue={(selected) => {
-                const selectedArray = Array.isArray(selected)
-                  ? selected
-                  : String(selected).split(',');
-                return (
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      gap: 0.5,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Chip
+              placeholder="Search assets..."
+              value={searchTerm}
+              fullWidth
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <Box display="flex" gap={1} alignItems="center">
+              <Dropdown
+                multiple
+                size="small"
+                value={selectedColumns as unknown as string}
+                onChange={handleChange}
+                input={<OutlinedInput />}
+                IconComponent={KeyboardArrowDownIcon}
+                renderValue={(selected) => {
+                  const selectedArray = Array.isArray(selected)
+                    ? selected
+                    : String(selected).split(',');
+                  return (
+                    <Box
                       sx={{
-                        height: '1.6rem',
-                        backgroundColor: 'rgba(var(--accent--primary-1-alpha), 0.3)',
+                        display: 'flex',
+                        gap: 0.5,
+                        justifyContent: 'center',
+                        alignItems: 'center',
                       }}
-                      key={selectedArray[0]}
-                      label={labels[selectedArray[0] as keyof typeof labels]}
-                      size="small"
-                    />
-                    {selectedArray.length > 1 && `+${selectedArray.length - 1}`}
-                  </Box>
-                );
-              }}
-            >
-              {columnOrder.map((key) => (
-                <MenuItem key={key} value={key}>
-                  <Checkbox checked={selectedColumns.includes(key)} size="small" />
-                  {labels[key]}
-                </MenuItem>
-              ))}
-            </Dropdown>
+                    >
+                      <Chip
+                        sx={{
+                          height: '1.6rem',
+                          backgroundColor: 'rgba(var(--accent--primary-1-alpha), 0.3)',
+                        }}
+                        key={selectedArray[0]}
+                        label={labels[selectedArray[0] as keyof typeof labels]}
+                        size="small"
+                      />
+                      {selectedArray.length > 1 && `+${selectedArray.length - 1}`}
+                    </Box>
+                  );
+                }}
+              >
+                {columnOrder.map((key) => (
+                  <MenuItem key={key} value={key}>
+                    <Checkbox checked={selectedColumns.includes(key)} size="small" />
+                    {labels[key]}
+                  </MenuItem>
+                ))}
+              </Dropdown>
+            </Box>
           </Box>
         </Box>
-      </Box>
 
-      <TableContainer
-        sx={{
-          backgroundColor: 'var(--bg-color-secondary)',
-          mt: 1,
-          '& .MuiTableCell-root': {
-            fontSize: '1.2rem',
-            borderColor: 'var(--neutral--600)',
-            whiteSpace: 'nowrap',
-            color: 'var(--text-color-primary)',
-            p: 1,
-          },
-          '& .MuiTableCell-root:first-of-type': {
-            minWidth: '100px',
-          },
-        }}
-      >
-        <Table aria-label="assets table">
-          <TableHead>
-            <TableRow>
-              {visibleColKeys.map((key) => (
-                <TableCell key={key} align={key === 'balance' ? 'right' : undefined}>
-                  {labels[key]}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredData.map((row) => (
-              <TableRow key={row.source}>
+        <TableContainer
+          sx={{
+            backgroundColor: 'var(--bg-color-secondary)',
+            mt: 1,
+            '& .MuiTableCell-root': {
+              fontSize: '1.2rem',
+              borderColor: 'var(--neutral--600)',
+              whiteSpace: 'nowrap',
+              color: 'var(--text-color-primary)',
+              p: 1,
+            },
+            '& .MuiTableCell-root:first-of-type': {
+              minWidth: '100px',
+            },
+          }}
+        >
+          <Table aria-label="assets table">
+            <TableHead>
+              <TableRow>
                 {visibleColKeys.map((key) => (
                   <TableCell key={key} align={key === 'balance' ? 'right' : undefined}>
-                    {getCellContent(key, row)}
+                    {labels[key]}
                   </TableCell>
                 ))}
               </TableRow>
-            ))}
+            </TableHead>
+            <TableBody>
+              {filteredData.map((row) => (
+                <TableRow key={row.source}>
+                  {visibleColKeys.map((key) => (
+                    <TableCell key={key} align={key === 'balance' ? 'right' : undefined}>
+                      {getCellContent(key, row)}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
 
-            <TableRow
-              sx={{
-                backgroundColor: 'rgba(var(--system--green-300-alpha), 0.1)',
-              }}
-            >
-              <TableCell
-                component="th"
-                scope="row"
+              <TableRow
                 sx={{
-                  fontWeight: 'bold',
-                  fontSize: '1.3rem',
-                  color: 'var(--system--green-700)',
+                  backgroundColor: 'rgba(var(--system--green-300-alpha), 0.1)',
                 }}
               >
-                Total Assets
-              </TableCell>
-              {visibleColKeys.slice(1).map((key) => (
                 <TableCell
-                  key={key}
-                  align={key === 'balance' ? 'right' : undefined}
+                  component="th"
+                  scope="row"
                   sx={{
                     fontWeight: 'bold',
                     fontSize: '1.3rem',
-                    color: key === 'balance' ? 'var(--system--green-700)' : 'inherit',
+                    color: 'var(--system--green-700)',
                   }}
                 >
-                  {key === 'balance' ? `$${totalAssets.toLocaleString('en-US')}` : ''}
+                  Total Assets
                 </TableCell>
-              ))}
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Card>
+                {visibleColKeys.slice(1).map((key) => (
+                  <TableCell
+                    key={key}
+                    align={key === 'balance' ? 'right' : undefined}
+                    sx={{
+                      fontWeight: 'bold',
+                      fontSize: '1.3rem',
+                      color: key === 'balance' ? 'var(--system--green-700)' : 'inherit',
+                    }}
+                  >
+                    {key === 'balance' ? `$${totalAssets.toLocaleString('en-US')}` : ''}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <ButtonIcon
+          sx={{
+            position: 'absolute',
+            top: '-13px',
+            left: '-13px',
+            opacity: 0.7,
+          }}
+          onClick={handleOpenInfoDialog}
+        >
+          <InfoOutlineIcon sx={{ fontSize: '2rem' }} />
+        </ButtonIcon>
+      </Card>
+
+      <InfoDialog
+        open={isOpenInfoDialog}
+        onClose={handleCloseInfoDialog}
+        youtubeUrl="https://www.youtube.com/embed/TDoYRMDUNa8?si=KuFoEeZNpaHlVCJd"
+        title="Total Assets"
+      />
+    </>
   );
 };
 

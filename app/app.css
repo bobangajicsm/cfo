@@ -112,3 +112,12 @@ html {
   box-shadow: none;
   background-color: transparent;
 }
+
+.MuiFormLabel-root.MuiInputLabel-root {
+    font-size: 12px;
+    transform: translate(14px, 4px) scale(1);
+}
+
+.MuiFormLabel-root.Mui-focused.MuiInputLabel-root, .MuiFormLabel-root.MuiFormLabel-filled.MuiInputLabel-root {
+    transform: translate(14px, -9px) scale(1);
+}

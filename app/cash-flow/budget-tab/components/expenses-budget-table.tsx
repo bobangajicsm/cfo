@@ -77,7 +77,10 @@ const UnexpectedCategories = ['Emergency Repairs', 'Unexpected Medical', 'Auto R
 
 interface Props {
   timeframe?: string;
-  userBudget?: number;
+  fixedBudget?: number;
+  variableBudget?: number;
+  discretionaryBudget?: number;
+  unexpectedBudget?: number;
 }
 
 const getPeriodInMonths = (timeframe: string) => {
@@ -93,7 +96,13 @@ const getPeriodInMonths = (timeframe: string) => {
   return periodMap[timeframe] || 12;
 };
 
-const ExpensesBudgetTable = ({ timeframe = 'Y', userBudget }: Props) => {
+const ExpensesBudgetTable = ({
+  timeframe = 'Y',
+  fixedBudget = 0,
+  variableBudget = 0,
+  discretionaryBudget = 0,
+  unexpectedBudget = 0,
+}: Props) => {
   const [isOpenInfoDialog, setIsOpenInfoDialog] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [visibleColumns, setVisibleColumns] = useState<ColumnKey[]>([...columnOptions]);
@@ -148,9 +157,20 @@ const ExpensesBudgetTable = ({ timeframe = 'Y', userBudget }: Props) => {
     [dateFilteredData]
   );
 
-  const budgetScale = userBudget ? userBudget / hardcodedBudgetSum : actualScale;
+  const categoryBudgetMap = useMemo(
+    () => ({
+      Fixed: fixedBudget,
+      Variable: variableBudget,
+      Discretionary: discretionaryBudget,
+      Unexpected: unexpectedBudget,
+    }),
+    [fixedBudget, variableBudget, discretionaryBudget, unexpectedBudget]
+  );
 
-  const totalBudget = userBudget ?? Math.round(hardcodedBudgetSum * actualScale);
+  const totalBudget = useMemo(
+    () => fixedBudget + variableBudget + discretionaryBudget + unexpectedBudget,
+    [fixedBudget, variableBudget, discretionaryBudget, unexpectedBudget]
+  );
 
   const totalRemaining = totalBudget - effectiveTotalActual;
 
@@ -319,8 +339,11 @@ const ExpensesBudgetTable = ({ timeframe = 'Y', userBudget }: Props) => {
 
             <TableBody>
               {groups.map((group) => {
+                const groupBudget =
+                  categoryBudgetMap[group.category as keyof typeof categoryBudgetMap] || 0;
                 const groupBudgetRaw = group.items.reduce((acc, item) => acc + item.budget, 0);
-                const groupBudget = Math.round(groupBudgetRaw * budgetScale);
+                const groupBudgetScale = groupBudgetRaw > 0 ? groupBudget / groupBudgetRaw : 0;
+
                 const groupActualRaw = group.items.reduce((acc, item) => acc + item.actual, 0);
                 const groupActual = Math.round(groupActualRaw * actualScale);
                 const groupRemaining = groupBudget - groupActual;
@@ -389,7 +412,7 @@ const ExpensesBudgetTable = ({ timeframe = 'Y', userBudget }: Props) => {
                             <Table size="small" aria-label="child table">
                               <TableBody>
                                 {group.items.map((row) => {
-                                  const rowBudget = Math.round(row.budget * budgetScale);
+                                  const rowBudget = Math.round(row.budget * groupBudgetScale);
                                   const rowActual = Math.round(row.actual * actualScale);
                                   const remaining = rowBudget - rowActual;
 
