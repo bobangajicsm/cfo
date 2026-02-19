@@ -383,6 +383,9 @@ const home = () => {
             <TrendingChip value={cashFlowTrend} />
           </Box>
         </Box>
+        <Typography color="var(--text-color-secondary)" fontSize="1rem">
+          Total Income – Total Expenses = Cash Flow (Total)
+        </Typography>
         <ButtonIcon
           onClick={() =>
             handleOpenInfoDialog({
