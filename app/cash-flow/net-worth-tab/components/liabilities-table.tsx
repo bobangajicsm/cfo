@@ -13,6 +13,7 @@ import {
   Checkbox,
   TextField,
   type SelectChangeEvent,
+  Stack,
 } from '@mui/material';
 import React, { useState } from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -344,6 +345,23 @@ const LiabilitiesTable = ({ timeframe }: { timeframe: string }) => {
         onClose={handleCloseInfoDialog}
         youtubeUrl="https://www.youtube.com/embed/QaDKDznksOg?si=s-vZoIBPb9xOSlFS"
         title="Total Liabilities"
+        content={
+          <Stack px={2} gap={3} mb={2}>
+            <Box>
+              <Typography sx={{ fontWeight: '700' }}>Overview</Typography>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+              >
+                Total liabilities in personal finance are all debts owed mortgages, loans, credit
+                cards, and other obligations. Subtracting them from total assets determines net
+                worth, serving as a critical measure of financial health and debt management
+                progress.
+              </Typography>
+            </Box>
+          </Stack>
+        }
       />
     </>
   );

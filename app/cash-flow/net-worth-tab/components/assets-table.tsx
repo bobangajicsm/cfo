@@ -465,6 +465,23 @@ const AssetsTable = ({ timeframe }: { timeframe: string }) => {
         onClose={handleCloseInfoDialog}
         youtubeUrl="https://www.youtube.com/embed/TDoYRMDUNa8?si=KuFoEeZNpaHlVCJd"
         title="Total Assets"
+        content={
+          <Stack px={2} gap={3} mb={2}>
+            <Box>
+              <Typography sx={{ fontWeight: '700' }}>Overview</Typography>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+              >
+                Total assets in personal finance represent all valuable items you own cash,
+                investments, real estate, and personal property. They form the foundation of net
+                worth calculations, helping assess financial health and progress toward goals when
+                compared against liabilities.
+              </Typography>
+            </Box>
+          </Stack>
+        }
       />
     </>
   );
