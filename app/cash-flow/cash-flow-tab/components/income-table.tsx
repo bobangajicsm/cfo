@@ -528,7 +528,7 @@ const IncomeTable = ({
         open={isOpenInfoDialog}
         onClose={handleCloseInfoDialog}
         youtubeUrl="https://www.youtube.com/embed/uripKTS9uxE?si=OIbjzqn4dQs-DBQr"
-        title="Income Overview"
+        title="Income"
         content={
           <Stack px={2} gap={3} mb={2}>
             <Box>

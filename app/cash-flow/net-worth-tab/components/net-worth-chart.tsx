@@ -196,6 +196,9 @@ const NetWorthChart = ({ date }: { date: string }) => {
             </Typography>
             <TrendingChip value={parseFloat(growthRate.toFixed(1))} />
           </Box>
+          <Typography color="var(--text-color-secondary)" fontSize="1rem">
+            Total Assets – Total Liabilities = Conventional Net Worth
+          </Typography>
         </Box>
         <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenu}>
           <MenuItem onClick={handleCloseMenu} component={Link} to="/cash-flow/net-worth/analytics">
@@ -337,7 +340,7 @@ const NetWorthChart = ({ date }: { date: string }) => {
                 Formula:
               </Typography>
               <Typography fontSize="1.4rem" mt={1}>
-                Conventional Net Worth = Total Assets – Total Liabilities
+                Total Assets – Total Liabilities = Conventional Net Worth
               </Typography>
             </Box>
 

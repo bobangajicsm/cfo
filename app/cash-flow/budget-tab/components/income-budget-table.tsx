@@ -157,17 +157,17 @@ const IncomeBudgetTable = ({
   const groups = useMemo(
     () => [
       {
+        category: 'Active',
+        items: searchFilteredData.filter((item) =>
+          activeCategories.includes(item.category as ActiveCategory)
+        ),
+      },
+      {
         category: 'Passive',
         items: searchFilteredData.filter(
           (item) =>
             !activeCategories.includes(item.category as ActiveCategory) &&
             !portfolioCategories.includes(item.category as PortfolioCategory)
-        ),
-      },
-      {
-        category: 'Active',
-        items: searchFilteredData.filter((item) =>
-          activeCategories.includes(item.category as ActiveCategory)
         ),
       },
       {

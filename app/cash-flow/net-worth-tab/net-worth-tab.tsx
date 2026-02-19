@@ -301,7 +301,7 @@ const NetWorthTab = () => {
       <InfoDialog
         open={isOpenInfoDialog}
         onClose={() => setIsOpenInfoDialog(false)}
-        title="Cash Flow Net Worth"
+        title="Passive Income Net Worth"
         content={
           <Stack px={2} gap={3} mb={2}>
             <Box>
@@ -309,7 +309,7 @@ const NetWorthTab = () => {
                 Formula:
               </Typography>
               <Typography fontSize="1.4rem" mt={1}>
-                Passive Income = Income ÷ Capitalization Rate
+                Passive Income (Total) ÷ Capitalization Rate = Passive Income Net Worth
               </Typography>
             </Box>
 

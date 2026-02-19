@@ -552,7 +552,7 @@ const ExpensesTable = ({
       <InfoDialog
         open={isOpenInfoDialog}
         onClose={handleCloseInfoDialog}
-        title="Expenses Overview"
+        title="Expenses"
         youtubeUrl="https://www.youtube.com/embed/dbK2Owp4hVc?si=JjpXWscCUypu_ajN"
         content={
           <Stack px={2} gap={3} mb={2}>

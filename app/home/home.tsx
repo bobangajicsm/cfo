@@ -386,7 +386,7 @@ const home = () => {
         <ButtonIcon
           onClick={() =>
             handleOpenInfoDialog({
-              title: 'Cash Flow',
+              title: 'Cash Flow (Total)',
               content: (
                 <Stack px={2} gap={3} mb={2}>
                   <Box p={2}>
@@ -408,7 +408,7 @@ const home = () => {
                       fontSize="1.4rem"
                       color="var(--text-color-secondary)"
                     >
-                      Cash Flow = Total Income – Total Expenses
+                      Total Income – Total Expenses = Cash Flow (Total)
                     </Typography>
                   </Box>
                   <Box>
@@ -467,6 +467,16 @@ const home = () => {
                   title: 'Income (Total) Overview',
                   content: (
                     <Stack px={2} gap={3} mb={2}>
+                      <Box>
+                        <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
+                        <Typography
+                          sx={{ fontWeight: '400' }}
+                          fontSize="1.4rem"
+                          color="var(--text-color-secondary)"
+                        >
+                          Active Income + Passive Income + Portfolio Income = Income (Total)
+                        </Typography>
+                      </Box>
                       <Box>
                         <Typography sx={{ fontWeight: '700' }}>Income Types</Typography>
                         <Typography
@@ -536,6 +546,17 @@ const home = () => {
                   content: (
                     <Stack px={2} gap={3} mb={2}>
                       <Box>
+                        <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
+                        <Typography
+                          sx={{ fontWeight: '400' }}
+                          fontSize="1.4rem"
+                          color="var(--text-color-secondary)"
+                        >
+                          Fixed Expenses + Variable Expenses + Descretionary Expenses + Unexpected
+                          Expenses = Expenses (Total)
+                        </Typography>
+                      </Box>
+                      <Box>
                         <Typography sx={{ fontWeight: '700' }}>Expense Types</Typography>
                         <Typography
                           sx={{ fontWeight: '400' }}
@@ -603,7 +624,7 @@ const home = () => {
           <ButtonIcon
             onClick={() =>
               handleOpenInfoDialog({
-                title: 'Lifestyle Coverage Percentage (Combined) Overview',
+                title: 'Lifestyle Coverage Percentage (Total)',
                 content: (
                   <Stack px={2} gap={3} mb={2}>
                     <Box p={2}>
@@ -626,7 +647,7 @@ const home = () => {
                         fontSize="1.4rem"
                         color="var(--text-color-secondary)"
                       >
-                        Passive Income ÷ Total Expenses
+                        Total Income ÷ Total Expenses = Lifestyle Coverage Percentage (Total)
                       </Typography>
                     </Box>
                     <Box>
@@ -649,9 +670,8 @@ const home = () => {
                         - 100%: Income equals expenses (break-even). <br />
                         - Above 100%: Surplus income available for savings, investments, or debt
                         reduction.
-                        <br />
-                        - Below 100%: Deficit; consider reducing expenses or increasing income.{' '}
-                        <br />
+                        <br />- Below 100%: Deficit; consider reducing expenses or increasing
+                        income. <br />
                       </Typography>
                     </Box>
                   </Stack>
@@ -720,7 +740,7 @@ const home = () => {
                         fontSize="1.4rem"
                         color="var(--text-color-secondary)"
                       >
-                        Passive Income ÷ Total Expenses
+                        Passive Income ÷ Total Expenses = Lifestyle Coverage Percentage (Passive)
                       </Typography>
                     </Box>
                     <Box>
@@ -743,9 +763,8 @@ const home = () => {
                         - 100%: Income equals expenses (break-even). <br />
                         - Above 100%: Surplus income available for savings, investments, or debt
                         reduction.
-                        <br />
-                        - Below 100%: Deficit; consider reducing expenses or increasing income.{' '}
-                        <br />
+                        <br />- Below 100%: Deficit; consider reducing expenses or increasing
+                        income. <br />
                       </Typography>
                     </Box>
                   </Stack>

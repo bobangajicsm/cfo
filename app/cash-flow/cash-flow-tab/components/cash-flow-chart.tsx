@@ -354,7 +354,7 @@ const CashFlowChart = ({
       <InfoDialog
         open={isOpenInfoDialog}
         onClose={handleCloseInfoDialog}
-        title="Cash Flow"
+        title="Cash Flow (Total)"
         content={
           <Stack px={2} gap={3} mb={2}>
             <Box p={2}>
@@ -376,7 +376,7 @@ const CashFlowChart = ({
                 fontSize="1.4rem"
                 color="var(--text-color-secondary)"
               >
-                Cash Flow = Total Income – Total Expenses
+                Total Income – Total Expenses = Cash Flow (Total)
               </Typography>
             </Box>
             <Box>
