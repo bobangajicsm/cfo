@@ -532,6 +532,16 @@ const IncomeTable = ({
         content={
           <Stack px={2} gap={3} mb={2}>
             <Box>
+              <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+              >
+                Active Income + Passive Income + Portfolio Income = Income (Total)
+              </Typography>
+            </Box>
+            <Box>
               <Typography sx={{ fontWeight: '700' }}>Income Types</Typography>
               <Typography
                 sx={{ fontWeight: '400' }}

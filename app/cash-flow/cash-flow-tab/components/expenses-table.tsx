@@ -557,6 +557,17 @@ const ExpensesTable = ({
         content={
           <Stack px={2} gap={3} mb={2}>
             <Box>
+              <Typography sx={{ fontWeight: '700' }}>Formula</Typography>
+              <Typography
+                sx={{ fontWeight: '400' }}
+                fontSize="1.4rem"
+                color="var(--text-color-secondary)"
+              >
+                Fixed Expenses + Variable Expenses + Descretionary Expenses + Unexpected Expenses =
+                Expenses (Total)
+              </Typography>
+            </Box>
+            <Box>
               <Typography sx={{ fontWeight: '700' }}>Expense Types</Typography>
               <Typography
                 sx={{ fontWeight: '400' }}
