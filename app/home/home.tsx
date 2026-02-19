@@ -464,7 +464,7 @@ const home = () => {
               onClick={(e) => {
                 e.preventDefault();
                 handleOpenInfoDialog({
-                  title: 'Income (Total) Overview',
+                  title: 'Income (Total)',
                   content: (
                     <Stack px={2} gap={3} mb={2}>
                       <Box>
@@ -542,7 +542,7 @@ const home = () => {
               onClick={(e) => {
                 e.preventDefault();
                 handleOpenInfoDialog({
-                  title: 'Expenses (Total) Overview',
+                  title: 'Expenses (Total)',
                   content: (
                     <Stack px={2} gap={3} mb={2}>
                       <Box>
