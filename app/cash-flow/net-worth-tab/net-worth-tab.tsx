@@ -208,7 +208,7 @@ const NetWorthTab = () => {
                   Passive Income Net Worth
                 </Typography>
                 <Typography color="var(--text-color-secondary)" fontSize="1rem">
-                  Passive Income (Total) ÷ Capitalization Rate = Passive Income Net Worth
+                  Passive Income (Total) ÷ Capitalization Rate
                 </Typography>
               </Box>
             </Box>
