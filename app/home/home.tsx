@@ -317,7 +317,7 @@ const home = () => {
             Welcome, Russell
           </Typography>
           <Typography color="var(--text-color-secondary)" mb={3} fontSize="1.2rem">
-            Build cash flow and create freedom
+            Real cash flow for real freedom 
           </Typography>
         </Stack>
         <Select
@@ -374,7 +374,7 @@ const home = () => {
       >
         <Box component={Link} to="/cash-flow">
           <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
-            Cash Flow (Total)
+            Cash Flow (Combined)
           </Typography>
           <Box display="flex" alignItems="center" gap={1}>
             <Typography fontSize="2.8rem" fontWeight={700}>
@@ -389,7 +389,7 @@ const home = () => {
         <ButtonIcon
           onClick={() =>
             handleOpenInfoDialog({
-              title: 'Cash Flow (Total)',
+              title: 'Cash Flow (Combined)',
               content: (
                 <Stack px={2} gap={3} mb={2}>
                   <Box p={2}>
@@ -411,7 +411,7 @@ const home = () => {
                       fontSize="1.4rem"
                       color="var(--text-color-secondary)"
                     >
-                      Total Income – Total Expenses = Cash Flow (Total)
+                      Total Income – Total Expenses = Cash Flow (Combined)
                     </Typography>
                   </Box>
                   <Box>
@@ -453,7 +453,7 @@ const home = () => {
             }}
           >
             <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
-              Income (Total)
+              Income (Combined)
             </Typography>
             <Box display="flex" alignItems="center" gap={1}>
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -467,7 +467,7 @@ const home = () => {
               onClick={(e) => {
                 e.preventDefault();
                 handleOpenInfoDialog({
-                  title: 'Income (Total)',
+                  title: 'Income (Combined)',
                   content: (
                     <Stack px={2} gap={3} mb={2}>
                       <Box>
@@ -477,7 +477,7 @@ const home = () => {
                           fontSize="1.4rem"
                           color="var(--text-color-secondary)"
                         >
-                          Active Income + Passive Income + Portfolio Income = Income (Total)
+                          Active Income + Passive Income + Portfolio Income = Income (Combined)
                         </Typography>
                       </Box>
                       <Box>
@@ -530,7 +530,7 @@ const home = () => {
             }}
           >
             <Typography color="var(--text-color-secondary)" fontSize="1.2rem">
-              Expenses (Total)
+              Expenses (Combined)
             </Typography>
             <Box display="flex" alignItems="center" gap={1}>
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -545,7 +545,7 @@ const home = () => {
               onClick={(e) => {
                 e.preventDefault();
                 handleOpenInfoDialog({
-                  title: 'Expenses (Total)',
+                  title: 'Expenses (Combined)',
                   content: (
                     <Stack px={2} gap={3} mb={2}>
                       <Box>
@@ -556,7 +556,7 @@ const home = () => {
                           color="var(--text-color-secondary)"
                         >
                           Fixed Expenses + Variable Expenses + Descretionary Expenses + Unexpected
-                          Expenses = Expenses (Total)
+                          Expenses = Expenses (Combined)
                         </Typography>
                       </Box>
                       <Box>
@@ -627,7 +627,7 @@ const home = () => {
           <ButtonIcon
             onClick={() =>
               handleOpenInfoDialog({
-                title: 'Lifestyle Coverage Percentage (Total)',
+                title: 'Lifestyle Coverage Percentage (Combined)',
                 content: (
                   <Stack px={2} gap={3} mb={2}>
                     <Box p={2}>
@@ -650,7 +650,7 @@ const home = () => {
                         fontSize="1.4rem"
                         color="var(--text-color-secondary)"
                       >
-                        Total Income ÷ Total Expenses = Lifestyle Coverage Percentage (Total)
+                        Total Income ÷ Total Expenses = Lifestyle Coverage Percentage (Combined)
                       </Typography>
                     </Box>
                     <Box>
@@ -798,3 +798,4 @@ const home = () => {
 };
 
 export default home;
+
